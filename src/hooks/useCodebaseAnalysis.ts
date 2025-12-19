@@ -26,149 +26,72 @@ export interface Message {
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-export function useCodebaseAnalysis() {
-  const [codebase, setCodebase] = useState<CodebaseData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [activeMode, setActiveMode] = useState("overview");
-  const folderInputRef = useRef<HTMLInputElement | null>(null);
-
-  const formatCodebaseForAnalysis = useCallback((data: CodebaseData): string => {
-    return data.files
-      .map((f) => `=== ${f.path} ===\n${f.content}`)
-      .join("\n\n");
-  }, []);
-
-  const fetchGitHubRepo = useCallback(async (url: string): Promise<CodebaseData> => {
-    const match = url.match(/github\.com\/([^/]+)\/([^/]+)/);
-    if (!match) {
-      throw new Error("Invalid GitHub URL. Please use format: https://github.com/owner/repo");
-    }
-
-    const [, owner, repo] = match;
-    const repoName = `${owner}/${repo.replace(/\.git$/, "")}`;
-
-    toast.info("Fetching repository structure...");
-
-    // Fetch repo tree
-    const treeResponse = await fetch(
-      `https://api.github.com/repos/${owner}/${repo.replace(/\.git$/, "")}/git/trees/main?recursive=1`
-    );
-
-    if (!treeResponse.ok) {
-      // Try master branch if main fails
-      const masterResponse = await fetch(
-        `https://api.github.com/repos/${owner}/${repo.replace(/\.git$/, "")}/git/trees/master?recursive=1`
-      );
-      if (!masterResponse.ok) {
-        throw new Error("Failed to fetch repository. Check if the URL is correct and the repo is public.");
-      }
-      const masterData = await masterResponse.json();
-      return await fetchFilesFromTree(masterData, owner, repo.replace(/\.git$/, ""), repoName);
-    }
-
-    const treeData = await treeResponse.json();
-    return await fetchFilesFromTree(treeData, owner, repo.replace(/\.git$/, ""), repoName);
-  }, []);
-
-  const fetchFilesFromTree = async (
-    treeData: { tree: Array<{ path: string; type: string }> },
-    owner: string,
-    repo: string,
-    repoName: string
-  ): Promise<CodebaseData> => {
-    const codeExtensions = [
-      ".ts", ".tsx", ".js", ".jsx", ".py", ".java", ".go", ".rs",
-      ".css", ".scss", ".html", ".json", ".md", ".yaml", ".yml",
-      ".toml", ".sql", ".graphql", ".vue", ".svelte"
-    ];
-
-    const ignorePaths = ["node_modules", "dist", "build", ".git", "vendor", "__pycache__"];
-
-    const codeFiles = treeData.tree
-      .filter((item) => {
-        if (item.type !== "blob") return false;
-        if (ignorePaths.some((p) => item.path.includes(p))) return false;
-        return codeExtensions.some((ext) => item.path.endsWith(ext));
-      })
-      .slice(0, 50); // Limit to 50 files for performance
-
-    toast.info(`Found ${codeFiles.length} code files. Downloading...`);
-
-    const files: FileContent[] = [];
-    for (const file of codeFiles) {
-      try {
-        const contentResponse = await fetch(
-          `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`
-        );
-        if (contentResponse.ok) {
-          const contentData = await contentResponse.json();
-          if (contentData.content) {
-            const content = atob(contentData.content);
-            files.push({ path: file.path, content });
-          }
-        }
-      } catch (error) {
-        console.warn(`Failed to fetch ${file.path}`);
-      }
-    }
-
-    return { files, repoName, source: "github" };
+// Move this outside the hook to avoid hook ordering issues
+const getModeQuestion = (mode: string): string => {
+  const questions: Record<string, string> = {
+    overview: "Give me a complete project overview",
+    map: "Show me the project structure and how files connect",
+    flow: "Explain the execution flow of this application",
+    teach: "Teach me this project as if I built it for interview prep",
+    ask: "I'm ready to ask questions about the codebase",
+    interview: "Generate interview questions for this project",
+    forgot: "I forgot everything - give me a quick refresher",
+    complexity: "Identify complex areas and technical debt",
+    impact: "Help me understand change impact analysis",
+    resume: "Generate resume-ready content for this project",
   };
+  return questions[mode] || "Analyze this codebase";
+};
 
-  const processFileList = useCallback(async (fileList: FileList): Promise<CodebaseData> => {
-    const codeExtensions = [
-      ".ts", ".tsx", ".js", ".jsx", ".py", ".java", ".go", ".rs",
-      ".css", ".scss", ".html", ".json", ".md", ".yaml", ".yml"
-    ];
+const fetchFilesFromTree = async (
+  treeData: { tree: Array<{ path: string; type: string }> },
+  owner: string,
+  repo: string,
+  repoName: string
+): Promise<CodebaseData> => {
+  const codeExtensions = [
+    ".ts", ".tsx", ".js", ".jsx", ".py", ".java", ".go", ".rs",
+    ".css", ".scss", ".html", ".json", ".md", ".yaml", ".yml",
+    ".toml", ".sql", ".graphql", ".vue", ".svelte"
+  ];
 
-    const ignorePaths = ["node_modules", "dist", "build", ".git", "vendor", "__pycache__"];
+  const ignorePaths = ["node_modules", "dist", "build", ".git", "vendor", "__pycache__"];
 
-    const files: FileContent[] = [];
-    let repoName = "local-project";
+  const codeFiles = treeData.tree
+    .filter((item) => {
+      if (item.type !== "blob") return false;
+      if (ignorePaths.some((p) => item.path.includes(p))) return false;
+      return codeExtensions.some((ext) => item.path.endsWith(ext));
+    })
+    .slice(0, 50);
 
-    toast.info(`Processing ${fileList.length} files...`);
+  toast.info(`Found ${codeFiles.length} code files. Downloading...`);
 
-    for (let i = 0; i < fileList.length && files.length < 50; i++) {
-      const file = fileList[i];
-      const relativePath = file.webkitRelativePath || file.name;
-      
-      // Get folder name from first file
-      if (i === 0 && relativePath.includes('/')) {
-        repoName = relativePath.split('/')[0];
+  const files: FileContent[] = [];
+  for (const file of codeFiles) {
+    try {
+      const contentResponse = await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`
+      );
+      if (contentResponse.ok) {
+        const contentData = await contentResponse.json();
+        if (contentData.content) {
+          const content = atob(contentData.content);
+          files.push({ path: file.path, content });
+        }
       }
-
-      // Skip ignored paths
-      if (ignorePaths.some((p) => relativePath.includes(p))) continue;
-
-      // Only process code files
-      if (!codeExtensions.some((ext) => file.name.endsWith(ext))) continue;
-
-      try {
-        const content = await file.text();
-        // Remove the root folder from path for cleaner display
-        const cleanPath = relativePath.includes('/') 
-          ? relativePath.split('/').slice(1).join('/') 
-          : relativePath;
-        files.push({ path: cleanPath, content });
-      } catch (error) {
-        console.warn(`Failed to read ${relativePath}`);
-      }
+    } catch (error) {
+      console.warn(`Failed to fetch ${file.path}`);
     }
+  }
 
-    if (files.length === 0) {
-      throw new Error("No code files found in the selected folder");
-    }
+  return { files, repoName, source: "github" };
+};
 
-    toast.success(`Loaded ${files.length} files from ${repoName}`);
-    return { files, repoName, source: "local" };
-  }, []);
-
-  const loadDemoProject = useCallback((): CodebaseData => {
-    const demoFiles: FileContent[] = [
-      {
-        path: "src/App.tsx",
-        content: `import React from 'react';
+const getDemoFiles = (): FileContent[] => [
+  {
+    path: "src/App.tsx",
+    content: `import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import ProductList from './pages/ProductList';
@@ -192,10 +115,10 @@ function App() {
 }
 
 export default App;`
-      },
-      {
-        path: "src/context/CartContext.tsx",
-        content: `import React, { createContext, useContext, useState, useEffect } from 'react';
+  },
+  {
+    path: "src/context/CartContext.tsx",
+    content: `import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface Product {
   id: string;
@@ -256,10 +179,10 @@ export const useCart = () => {
   if (!context) throw new Error('useCart must be used within CartProvider');
   return context;
 };`
-      },
-      {
-        path: "src/hooks/useProducts.ts",
-        content: `import { useState, useEffect } from 'react';
+  },
+  {
+    path: "src/hooks/useProducts.ts",
+    content: `import { useState, useEffect } from 'react';
 
 interface Product {
   id: string;
@@ -317,10 +240,10 @@ export function useProduct(id: string) {
 
   return { product, loading };
 }`
-      },
-      {
-        path: "src/components/Header.tsx",
-        content: `import React from 'react';
+  },
+  {
+    path: "src/components/Header.tsx",
+    content: `import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Search } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -359,10 +282,10 @@ export default function Header() {
     </header>
   );
 }`
-      },
-      {
-        path: "package.json",
-        content: `{
+  },
+  {
+    path: "package.json",
+    content: `{
   "name": "react-ecommerce-app",
   "version": "1.0.0",
   "private": true,
@@ -379,10 +302,97 @@ export default function Header() {
     "preview": "vite preview"
   }
 }`
+  }
+];
+
+export function useCodebaseAnalysis() {
+  const [codebase, setCodebase] = useState<CodebaseData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [activeMode, setActiveMode] = useState("overview");
+  const folderInputRef = useRef<HTMLInputElement | null>(null);
+
+  const formatCodebaseForAnalysis = useCallback((data: CodebaseData): string => {
+    return data.files
+      .map((f) => `=== ${f.path} ===\n${f.content}`)
+      .join("\n\n");
+  }, []);
+
+  const fetchGitHubRepo = useCallback(async (url: string): Promise<CodebaseData> => {
+    const match = url.match(/github\.com\/([^/]+)\/([^/]+)/);
+    if (!match) {
+      throw new Error("Invalid GitHub URL. Please use format: https://github.com/owner/repo");
+    }
+
+    const [, owner, repo] = match;
+    const repoName = `${owner}/${repo.replace(/\.git$/, "")}`;
+
+    toast.info("Fetching repository structure...");
+
+    const treeResponse = await fetch(
+      `https://api.github.com/repos/${owner}/${repo.replace(/\.git$/, "")}/git/trees/main?recursive=1`
+    );
+
+    if (!treeResponse.ok) {
+      const masterResponse = await fetch(
+        `https://api.github.com/repos/${owner}/${repo.replace(/\.git$/, "")}/git/trees/master?recursive=1`
+      );
+      if (!masterResponse.ok) {
+        throw new Error("Failed to fetch repository. Check if the URL is correct and the repo is public.");
       }
+      const masterData = await masterResponse.json();
+      return await fetchFilesFromTree(masterData, owner, repo.replace(/\.git$/, ""), repoName);
+    }
+
+    const treeData = await treeResponse.json();
+    return await fetchFilesFromTree(treeData, owner, repo.replace(/\.git$/, ""), repoName);
+  }, []);
+
+  const processFileList = useCallback(async (fileList: FileList): Promise<CodebaseData> => {
+    const codeExtensions = [
+      ".ts", ".tsx", ".js", ".jsx", ".py", ".java", ".go", ".rs",
+      ".css", ".scss", ".html", ".json", ".md", ".yaml", ".yml"
     ];
 
-    return { files: demoFiles, repoName: "react-ecommerce-app", source: "demo" };
+    const ignorePaths = ["node_modules", "dist", "build", ".git", "vendor", "__pycache__"];
+
+    const files: FileContent[] = [];
+    let repoName = "local-project";
+
+    toast.info(`Processing ${fileList.length} files...`);
+
+    for (let i = 0; i < fileList.length && files.length < 50; i++) {
+      const file = fileList[i];
+      const relativePath = file.webkitRelativePath || file.name;
+      
+      if (i === 0 && relativePath.includes('/')) {
+        repoName = relativePath.split('/')[0];
+      }
+
+      if (ignorePaths.some((p) => relativePath.includes(p))) continue;
+      if (!codeExtensions.some((ext) => file.name.endsWith(ext))) continue;
+
+      try {
+        const content = await file.text();
+        const cleanPath = relativePath.includes('/') 
+          ? relativePath.split('/').slice(1).join('/') 
+          : relativePath;
+        files.push({ path: cleanPath, content });
+      } catch (error) {
+        console.warn(`Failed to read ${relativePath}`);
+      }
+    }
+
+    if (files.length === 0) {
+      throw new Error("No code files found in the selected folder");
+    }
+
+    toast.success(`Loaded ${files.length} files from ${repoName}`);
+    return { files, repoName, source: "local" };
+  }, []);
+
+  const loadDemoProject = useCallback((): CodebaseData => {
+    return { files: getDemoFiles(), repoName: "react-ecommerce-app", source: "demo" };
   }, []);
 
   const analyzeWithAI = useCallback(async (mode: string, question?: string) => {
@@ -423,9 +433,8 @@ export default function Header() {
 
       const decoder = new TextDecoder();
       let assistantContent = "";
-      let assistantMessageId = (Date.now() + 1).toString();
+      const assistantMessageId = (Date.now() + 1).toString();
 
-      // Add initial assistant message
       setMessages((prev) => [
         ...prev,
         { id: assistantMessageId, role: "assistant", content: "" },
@@ -462,7 +471,6 @@ export default function Header() {
               );
             }
           } catch {
-            // Incomplete JSON, wait for more data
             buffer = line + "\n" + buffer;
             break;
           }
@@ -478,22 +486,6 @@ export default function Header() {
       setIsLoading(false);
     }
   }, [codebase, formatCodebaseForAnalysis]);
-
-  const getModeQuestion = (mode: string): string => {
-    const questions: Record<string, string> = {
-      overview: "Give me a complete project overview",
-      map: "Show me the project structure and how files connect",
-      flow: "Explain the execution flow of this application",
-      teach: "Teach me this project as if I built it for interview prep",
-      ask: "I'm ready to ask questions about the codebase",
-      interview: "Generate interview questions for this project",
-      forgot: "I forgot everything - give me a quick refresher",
-      complexity: "Identify complex areas and technical debt",
-      impact: "Help me understand change impact analysis",
-      resume: "Generate resume-ready content for this project",
-    };
-    return questions[mode] || "Analyze this codebase";
-  };
 
   const connectRepo = useCallback(async (url: string) => {
     setIsLoading(true);
@@ -511,7 +503,6 @@ export default function Header() {
   }, [fetchGitHubRepo]);
 
   const uploadFolder = useCallback(() => {
-    // Create hidden file input if it doesn't exist
     if (!folderInputRef.current) {
       const input = document.createElement('input');
       input.type = 'file';
@@ -540,7 +531,6 @@ export default function Header() {
           toast.error(error instanceof Error ? error.message : "Failed to process folder");
         } finally {
           setIsLoading(false);
-          // Reset input for re-use
           target.value = '';
         }
       });
@@ -549,7 +539,6 @@ export default function Header() {
       folderInputRef.current = input;
     }
     
-    // Trigger file picker
     folderInputRef.current.click();
   }, [processFileList]);
 
