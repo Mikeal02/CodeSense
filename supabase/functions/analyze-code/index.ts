@@ -81,7 +81,35 @@ Provide concrete file/function references.`,
 - Problem → Solution → Outcome framing
 - Metrics or impact statements where applicable
 - Project description for portfolio sites
-Format professionally for immediate use.`
+Format professionally for immediate use.`,
+
+  coupling: `You are a software architect analyzing code coupling and dependencies. Analyze this codebase and provide:
+
+## Tightly Coupled Files
+Identify files/modules that are TIGHTLY COUPLED (high dependency, hard to change independently):
+- List each group of tightly coupled files
+- Explain WHY they are coupled (shared state, direct imports, inheritance, etc.)
+- Rate the coupling severity (High/Medium/Low)
+- Suggest how to reduce coupling if possible
+
+## Loosely Coupled Files  
+Identify files/modules that are LOOSELY COUPLED (independent, well-encapsulated):
+- List files that follow good separation of concerns
+- Explain what makes them loosely coupled
+- Highlight good patterns used
+
+## Dependency Map
+Create a visual representation showing:
+- Which files depend on which
+- Central "hub" files that many others depend on
+- Isolated modules that could be extracted
+
+## Coupling Metrics Summary
+- Overall coupling score (1-10, where 1 is highly coupled, 10 is loosely coupled)
+- Most problematic coupling areas
+- Recommended refactoring priorities
+
+Format with clear sections, bullet points, and code references.`
 };
 
 serve(async (req) => {

@@ -5,6 +5,7 @@ import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import FileTreeView from "./FileTreeView";
+import FileContentPreview from "./FileContentPreview";
 
 export interface Message {
   id: string;
@@ -88,7 +89,7 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
     )}>
       {/* File Tree Sidebar */}
       {showFileTree && (
-        <div className="w-64 border-r border-border/50 bg-secondary/30 flex-shrink-0">
+        <div className="w-64 border-r border-border/50 bg-secondary/30 flex-shrink-0 flex flex-col">
           <div className="px-4 py-3 border-b border-border/50 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FolderTree className="w-4 h-4 text-primary" />
@@ -101,10 +102,23 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
               <X className="w-4 h-4" />
             </button>
           </div>
-          <FileTreeView 
-            files={files} 
-            onFileSelect={setSelectedFile}
-            selectedFile={selectedFile}
+          <div className="flex-1 overflow-hidden">
+            <FileTreeView 
+              files={files} 
+              onFileSelect={setSelectedFile}
+              selectedFile={selectedFile}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* File Content Preview */}
+      {selectedFile && (
+        <div className="w-96 flex-shrink-0">
+          <FileContentPreview
+            filePath={selectedFile}
+            content={files.find(f => f.path === selectedFile)?.content || ""}
+            onClose={() => setSelectedFile(undefined)}
           />
         </div>
       )}

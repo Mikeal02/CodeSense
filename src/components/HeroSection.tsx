@@ -1,4 +1,4 @@
-import { ArrowRight, FolderUp, Github, Zap, Loader2 } from "lucide-react";
+import { ArrowRight, FolderUp, Github, Zap, Loader2, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useState } from "react";
@@ -7,6 +7,7 @@ interface HeroSectionProps {
   onSubmitRepo: (url: string) => void;
   onUploadFolder: () => void;
   onLoadDemo: () => void;
+  onOpenGitHubSelector: () => void;
   isLoading: boolean;
   isConnected: boolean;
   repoName?: string;
@@ -15,7 +16,8 @@ interface HeroSectionProps {
 const HeroSection = ({ 
   onSubmitRepo, 
   onUploadFolder, 
-  onLoadDemo, 
+  onLoadDemo,
+  onOpenGitHubSelector,
   isLoading, 
   isConnected,
   repoName 
@@ -68,7 +70,7 @@ const HeroSection = ({
             </div>
           ) : (
             <>
-              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto mb-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto mb-6 animate-slide-up" style={{ animationDelay: '0.2s' }}>
                 <div className="flex-1 relative">
                   <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
@@ -99,6 +101,20 @@ const HeroSection = ({
                   )}
                 </Button>
               </form>
+
+              {/* Browse GitHub button */}
+              <div className="mb-6 animate-slide-up" style={{ animationDelay: '0.25s' }}>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={onOpenGitHubSelector}
+                  disabled={isLoading}
+                  className="gap-2"
+                >
+                  <User className="w-4 h-4" />
+                  Browse GitHub Repos
+                </Button>
+              </div>
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.3s' }}>
                 <button 
