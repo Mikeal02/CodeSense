@@ -41,6 +41,7 @@ const Index = () => {
         onSendMessage={askQuestion}
         isLoading={isLoading}
         repoName={codebase?.repoName}
+        files={codebase?.files || []}
       />
       <FeaturesSection />
       <Footer />

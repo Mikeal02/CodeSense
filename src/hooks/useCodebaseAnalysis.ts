@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 
 export interface FileContent {
@@ -31,6 +31,7 @@ export function useCodebaseAnalysis() {
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeMode, setActiveMode] = useState("overview");
+  const folderInputRef = useRef<HTMLInputElement | null>(null);
 
   const formatCodebaseForAnalysis = useCallback((data: CodebaseData): string => {
     return data.files
@@ -115,15 +116,7 @@ export function useCodebaseAnalysis() {
     return { files, repoName, source: "github" };
   };
 
-  const handleLocalFolder = useCallback(async (): Promise<CodebaseData> => {
-    if (!("showDirectoryPicker" in window)) {
-      throw new Error("Your browser doesn't support folder selection. Please use Chrome or Edge.");
-    }
-
-    const dirHandle = await (window as any).showDirectoryPicker();
-    const files: FileContent[] = [];
-    const repoName = dirHandle.name;
-
+  const processFileList = useCallback(async (fileList: FileList): Promise<CodebaseData> => {
     const codeExtensions = [
       ".ts", ".tsx", ".js", ".jsx", ".py", ".java", ".go", ".rs",
       ".css", ".scss", ".html", ".json", ".md", ".yaml", ".yml"
@@ -131,33 +124,43 @@ export function useCodebaseAnalysis() {
 
     const ignorePaths = ["node_modules", "dist", "build", ".git", "vendor", "__pycache__"];
 
-    async function readDirectory(handle: any, path: string = "") {
-      for await (const entry of handle.values()) {
-        const fullPath = path ? `${path}/${entry.name}` : entry.name;
-        
-        if (ignorePaths.some((p) => fullPath.includes(p))) continue;
-        
-        if (entry.kind === "directory") {
-          await readDirectory(entry, fullPath);
-        } else if (entry.kind === "file") {
-          if (codeExtensions.some((ext) => entry.name.endsWith(ext))) {
-            try {
-              const file = await entry.getFile();
-              const content = await file.text();
-              files.push({ path: fullPath, content });
-              
-              if (files.length >= 50) return; // Limit files
-            } catch (error) {
-              console.warn(`Failed to read ${fullPath}`);
-            }
-          }
-        }
+    const files: FileContent[] = [];
+    let repoName = "local-project";
+
+    toast.info(`Processing ${fileList.length} files...`);
+
+    for (let i = 0; i < fileList.length && files.length < 50; i++) {
+      const file = fileList[i];
+      const relativePath = file.webkitRelativePath || file.name;
+      
+      // Get folder name from first file
+      if (i === 0 && relativePath.includes('/')) {
+        repoName = relativePath.split('/')[0];
+      }
+
+      // Skip ignored paths
+      if (ignorePaths.some((p) => relativePath.includes(p))) continue;
+
+      // Only process code files
+      if (!codeExtensions.some((ext) => file.name.endsWith(ext))) continue;
+
+      try {
+        const content = await file.text();
+        // Remove the root folder from path for cleaner display
+        const cleanPath = relativePath.includes('/') 
+          ? relativePath.split('/').slice(1).join('/') 
+          : relativePath;
+        files.push({ path: cleanPath, content });
+      } catch (error) {
+        console.warn(`Failed to read ${relativePath}`);
       }
     }
 
-    toast.info("Reading local files...");
-    await readDirectory(dirHandle);
+    if (files.length === 0) {
+      throw new Error("No code files found in the selected folder");
+    }
 
+    toast.success(`Loaded ${files.length} files from ${repoName}`);
     return { files, repoName, source: "local" };
   }, []);
 
@@ -498,50 +501,77 @@ export default function Header() {
       const data = await fetchGitHubRepo(url);
       setCodebase(data);
       setMessages([]);
-      toast.success(`Connected to ${data.repoName}! ${data.files.length} files loaded.`);
+      toast.success(`Connected to ${data.repoName}`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to connect");
+      console.error("Error connecting to repo:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to connect to repository");
     } finally {
       setIsLoading(false);
     }
   }, [fetchGitHubRepo]);
 
-  const uploadFolder = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await handleLocalFolder();
-      setCodebase(data);
-      setMessages([]);
-      toast.success(`Loaded ${data.repoName}! ${data.files.length} files found.`);
-    } catch (error) {
-      if ((error as Error).name === "AbortError") {
-        toast.info("Folder selection cancelled");
-      } else {
-        toast.error(error instanceof Error ? error.message : "Failed to load folder");
-      }
-    } finally {
-      setIsLoading(false);
+  const uploadFolder = useCallback(() => {
+    // Create hidden file input if it doesn't exist
+    if (!folderInputRef.current) {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.setAttribute('webkitdirectory', '');
+      input.setAttribute('directory', '');
+      input.multiple = true;
+      input.style.display = 'none';
+      
+      input.addEventListener('change', async (e) => {
+        const target = e.target as HTMLInputElement;
+        const files = target.files;
+        
+        if (!files || files.length === 0) {
+          toast.error("No files selected");
+          return;
+        }
+
+        setIsLoading(true);
+        try {
+          const data = await processFileList(files);
+          setCodebase(data);
+          setMessages([]);
+          toast.success(`Connected to ${data.repoName}`);
+        } catch (error) {
+          console.error("Error processing folder:", error);
+          toast.error(error instanceof Error ? error.message : "Failed to process folder");
+        } finally {
+          setIsLoading(false);
+          // Reset input for re-use
+          target.value = '';
+        }
+      });
+      
+      document.body.appendChild(input);
+      folderInputRef.current = input;
     }
-  }, [handleLocalFolder]);
+    
+    // Trigger file picker
+    folderInputRef.current.click();
+  }, [processFileList]);
 
   const loadDemo = useCallback(() => {
-    const data = loadDemoProject();
-    setCodebase(data);
-    setMessages([]);
-    toast.success("Demo project loaded! Try analyzing it.");
+    setIsLoading(true);
+    setTimeout(() => {
+      const data = loadDemoProject();
+      setCodebase(data);
+      setMessages([]);
+      toast.success("Demo project loaded successfully!");
+      setIsLoading(false);
+    }, 500);
   }, [loadDemoProject]);
 
   const selectMode = useCallback((mode: string) => {
     setActiveMode(mode);
     if (codebase) {
       analyzeWithAI(mode);
-    } else {
-      toast.info("Connect a repository first to use this mode");
     }
   }, [codebase, analyzeWithAI]);
 
   const askQuestion = useCallback((question: string) => {
-    if (!question.trim()) return;
     analyzeWithAI(activeMode, question);
   }, [activeMode, analyzeWithAI]);
 
