@@ -8,13 +8,15 @@ import {
   Brain, 
   AlertTriangle, 
   GitBranch, 
-  FileText 
+  FileText,
+  Lock
 } from "lucide-react";
 import ModeCard from "./ModeCard";
 
 interface ModesSectionProps {
   activeMode: string;
   onSelectMode: (mode: string) => void;
+  isConnected: boolean;
 }
 
 const modes = [
@@ -80,27 +82,37 @@ const modes = [
   }
 ];
 
-const ModesSection = ({ activeMode, onSelectMode }: ModesSectionProps) => {
+const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionProps) => {
   return (
     <section className="py-20 relative">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-4">Choose Your Mode</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Select how you want to explore and understand your codebase
+            {isConnected 
+              ? "Select a mode to analyze your codebase with AI"
+              : "Connect a repository first, then select how you want to explore it"
+            }
           </p>
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {modes.map((mode) => (
-            <ModeCard
-              key={mode.id}
-              icon={mode.icon}
-              title={mode.title}
-              description={mode.description}
-              isActive={activeMode === mode.id}
-              onClick={() => onSelectMode(mode.id)}
-            />
+            <div key={mode.id} className="relative">
+              {!isConnected && (
+                <div className="absolute top-2 right-2 z-10">
+                  <Lock className="w-4 h-4 text-muted-foreground/50" />
+                </div>
+              )}
+              <ModeCard
+                icon={mode.icon}
+                title={mode.title}
+                description={mode.description}
+                isActive={activeMode === mode.id}
+                onClick={() => onSelectMode(mode.id)}
+                disabled={!isConnected}
+              />
+            </div>
           ))}
         </div>
       </div>

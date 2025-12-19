@@ -7,37 +7,38 @@ interface ModeCardProps {
   description: string;
   isActive?: boolean;
   onClick?: () => void;
+  disabled?: boolean;
 }
 
-const ModeCard = ({ icon: Icon, title, description, isActive, onClick }: ModeCardProps) => {
+const ModeCard = ({ icon: Icon, title, description, isActive, onClick, disabled }: ModeCardProps) => {
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       className={cn(
-        "group relative p-6 rounded-xl text-left transition-all duration-300",
+        "w-full p-5 rounded-xl text-left transition-all duration-300 group",
         "border border-border/50 hover:border-primary/50",
-        "bg-card/50 hover:bg-card",
-        isActive && "border-primary bg-card glow-primary"
+        "bg-secondary/30 hover:bg-secondary/50",
+        isActive && "border-primary bg-primary/10 shadow-lg shadow-primary/10",
+        disabled && "opacity-50 cursor-not-allowed hover:border-border/50 hover:bg-secondary/30"
       )}
     >
       <div className={cn(
-        "w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-colors",
-        "bg-secondary group-hover:bg-primary/20",
-        isActive && "bg-primary/20"
+        "w-10 h-10 rounded-lg flex items-center justify-center mb-3 transition-colors",
+        isActive ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground group-hover:text-foreground",
+        disabled && "group-hover:text-muted-foreground"
       )}>
-        <Icon className={cn(
-          "w-6 h-6 transition-colors",
-          "text-muted-foreground group-hover:text-primary",
-          isActive && "text-primary"
-        )} />
+        <Icon className="w-5 h-5" />
       </div>
-      
-      <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-      
-      {isActive && (
-        <div className="absolute top-4 right-4 w-2 h-2 bg-primary rounded-full animate-pulse" />
-      )}
+      <h3 className={cn(
+        "font-semibold text-sm mb-1 transition-colors",
+        isActive ? "text-primary" : "text-foreground"
+      )}>
+        {title}
+      </h3>
+      <p className="text-xs text-muted-foreground leading-relaxed">
+        {description}
+      </p>
     </button>
   );
 };

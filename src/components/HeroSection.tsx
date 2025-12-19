@@ -1,18 +1,30 @@
-import { ArrowRight, FolderUp, Github, Zap } from "lucide-react";
+import { ArrowRight, FolderUp, Github, Zap, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useState } from "react";
 
 interface HeroSectionProps {
   onSubmitRepo: (url: string) => void;
+  onUploadFolder: () => void;
+  onLoadDemo: () => void;
+  isLoading: boolean;
+  isConnected: boolean;
+  repoName?: string;
 }
 
-const HeroSection = ({ onSubmitRepo }: HeroSectionProps) => {
+const HeroSection = ({ 
+  onSubmitRepo, 
+  onUploadFolder, 
+  onLoadDemo, 
+  isLoading, 
+  isConnected,
+  repoName 
+}: HeroSectionProps) => {
   const [repoUrl, setRepoUrl] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (repoUrl.trim()) {
+    if (repoUrl.trim() && !isLoading) {
       onSubmitRepo(repoUrl);
     }
   };
@@ -45,35 +57,70 @@ const HeroSection = ({ onSubmitRepo }: HeroSectionProps) => {
           <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: '0.1s' }}>
             Forgot what your project does? Let CodeSense analyze your codebase and prepare you for technical interviews with confidence.
           </p>
-          
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto mb-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <div className="flex-1 relative">
-              <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                type="url"
-                placeholder="Paste GitHub repo URL..."
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-                className="pl-12 h-14 bg-secondary/50 border-border/50 text-base"
-              />
+
+          {isConnected && repoName ? (
+            <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
+              <div className="inline-flex items-center gap-3 px-6 py-4 rounded-xl bg-primary/10 border border-primary/30 mb-6">
+                <div className="w-3 h-3 rounded-full bg-primary animate-pulse" />
+                <span className="text-foreground font-medium">Connected to: {repoName}</span>
+              </div>
+              <p className="text-muted-foreground">Select a mode below to start analyzing</p>
             </div>
-            <Button type="submit" size="lg" className="h-14 px-8 gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-              Analyze
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </form>
-          
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <button className="flex items-center gap-2 hover:text-foreground transition-colors">
-              <FolderUp className="w-4 h-4" />
-              Upload Local Folder
-            </button>
-            <span className="hidden sm:inline">•</span>
-            <button className="flex items-center gap-2 hover:text-foreground transition-colors">
-              <Zap className="w-4 h-4" />
-              Try Demo Project
-            </button>
-          </div>
+          ) : (
+            <>
+              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto mb-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+                <div className="flex-1 relative">
+                  <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    type="url"
+                    placeholder="Paste GitHub repo URL..."
+                    value={repoUrl}
+                    onChange={(e) => setRepoUrl(e.target.value)}
+                    className="pl-12 h-14 bg-secondary/50 border-border/50 text-base"
+                    disabled={isLoading}
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  size="lg" 
+                  className="h-14 px-8 gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                  disabled={isLoading || !repoUrl.trim()}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      Analyze
+                      <ArrowRight className="w-5 h-5" />
+                    </>
+                  )}
+                </Button>
+              </form>
+              
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                <button 
+                  onClick={onUploadFolder}
+                  disabled={isLoading}
+                  className="flex items-center gap-2 hover:text-foreground transition-colors disabled:opacity-50"
+                >
+                  <FolderUp className="w-4 h-4" />
+                  Upload Local Folder
+                </button>
+                <span className="hidden sm:inline">•</span>
+                <button 
+                  onClick={onLoadDemo}
+                  disabled={isLoading}
+                  className="flex items-center gap-2 hover:text-foreground transition-colors disabled:opacity-50"
+                >
+                  <Zap className="w-4 h-4" />
+                  Try Demo Project
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </section>
