@@ -39,6 +39,7 @@ const getModeQuestion = (mode: string): string => {
     complexity: "Identify complex areas and technical debt",
     impact: "Help me understand change impact analysis",
     resume: "Generate resume-ready content for this project",
+    coupling: "Analyze which files are tightly and loosely coupled",
   };
   return questions[mode] || "Analyze this codebase";
 };

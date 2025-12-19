@@ -9,7 +9,8 @@ import {
   AlertTriangle, 
   GitBranch, 
   FileText,
-  Lock
+  Lock,
+  Link2
 } from "lucide-react";
 import ModeCard from "./ModeCard";
 
@@ -79,6 +80,12 @@ const modes = [
     icon: FileText,
     title: "Resume Summary",
     description: "Generate resume bullets and tech stack summaries for your portfolio."
+  },
+  {
+    id: "coupling",
+    icon: Link2,
+    title: "Coupling Analysis",
+    description: "Identify tightly and loosely coupled files to understand dependencies."
   }
 ];
 
