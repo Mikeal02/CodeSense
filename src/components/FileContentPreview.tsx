@@ -1,7 +1,6 @@
 import { X, Copy, Check, FileCode } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { cn } from "@/lib/utils";
 
 interface FileContentPreviewProps {
   filePath: string;
@@ -31,6 +30,96 @@ const getLanguageFromPath = (path: string): string => {
     sql: "sql",
   };
   return langMap[ext || ""] || "plaintext";
+};
+
+// Simple syntax highlighting component
+const SyntaxHighlightedLine = ({ line, language }: { line: string; language: string }) => {
+  if (!line.trim()) return <span>{' '}</span>;
+  
+  // Catppuccin Mocha colors
+  const colors = {
+    keyword: "#cba6f7",     // Mauve
+    string: "#a6e3a1",      // Green
+    comment: "#6c7086",     // Overlay0
+    number: "#fab387",      // Peach
+    function: "#89b4fa",    // Blue
+    variable: "#f5e0dc",    // Rosewater
+    operator: "#89dceb",    // Sky
+    property: "#f9e2af",    // Yellow
+    tag: "#f38ba8",         // Red
+    attribute: "#fab387",   // Peach
+    type: "#f9e2af",        // Yellow
+  };
+
+  // Simple patterns for syntax highlighting
+  const patterns: { regex: RegExp; color: string }[] = [
+    // Comments
+    { regex: /(\/\/.*$|\/\*[\s\S]*?\*\/|#.*$)/gm, color: colors.comment },
+    // Strings
+    { regex: /("[^"]*"|'[^']*'|`[^`]*`)/g, color: colors.string },
+    // Keywords
+    { regex: /\b(const|let|var|function|return|if|else|for|while|import|export|from|default|class|extends|new|this|async|await|try|catch|throw|typeof|instanceof|in|of|switch|case|break|continue|do|static|public|private|protected|interface|type|enum|implements|abstract|readonly|as|is|keyof|infer|never|void|null|undefined|true|false)\b/g, color: colors.keyword },
+    // Types (TypeScript)
+    { regex: /\b(string|number|boolean|object|any|unknown|Array|Promise|Record|Partial|Required|Pick|Omit|Exclude|Extract|NonNullable|ReturnType|Parameters|InstanceType|React|FC|ReactNode|JSX|Element)\b/g, color: colors.type },
+    // Functions
+    { regex: /\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g, color: colors.function },
+    // Numbers
+    { regex: /\b(\d+\.?\d*|0x[0-9a-fA-F]+)\b/g, color: colors.number },
+    // Operators
+    { regex: /(=>|===|!==|==|!=|<=|>=|&&|\|\||[+\-*/%=<>!&|^~?:])/g, color: colors.operator },
+    // JSX/HTML tags
+    { regex: /(<\/?[a-zA-Z][a-zA-Z0-9]*)/g, color: colors.tag },
+    // Object properties
+    { regex: /\.([a-zA-Z_$][a-zA-Z0-9_$]*)/g, color: colors.property },
+  ];
+
+  // Build highlighted segments
+  let result = line;
+  const segments: { start: number; end: number; color: string; text: string }[] = [];
+  
+  patterns.forEach(({ regex, color }) => {
+    let match;
+    const re = new RegExp(regex.source, regex.flags);
+    while ((match = re.exec(line)) !== null) {
+      const text = match[1] || match[0];
+      const start = match.index + (match[0].indexOf(text));
+      segments.push({
+        start,
+        end: start + text.length,
+        color,
+        text,
+      });
+    }
+  });
+
+  // Sort by start position and remove overlapping
+  segments.sort((a, b) => a.start - b.start);
+  const nonOverlapping: typeof segments = [];
+  let lastEnd = 0;
+  segments.forEach(seg => {
+    if (seg.start >= lastEnd) {
+      nonOverlapping.push(seg);
+      lastEnd = seg.end;
+    }
+  });
+
+  // Build the final JSX
+  const parts: JSX.Element[] = [];
+  let currentPos = 0;
+  
+  nonOverlapping.forEach((seg, i) => {
+    if (seg.start > currentPos) {
+      parts.push(<span key={`text-${i}`}>{line.slice(currentPos, seg.start)}</span>);
+    }
+    parts.push(<span key={`hl-${i}`} style={{ color: seg.color }}>{seg.text}</span>);
+    currentPos = seg.end;
+  });
+  
+  if (currentPos < line.length) {
+    parts.push(<span key="end">{line.slice(currentPos)}</span>);
+  }
+
+  return <>{parts.length > 0 ? parts : line}</>;
 };
 
 const FileContentPreview = ({ filePath, content, onClose }: FileContentPreviewProps) => {
@@ -81,11 +170,11 @@ const FileContentPreview = ({ filePath, content, onClose }: FileContentPreviewPr
         </div>
       </div>
 
-      {/* Code Content */}
-      <div className="flex-1 overflow-auto">
+      {/* Code Content with Syntax Theme */}
+      <div className="flex-1 overflow-auto bg-[#1e1e2e]">
         <div className="flex text-sm font-mono">
           {/* Line Numbers */}
-          <div className="flex-shrink-0 text-right pr-4 pl-4 py-4 text-muted-foreground/50 select-none border-r border-border/50 bg-secondary/20">
+          <div className="flex-shrink-0 text-right pr-4 pl-4 py-4 text-[#6c7086] select-none border-r border-[#313244] bg-[#181825]">
             {lines.map((_, i) => (
               <div key={i} className="leading-6">
                 {i + 1}
@@ -93,12 +182,12 @@ const FileContentPreview = ({ filePath, content, onClose }: FileContentPreviewPr
             ))}
           </div>
           
-          {/* Code */}
+          {/* Code with Catppuccin-inspired theme */}
           <pre className="flex-1 p-4 overflow-x-auto">
-            <code className={cn("text-foreground/90")}>
+            <code className="text-[#cdd6f4]">
               {lines.map((line, i) => (
                 <div key={i} className="leading-6 whitespace-pre">
-                  {line || ' '}
+                  <SyntaxHighlightedLine line={line} language={language} />
                 </div>
               ))}
             </code>
