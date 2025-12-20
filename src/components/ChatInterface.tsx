@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Sparkles, Code, FileCode, Copy, Check, Loader2, Maximize2, Minimize2, X, FolderTree } from "lucide-react";
+import { Send, Sparkles, Code, FileCode, Copy, Check, Loader2, Maximize2, Minimize2, X, FolderTree, Columns2, BarChart3 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import FileTreeView from "./FileTreeView";
 import FileContentPreview from "./FileContentPreview";
+import SplitViewMode from "./SplitViewMode";
+import DependencyGraph from "./DependencyGraph";
+import FileStats from "./FileStats";
 
 export interface Message {
   id: string;
@@ -43,6 +46,9 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
   const [showFileTree, setShowFileTree] = useState(false);
   const [selectedFile, setSelectedFile] = useState<string | undefined>();
   const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
+  const [showSplitView, setShowSplitView] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const [showGraph, setShowGraph] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -156,15 +162,35 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
               </div>
             )}
             {files.length > 0 && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowFileTree(!showFileTree)}
-                className="text-muted-foreground hover:text-foreground"
-                title="Toggle file tree"
-              >
-                <FolderTree className="w-4 h-4" />
-              </Button>
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowSplitView(true)}
+                  className="text-muted-foreground hover:text-foreground"
+                  title="Split view mode"
+                >
+                  <Columns2 className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => { setShowStats(!showStats); setShowGraph(false); }}
+                  className={cn("text-muted-foreground hover:text-foreground", showStats && "bg-primary/10 text-primary")}
+                  title="File statistics"
+                >
+                  <BarChart3 className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowFileTree(!showFileTree)}
+                  className={cn("text-muted-foreground hover:text-foreground", showFileTree && "bg-primary/10 text-primary")}
+                  title="Toggle file tree"
+                >
+                  <FolderTree className="w-4 h-4" />
+                </Button>
+              </>
             )}
             <Button
               variant="ghost"
@@ -348,13 +374,27 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
   }
 
   return (
-    <section className="py-12 relative">
-      <div className="container mx-auto px-6">
-        <div className="max-w-4xl mx-auto">
-          {chatContent}
+    <>
+      <SplitViewMode
+        isOpen={showSplitView}
+        onClose={() => setShowSplitView(false)}
+        files={files}
+        messages={messages}
+        onSendMessage={onSendMessage}
+        isLoading={isLoading}
+        repoName={repoName}
+      />
+      
+      <section className="py-12 relative">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto space-y-6">
+            {showStats && <FileStats files={files} />}
+            {showGraph && <DependencyGraph files={files} className="h-[500px]" />}
+            {chatContent}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 
