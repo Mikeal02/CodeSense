@@ -6,6 +6,7 @@ interface FileContentPreviewProps {
   filePath: string;
   content: string;
   onClose: () => void;
+  hideHeader?: boolean;
 }
 
 const getLanguageFromPath = (path: string): string => {
@@ -122,7 +123,7 @@ const SyntaxHighlightedLine = ({ line, language }: { line: string; language: str
   return <>{parts.length > 0 ? parts : line}</>;
 };
 
-const FileContentPreview = ({ filePath, content, onClose }: FileContentPreviewProps) => {
+const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: FileContentPreviewProps) => {
   const [copied, setCopied] = useState(false);
   const language = getLanguageFromPath(filePath);
   const lines = content.split('\n');
@@ -136,6 +137,7 @@ const FileContentPreview = ({ filePath, content, onClose }: FileContentPreviewPr
   return (
     <div className="flex flex-col h-full border-l border-border bg-background">
       {/* Header */}
+      {!hideHeader && (
       <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/30">
         <div className="flex items-center gap-2 min-w-0">
           <FileCode className="w-4 h-4 text-primary flex-shrink-0" />
@@ -169,6 +171,7 @@ const FileContentPreview = ({ filePath, content, onClose }: FileContentPreviewPr
           </Button>
         </div>
       </div>
+      )}
 
       {/* Code Content with Syntax Theme */}
       <div className="flex-1 overflow-auto bg-[#1e1e2e]">
