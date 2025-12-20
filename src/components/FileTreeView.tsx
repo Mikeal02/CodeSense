@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { ChevronRight, ChevronDown, Folder, FolderOpen, FileCode, FileJson, FileText, File } from "lucide-react";
+import { useState, useMemo } from "react";
+import { ChevronRight, ChevronDown, Folder, FolderOpen, FileCode, FileJson, FileText, File, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Input } from "./ui/input";
 
 interface FileNode {
   name: string;
@@ -13,6 +14,8 @@ interface FileTreeViewProps {
   files: { path: string; content: string }[];
   onFileSelect?: (path: string) => void;
   selectedFile?: string;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
 }
 
 const getFileIcon = (filename: string) => {
@@ -156,7 +159,18 @@ const TreeNode = ({
 };
 
 const FileTreeView = ({ files, onFileSelect, selectedFile }: FileTreeViewProps) => {
-  const tree = buildTree(files);
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  const filteredFiles = useMemo(() => {
+    if (!searchQuery.trim()) return files;
+    const query = searchQuery.toLowerCase();
+    return files.filter(f => 
+      f.path.toLowerCase().includes(query) || 
+      f.content.toLowerCase().includes(query)
+    );
+  }, [files, searchQuery]);
+  
+  const tree = buildTree(filteredFiles);
   
   if (files.length === 0) {
     return (
@@ -167,19 +181,46 @@ const FileTreeView = ({ files, onFileSelect, selectedFile }: FileTreeViewProps) 
   }
   
   return (
-    <div className="py-2">
-      <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-        Files ({files.length})
-      </div>
-      <div className="max-h-[400px] overflow-y-auto">
-        {tree.map(node => (
-          <TreeNode
-            key={node.path}
-            node={node}
-            onFileSelect={onFileSelect}
-            selectedFile={selectedFile}
+    <div className="py-2 flex flex-col h-full">
+      {/* Search Input */}
+      <div className="px-3 pb-2">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search files..."
+            className="h-8 pl-8 pr-8 text-xs bg-secondary/50 border-border/50"
           />
-        ))}
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+      
+      <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+        Files ({filteredFiles.length}{searchQuery ? ` / ${files.length}` : ""})
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        {filteredFiles.length === 0 ? (
+          <div className="p-4 text-center text-muted-foreground text-sm">
+            No files match "{searchQuery}"
+          </div>
+        ) : (
+          tree.map(node => (
+            <TreeNode
+              key={node.path}
+              node={node}
+              onFileSelect={onFileSelect}
+              selectedFile={selectedFile}
+            />
+          ))
+        )}
       </div>
     </div>
   );

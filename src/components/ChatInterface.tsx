@@ -82,25 +82,33 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
 
   if (!isActive) return null;
 
+  // When a file is selected, show only file tree and file content (no chat)
+  const isFileViewMode = !!selectedFile;
+
   const chatContent = (
     <div className={cn(
       "glass rounded-2xl border border-border/50 overflow-hidden flex",
       isFullscreen && "h-full rounded-none border-0"
     )}>
-      {/* File Tree Sidebar */}
-      {showFileTree && (
-        <div className="w-64 border-r border-border/50 bg-secondary/30 flex-shrink-0 flex flex-col">
+      {/* File Tree Sidebar - Always show in file view mode */}
+      {(showFileTree || isFileViewMode) && (
+        <div className={cn(
+          "border-r border-border/50 bg-secondary/30 flex-shrink-0 flex flex-col",
+          isFileViewMode ? "w-72" : "w-64"
+        )}>
           <div className="px-4 py-3 border-b border-border/50 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FolderTree className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium">File Tree</span>
             </div>
-            <button 
-              onClick={() => setShowFileTree(false)}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            {!isFileViewMode && (
+              <button 
+                onClick={() => setShowFileTree(false)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
           <div className="flex-1 overflow-hidden">
             <FileTreeView 
@@ -112,9 +120,12 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
         </div>
       )}
 
-      {/* File Content Preview */}
+      {/* File Content Preview - Takes up remaining space when in file view mode */}
       {selectedFile && (
-        <div className="w-96 flex-shrink-0">
+        <div className={cn(
+          "flex-shrink-0",
+          isFileViewMode ? "flex-1" : "w-96"
+        )}>
           <FileContentPreview
             filePath={selectedFile}
             content={files.find(f => f.path === selectedFile)?.content || ""}
@@ -123,6 +134,8 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
         </div>
       )}
 
+      {/* Chat Section - Hidden when file is selected */}
+      {!isFileViewMode && (
       <div className="flex-1 flex flex-col min-w-0">
         {/* Chat header */}
         <div className="px-6 py-4 border-b border-border/50 flex items-center gap-3">
@@ -322,6 +335,7 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
           </div>
         </form>
       </div>
+      )}
     </div>
   );
 
