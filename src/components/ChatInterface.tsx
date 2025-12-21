@@ -1,5 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Sparkles, Code, FileCode, Copy, Check, Loader2, Maximize2, Minimize2, X, FolderTree, Columns2, BarChart3 } from "lucide-react";
+import { 
+  Send, Sparkles, Code, FileCode, Copy, Check, Loader2, 
+  Maximize2, Minimize2, X, FolderTree, Columns2, BarChart3,
+  Search, Bookmark, Download, Keyboard
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
@@ -9,6 +13,11 @@ import FileContentPreview from "./FileContentPreview";
 import SplitViewMode from "./SplitViewMode";
 import DependencyGraph from "./DependencyGraph";
 import FileStats from "./FileStats";
+import CodeSearchModal from "./CodeSearchModal";
+import BookmarksPanel from "./BookmarksPanel";
+import ExportReportModal from "./ExportReportModal";
+import KeyboardShortcutsModal from "./KeyboardShortcutsModal";
+import { useBookmarks } from "@/hooks/useBookmarks";
 
 export interface Message {
   id: string;
@@ -49,8 +58,54 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
   const [showSplitView, setShowSplitView] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showGraph, setShowGraph] = useState(false);
+  const [showCodeSearch, setShowCodeSearch] = useState(false);
+  const [showBookmarks, setShowBookmarks] = useState(false);
+  const [showExport, setShowExport] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  
+  const {
+    bookmarks,
+    addBookmark,
+    removeBookmark,
+    updateBookmark,
+    clearAllBookmarks,
+  } = useBookmarks();
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+Shift+F: Code search
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'F') {
+        e.preventDefault();
+        setShowCodeSearch(true);
+      }
+      // Ctrl+B: Bookmarks
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b' && !e.shiftKey) {
+        e.preventDefault();
+        setShowBookmarks(true);
+      }
+      // Ctrl+E: Export
+      if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+        e.preventDefault();
+        setShowExport(true);
+      }
+      // Ctrl+/: Shortcuts
+      if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+        e.preventDefault();
+        setShowShortcuts(true);
+      }
+      // Ctrl+\: Split view
+      if ((e.ctrlKey || e.metaKey) && e.key === '\\') {
+        e.preventDefault();
+        setShowSplitView(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Only scroll when user sends a message, not during streaming
   useEffect(() => {
@@ -166,9 +221,37 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
                 <Button
                   variant="ghost"
                   size="icon"
+                  onClick={() => setShowCodeSearch(true)}
+                  className="text-muted-foreground hover:text-foreground"
+                  title="Code search (Ctrl+Shift+F)"
+                >
+                  <Search className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowBookmarks(true)}
+                  className={cn("text-muted-foreground hover:text-foreground", bookmarks.length > 0 && "text-primary")}
+                  title="Bookmarks (Ctrl+B)"
+                >
+                  <Bookmark className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowExport(true)}
+                  className="text-muted-foreground hover:text-foreground"
+                  title="Export report (Ctrl+E)"
+                >
+                  <Download className="w-4 h-4" />
+                </Button>
+                <div className="w-px h-4 bg-border mx-1" />
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setShowSplitView(true)}
                   className="text-muted-foreground hover:text-foreground"
-                  title="Split view mode"
+                  title="Split view mode (Ctrl+\)"
                 >
                   <Columns2 className="w-4 h-4" />
                 </Button>
@@ -192,6 +275,15 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
                 </Button>
               </>
             )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowShortcuts(true)}
+              className="text-muted-foreground hover:text-foreground"
+              title="Keyboard shortcuts (Ctrl+/)"
+            >
+              <Keyboard className="w-4 h-4" />
+            </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -383,6 +475,43 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
         onSendMessage={onSendMessage}
         isLoading={isLoading}
         repoName={repoName}
+      />
+      
+      <CodeSearchModal
+        isOpen={showCodeSearch}
+        onClose={() => setShowCodeSearch(false)}
+        files={files}
+        onFileSelect={(path, lineNumber) => {
+          setSelectedFile(path);
+          setShowFileTree(true);
+        }}
+      />
+      
+      <BookmarksPanel
+        isOpen={showBookmarks}
+        onClose={() => setShowBookmarks(false)}
+        bookmarks={bookmarks}
+        onRemoveBookmark={removeBookmark}
+        onUpdateBookmark={updateBookmark}
+        onClearAll={clearAllBookmarks}
+        onNavigate={(path, lineNumber) => {
+          setSelectedFile(path);
+          setShowFileTree(true);
+          setShowBookmarks(false);
+        }}
+      />
+      
+      <ExportReportModal
+        isOpen={showExport}
+        onClose={() => setShowExport(false)}
+        repoName={repoName}
+        files={files}
+        messages={messages}
+      />
+      
+      <KeyboardShortcutsModal
+        isOpen={showShortcuts}
+        onClose={() => setShowShortcuts(false)}
       />
       
       <section className="py-12 relative">
