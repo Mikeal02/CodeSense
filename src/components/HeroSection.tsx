@@ -1,4 +1,4 @@
-import { ArrowRight, FolderUp, Github, Zap, Loader2, User } from "lucide-react";
+import { ArrowRight, FolderUp, Github, Zap, Loader2, User, Key, Check } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useState } from "react";
@@ -11,6 +11,8 @@ interface HeroSectionProps {
   isLoading: boolean;
   isConnected: boolean;
   repoName?: string;
+  githubToken?: string | null;
+  onUpdateGithubToken?: (token: string | null) => void;
 }
 
 const HeroSection = ({ 
@@ -20,15 +22,24 @@ const HeroSection = ({
   onOpenGitHubSelector,
   isLoading, 
   isConnected,
-  repoName 
+  repoName,
+  githubToken,
+  onUpdateGithubToken
 }: HeroSectionProps) => {
   const [repoUrl, setRepoUrl] = useState("");
+  const [showTokenInput, setShowTokenInput] = useState(false);
+  const [tokenInput, setTokenInput] = useState(githubToken || "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (repoUrl.trim() && !isLoading) {
       onSubmitRepo(repoUrl);
     }
+  };
+
+  const handleSaveToken = () => {
+    onUpdateGithubToken?.(tokenInput.trim() || null);
+    setShowTokenInput(false);
   };
 
   return (
@@ -102,8 +113,8 @@ const HeroSection = ({
                 </Button>
               </form>
 
-              {/* Browse GitHub button */}
-              <div className="mb-6 animate-slide-up" style={{ animationDelay: '0.25s' }}>
+              {/* Browse GitHub button and Token */}
+              <div className="mb-6 animate-slide-up flex flex-col sm:flex-row items-center justify-center gap-4" style={{ animationDelay: '0.25s' }}>
                 <Button
                   variant="outline"
                   size="lg"
@@ -114,6 +125,31 @@ const HeroSection = ({
                   <User className="w-4 h-4" />
                   Browse GitHub Repos
                 </Button>
+                
+                {showTokenInput ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="password"
+                      placeholder="GitHub Token (optional)"
+                      value={tokenInput}
+                      onChange={(e) => setTokenInput(e.target.value)}
+                      className="w-48 h-10"
+                    />
+                    <Button size="icon" variant="ghost" onClick={handleSaveToken}>
+                      <Check className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowTokenInput(true)}
+                    className={githubToken ? "text-primary" : "text-muted-foreground"}
+                  >
+                    <Key className="w-4 h-4 mr-1" />
+                    {githubToken ? "Token Set" : "Add Token"}
+                  </Button>
+                )}
               </div>
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.3s' }}>

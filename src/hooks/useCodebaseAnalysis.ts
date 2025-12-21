@@ -48,7 +48,8 @@ const fetchFilesFromTree = async (
   treeData: { tree: Array<{ path: string; type: string }> },
   owner: string,
   repo: string,
-  repoName: string
+  repoName: string,
+  githubToken?: string
 ): Promise<CodebaseData> => {
   const codeExtensions = [
     ".ts", ".tsx", ".js", ".jsx", ".py", ".java", ".go", ".rs",
@@ -68,11 +69,17 @@ const fetchFilesFromTree = async (
 
   toast.info(`Found ${codeFiles.length} code files. Downloading...`);
 
+  const headers: HeadersInit = { Accept: 'application/vnd.github.v3+json' };
+  if (githubToken) {
+    headers.Authorization = `Bearer ${githubToken}`;
+  }
+
   const files: FileContent[] = [];
   for (const file of codeFiles) {
     try {
       const contentResponse = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`
+        `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`,
+        { headers }
       );
       if (contentResponse.ok) {
         const contentData = await contentResponse.json();
@@ -311,6 +318,9 @@ export function useCodebaseAnalysis() {
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeMode, setActiveMode] = useState("overview");
+  const [githubToken, setGithubToken] = useState<string | null>(() => {
+    return localStorage.getItem('github_token');
+  });
   const folderInputRef = useRef<HTMLInputElement | null>(null);
 
   const formatCodebaseForAnalysis = useCallback((data: CodebaseData): string => {
@@ -330,24 +340,31 @@ export function useCodebaseAnalysis() {
 
     toast.info("Fetching repository structure...");
 
+    const headers: HeadersInit = { Accept: 'application/vnd.github.v3+json' };
+    if (githubToken) {
+      headers.Authorization = `Bearer ${githubToken}`;
+    }
+
     const treeResponse = await fetch(
-      `https://api.github.com/repos/${owner}/${repo.replace(/\.git$/, "")}/git/trees/main?recursive=1`
+      `https://api.github.com/repos/${owner}/${repo.replace(/\.git$/, "")}/git/trees/main?recursive=1`,
+      { headers }
     );
 
     if (!treeResponse.ok) {
       const masterResponse = await fetch(
-        `https://api.github.com/repos/${owner}/${repo.replace(/\.git$/, "")}/git/trees/master?recursive=1`
+        `https://api.github.com/repos/${owner}/${repo.replace(/\.git$/, "")}/git/trees/master?recursive=1`,
+        { headers }
       );
       if (!masterResponse.ok) {
         throw new Error("Failed to fetch repository. Check if the URL is correct and the repo is public.");
       }
       const masterData = await masterResponse.json();
-      return await fetchFilesFromTree(masterData, owner, repo.replace(/\.git$/, ""), repoName);
+      return await fetchFilesFromTree(masterData, owner, repo.replace(/\.git$/, ""), repoName, githubToken || undefined);
     }
 
     const treeData = await treeResponse.json();
-    return await fetchFilesFromTree(treeData, owner, repo.replace(/\.git$/, ""), repoName);
-  }, []);
+    return await fetchFilesFromTree(treeData, owner, repo.replace(/\.git$/, ""), repoName, githubToken || undefined);
+  }, [githubToken]);
 
   const processFileList = useCallback(async (fileList: FileList): Promise<CodebaseData> => {
     const codeExtensions = [
@@ -565,6 +582,15 @@ export function useCodebaseAnalysis() {
     analyzeWithAI(activeMode, question);
   }, [activeMode, analyzeWithAI]);
 
+  const updateGithubToken = useCallback((token: string | null) => {
+    setGithubToken(token);
+    if (token) {
+      localStorage.setItem('github_token', token);
+    } else {
+      localStorage.removeItem('github_token');
+    }
+  }, []);
+
   return {
     codebase,
     isLoading,
@@ -575,5 +601,7 @@ export function useCodebaseAnalysis() {
     loadDemo,
     selectMode,
     askQuestion,
+    githubToken,
+    updateGithubToken,
   };
 }
