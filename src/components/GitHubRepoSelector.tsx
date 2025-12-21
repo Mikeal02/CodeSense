@@ -21,9 +21,10 @@ interface GitHubRepoSelectorProps {
   onSelectRepo: (repoUrl: string) => void;
   onClose: () => void;
   isLoading: boolean;
+  githubToken?: string;
 }
 
-const GitHubRepoSelector = ({ onSelectRepo, onClose, isLoading }: GitHubRepoSelectorProps) => {
+const GitHubRepoSelector = ({ onSelectRepo, onClose, isLoading, githubToken }: GitHubRepoSelectorProps) => {
   const [username, setUsername] = useState("");
   const [repos, setRepos] = useState<Repository[]>([]);
   const [fetchingRepos, setFetchingRepos] = useState(false);
@@ -38,7 +39,15 @@ const GitHubRepoSelector = ({ onSelectRepo, onClose, isLoading }: GitHubRepoSele
     setRepos([]);
 
     try {
-      const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`);
+      const headers: HeadersInit = { Accept: 'application/vnd.github.v3+json' };
+      if (githubToken) {
+        headers.Authorization = `Bearer ${githubToken}`;
+      }
+      
+      const response = await fetch(
+        `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`,
+        { headers }
+      );
       
       if (!response.ok) {
         if (response.status === 404) {
