@@ -21,6 +21,8 @@ const Index = () => {
     loadDemo,
     selectMode,
     askQuestion,
+    githubToken,
+    updateGithubToken,
   } = useCodebaseAnalysis();
 
   const handleSelectRepo = async (repoUrl: string) => {
@@ -39,6 +41,8 @@ const Index = () => {
         isLoading={isLoading}
         isConnected={!!codebase}
         repoName={codebase?.repoName}
+        githubToken={githubToken}
+        onUpdateGithubToken={updateGithubToken}
       />
       <ModesSection 
         activeMode={activeMode} 
@@ -61,6 +65,7 @@ const Index = () => {
           onSelectRepo={handleSelectRepo}
           onClose={() => setShowGitHubSelector(false)}
           isLoading={isLoading}
+          githubToken={githubToken || undefined}
         />
       )}
     </div>
