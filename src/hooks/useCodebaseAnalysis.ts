@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
+import { fetchFromGitHubProxy } from "@/lib/githubProxy";
 
 export interface FileContent {
   path: string;
@@ -44,8 +45,21 @@ const getModeQuestion = (mode: string): string => {
   return questions[mode] || "Analyze this codebase";
 };
 
+interface TreeItem {
+  path: string;
+  type: string;
+}
+
+interface TreeData {
+  tree: TreeItem[];
+}
+
+interface ContentData {
+  content?: string;
+}
+
 const fetchFilesFromTree = async (
-  treeData: { tree: Array<{ path: string; type: string }> },
+  treeData: TreeData,
   owner: string,
   repo: string,
   repoName: string,
@@ -69,24 +83,16 @@ const fetchFilesFromTree = async (
 
   toast.info(`Found ${codeFiles.length} code files. Downloading...`);
 
-  const headers: HeadersInit = { Accept: 'application/vnd.github.v3+json' };
-  if (githubToken) {
-    headers.Authorization = `Bearer ${githubToken}`;
-  }
-
   const files: FileContent[] = [];
   for (const file of codeFiles) {
     try {
-      const contentResponse = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/contents/${file.path}`,
-        { headers }
-      );
-      if (contentResponse.ok) {
-        const contentData = await contentResponse.json();
-        if (contentData.content) {
-          const content = atob(contentData.content);
-          files.push({ path: file.path, content });
-        }
+      const contentData = await fetchFromGitHubProxy<ContentData>({
+        endpoint: `/repos/${owner}/${repo}/contents/${file.path}`,
+        userToken: githubToken
+      });
+      if (contentData.content) {
+        const content = atob(contentData.content);
+        files.push({ path: file.path, content });
       }
     } catch (error) {
       console.warn(`Failed to fetch ${file.path}`);
@@ -336,34 +342,29 @@ export function useCodebaseAnalysis() {
     }
 
     const [, owner, repo] = match;
-    const repoName = `${owner}/${repo.replace(/\.git$/, "")}`;
+    const cleanRepo = repo.replace(/\.git$/, "");
+    const repoName = `${owner}/${cleanRepo}`;
 
     toast.info("Fetching repository structure...");
 
-    const headers: HeadersInit = { Accept: 'application/vnd.github.v3+json' };
-    if (githubToken) {
-      headers.Authorization = `Bearer ${githubToken}`;
-    }
-
-    const treeResponse = await fetch(
-      `https://api.github.com/repos/${owner}/${repo.replace(/\.git$/, "")}/git/trees/main?recursive=1`,
-      { headers }
-    );
-
-    if (!treeResponse.ok) {
-      const masterResponse = await fetch(
-        `https://api.github.com/repos/${owner}/${repo.replace(/\.git$/, "")}/git/trees/master?recursive=1`,
-        { headers }
-      );
-      if (!masterResponse.ok) {
-        throw new Error("Failed to fetch repository. Check if the URL is correct and the repo is public.");
+    try {
+      const treeData = await fetchFromGitHubProxy<TreeData>({
+        endpoint: `/repos/${owner}/${cleanRepo}/git/trees/main?recursive=1`,
+        userToken: githubToken
+      });
+      return await fetchFilesFromTree(treeData, owner, cleanRepo, repoName, githubToken || undefined);
+    } catch {
+      // Try master branch if main fails
+      try {
+        const masterData = await fetchFromGitHubProxy<TreeData>({
+          endpoint: `/repos/${owner}/${cleanRepo}/git/trees/master?recursive=1`,
+          userToken: githubToken
+        });
+        return await fetchFilesFromTree(masterData, owner, cleanRepo, repoName, githubToken || undefined);
+      } catch {
+        throw new Error("Failed to fetch repository. Check if the URL is correct.");
       }
-      const masterData = await masterResponse.json();
-      return await fetchFilesFromTree(masterData, owner, repo.replace(/\.git$/, ""), repoName, githubToken || undefined);
     }
-
-    const treeData = await treeResponse.json();
-    return await fetchFilesFromTree(treeData, owner, repo.replace(/\.git$/, ""), repoName, githubToken || undefined);
   }, [githubToken]);
 
   const processFileList = useCallback(async (fileList: FileList): Promise<CodebaseData> => {

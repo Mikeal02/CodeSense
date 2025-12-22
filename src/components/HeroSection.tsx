@@ -130,10 +130,10 @@ const HeroSection = ({
                   <div className="flex items-center gap-2">
                     <Input
                       type="password"
-                      placeholder="GitHub Token (optional)"
+                      placeholder="Your GitHub token (higher rate limits)"
                       value={tokenInput}
                       onChange={(e) => setTokenInput(e.target.value)}
-                      className="w-48 h-10"
+                      className="w-64 h-10"
                     />
                     <Button size="icon" variant="ghost" onClick={handleSaveToken}>
                       <Check className="w-4 h-4" />
@@ -147,7 +147,7 @@ const HeroSection = ({
                     className={githubToken ? "text-primary" : "text-muted-foreground"}
                   >
                     <Key className="w-4 h-4 mr-1" />
-                    {githubToken ? "Token Set" : "Add Token"}
+                    {githubToken ? "Token Set" : "Optional: Your Token"}
                   </Button>
                 )}
               </div>
