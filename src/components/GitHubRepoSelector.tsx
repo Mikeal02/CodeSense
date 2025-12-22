@@ -3,6 +3,7 @@ import { Github, Search, Loader2, Lock, Globe, Star, GitFork } from "lucide-reac
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
+import { fetchFromGitHubProxy } from "@/lib/githubProxy";
 
 interface Repository {
   id: number;
@@ -39,24 +40,10 @@ const GitHubRepoSelector = ({ onSelectRepo, onClose, isLoading, githubToken }: G
     setRepos([]);
 
     try {
-      const headers: HeadersInit = { Accept: 'application/vnd.github.v3+json' };
-      if (githubToken) {
-        headers.Authorization = `Bearer ${githubToken}`;
-      }
-      
-      const response = await fetch(
-        `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`,
-        { headers }
-      );
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error("User not found");
-        }
-        throw new Error("Failed to fetch repositories");
-      }
-      
-      const data = await response.json();
+      const data = await fetchFromGitHubProxy<Repository[]>({
+        endpoint: `/users/${username}/repos?per_page=100&sort=updated`,
+        userToken: githubToken
+      });
       setRepos(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch repos");
