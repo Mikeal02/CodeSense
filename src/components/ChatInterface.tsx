@@ -46,9 +46,20 @@ interface ChatInterfaceProps {
   isLoading: boolean;
   repoName?: string;
   files?: { path: string; content: string }[];
+  selectedFileFromPalette?: string;
+  onClearSelectedFile?: () => void;
 }
 
-const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName, files = [] }: ChatInterfaceProps) => {
+const ChatInterface = ({ 
+  isActive, 
+  messages, 
+  onSendMessage, 
+  isLoading, 
+  repoName, 
+  files = [],
+  selectedFileFromPalette,
+  onClearSelectedFile,
+}: ChatInterfaceProps) => {
   const [input, setInput] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -72,6 +83,15 @@ const ChatInterface = ({ isActive, messages, onSendMessage, isLoading, repoName,
     updateBookmark,
     clearAllBookmarks,
   } = useBookmarks();
+
+  // Handle file selection from command palette
+  useEffect(() => {
+    if (selectedFileFromPalette) {
+      setSelectedFile(selectedFileFromPalette);
+      setShowFileTree(true);
+      onClearSelectedFile?.();
+    }
+  }, [selectedFileFromPalette, onClearSelectedFile]);
 
   // Keyboard shortcuts
   useEffect(() => {
