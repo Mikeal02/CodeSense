@@ -1,11 +1,15 @@
-import { Code2, Github, Sparkles } from "lucide-react";
+import { Code2, Github, Sparkles, Moon, Sun } from "lucide-react";
 import { Button } from "./ui/button";
+import RateLimitStatus from "./RateLimitStatus";
 
 interface HeaderProps {
   onConnectRepo: () => void;
+  githubToken?: string | null;
+  isDarkMode?: boolean;
+  onToggleTheme?: () => void;
 }
 
-const Header = ({ onConnectRepo }: HeaderProps) => {
+const Header = ({ onConnectRepo, githubToken, isDarkMode = true, onToggleTheme }: HeaderProps) => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/50">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
@@ -22,7 +26,25 @@ const Header = ({ onConnectRepo }: HeaderProps) => {
           </div>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <RateLimitStatus githubToken={githubToken} />
+          
+          {onToggleTheme && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onToggleTheme}
+              className="h-9 w-9"
+              title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {isDarkMode ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
+            </Button>
+          )}
+          
           <Button 
             variant="outline" 
             size="sm" 

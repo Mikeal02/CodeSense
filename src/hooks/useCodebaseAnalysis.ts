@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { fetchFromGitHubProxy } from "@/lib/githubProxy";
 
@@ -319,15 +319,36 @@ export default function Header() {
   }
 ];
 
+const SESSION_STORAGE_KEY = "codesense_session";
+
 export function useCodebaseAnalysis() {
   const [codebase, setCodebase] = useState<CodebaseData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    try {
+      const stored = sessionStorage.getItem(SESSION_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return parsed.messages || [];
+      }
+    } catch {}
+    return [];
+  });
   const [activeMode, setActiveMode] = useState("overview");
   const [githubToken, setGithubToken] = useState<string | null>(() => {
     return localStorage.getItem('github_token');
   });
   const folderInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Persist messages to session storage
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({
+        messages,
+        repoName: codebase?.repoName,
+      }));
+    } catch {}
+  }, [messages, codebase?.repoName]);
 
   const formatCodebaseForAnalysis = useCallback((data: CodebaseData): string => {
     return data.files

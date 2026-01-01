@@ -8,15 +8,19 @@ interface KeyboardShortcutsModalProps {
 
 const shortcuts = [
   { category: "Navigation", items: [
-    { keys: ["Ctrl", "P"], description: "Quick file search" },
-    { keys: ["Ctrl", "Shift", "F"], description: "Code search" },
+    { keys: ["Ctrl", "K"], description: "Command palette" },
+    { keys: ["Ctrl", "Shift", "F"], description: "Search in files" },
     { keys: ["Ctrl", "B"], description: "Toggle bookmarks" },
     { keys: ["Ctrl", "\\"], description: "Toggle split view" },
   ]},
   { category: "Editor", items: [
-    { keys: ["Ctrl", "G"], description: "Go to line" },
-    { keys: ["Ctrl", "D"], description: "Bookmark current file/line" },
     { keys: ["Ctrl", "E"], description: "Export report" },
+    { keys: ["Ctrl", "Tab"], description: "Switch tabs (split view)" },
+    { keys: ["Ctrl", "W"], description: "Close tab (split view)" },
+  ]},
+  { category: "View", items: [
+    { keys: ["Ctrl", "J"], description: "Toggle chat (split view)" },
+    { keys: ["F11"], description: "Toggle fullscreen" },
   ]},
   { category: "General", items: [
     { keys: ["Esc"], description: "Close modal / Exit mode" },
