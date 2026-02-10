@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -12,14 +13,17 @@ interface ModeCardProps {
 
 const ModeCard = ({ icon: Icon, title, description, isActive, onClick, disabled }: ModeCardProps) => {
   return (
-    <button
+    <motion.button
       onClick={onClick}
       disabled={disabled}
+      whileHover={!disabled ? { scale: 1.03, y: -2 } : undefined}
+      whileTap={!disabled ? { scale: 0.98 } : undefined}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
       className={cn(
         "w-full p-5 rounded-xl text-left transition-all duration-300 group",
         "border border-border/50 hover:border-primary/50",
         "bg-secondary/30 hover:bg-secondary/50",
-        isActive && "border-primary bg-primary/10 shadow-lg shadow-primary/10",
+        isActive && "border-primary bg-primary/10 shadow-lg shadow-primary/10 gradient-border",
         disabled && "opacity-50 cursor-not-allowed hover:border-border/50 hover:bg-secondary/30"
       )}
     >
@@ -39,7 +43,7 @@ const ModeCard = ({ icon: Icon, title, description, isActive, onClick, disabled 
       <p className="text-xs text-muted-foreground leading-relaxed">
         {description}
       </p>
-    </button>
+    </motion.button>
   );
 };
 
