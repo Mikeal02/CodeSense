@@ -81,18 +81,18 @@ Suggested path: /assets/demo.gif
 
 ### Installation
 
-1. Clone the repository:
+1.Clone the repository:
 
 ```bash
-git clone <YOUR_GIT_URL>
+git clone https://github.com/Mikeal02/CodeSense.git
 ```
-2. Navigate to the project directory**:
+2.Navigate to the project directory**:
 ```sh
-    cd <YOUR_PROJECT_NAME>
+    cd CodeSense
 ```
-3. Install NPM packages**:
+3.Install NPM packages**:
 ```sh
-    npm i
+    npm install
 ```
 4. Start the development server**:
 ```sh
