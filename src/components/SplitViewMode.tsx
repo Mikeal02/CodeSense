@@ -201,7 +201,7 @@ const SplitViewMode = ({
       <div className="flex-1 flex overflow-hidden">
         {/* File Tree */}
         {showFileTree && (
-          <div className="w-64 border-r border-border bg-card/50 flex-shrink-0">
+          <div className="w-full sm:w-56 lg:w-64 border-r border-border bg-card/50 flex-shrink-0">
             <FileTreeView 
               files={files} 
               onFileSelect={handleFileSelect}
@@ -265,7 +265,7 @@ const SplitViewMode = ({
 
         {/* Chat Panel */}
         {showChat && (
-          <div className="w-96 border-l border-border bg-card/50 flex flex-col flex-shrink-0">
+          <div className="w-full sm:w-80 lg:w-96 border-l border-border bg-card/50 flex flex-col flex-shrink-0">
             {/* Chat Header */}
             <div className="px-4 py-3 border-b border-border flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-primary" />

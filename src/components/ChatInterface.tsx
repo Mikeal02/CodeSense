@@ -168,14 +168,14 @@ const ChatInterface = ({
 
   const chatContent = (
     <div className={cn(
-      "glass rounded-2xl border border-border/50 overflow-hidden flex",
+      "glass rounded-2xl border border-border/50 overflow-hidden flex flex-col sm:flex-row",
       isFullscreen && "h-full rounded-none border-0"
     )}>
       {/* File Tree Sidebar - Always show in file view mode */}
       {(showFileTree || isFileViewMode) && (
         <div className={cn(
-          "border-r border-border/50 bg-secondary/30 flex-shrink-0 flex flex-col",
-          isFileViewMode ? "w-72" : "w-64"
+          "border-b sm:border-b-0 sm:border-r border-border/50 bg-secondary/30 flex-shrink-0 flex flex-col",
+          isFileViewMode ? "w-full sm:w-64 lg:w-72 max-h-48 sm:max-h-none" : "w-full sm:w-56 lg:w-64 max-h-48 sm:max-h-none"
         )}>
           <div className="px-4 py-3 border-b border-border/50 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -205,7 +205,7 @@ const ChatInterface = ({
       {selectedFile && (
         <div className={cn(
           "flex-shrink-0",
-          isFileViewMode ? "flex-1" : "w-96"
+          isFileViewMode ? "flex-1 min-w-0" : "w-full sm:w-80 lg:w-96"
         )}>
           <FileContentPreview
             filePath={selectedFile}
@@ -219,17 +219,17 @@ const ChatInterface = ({
       {!isFileViewMode && (
       <div className="flex-1 flex flex-col min-w-0">
         {/* Chat header */}
-        <div className="px-6 py-4 border-b border-border/50 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-primary-foreground" />
+        <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-border/50 flex items-center gap-2 sm:gap-3">
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0">
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-foreground" />
           </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-foreground">CodeSense Assistant</h3>
-            <p className="text-xs text-muted-foreground">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-foreground text-sm sm:text-base">CodeSense Assistant</h3>
+            <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
               Analyzing: {repoName || "No repository"}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-wrap sm:flex-nowrap">
             {isLoading && (
               <div className="flex items-center gap-2 text-primary">
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -324,8 +324,8 @@ const ChatInterface = ({
         <div 
           ref={messagesContainerRef}
           className={cn(
-            "overflow-y-auto p-6 space-y-6 flex-1",
-            isFullscreen ? "h-[calc(100vh-180px)]" : "h-[500px]"
+            "overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6 flex-1",
+            isFullscreen ? "h-[calc(100vh-180px)]" : "h-[350px] sm:h-[450px] lg:h-[500px]"
           )}
         >
           {messages.length === 0 ? (
@@ -435,7 +435,7 @@ const ChatInterface = ({
         </div>
         
         {/* Suggested questions */}
-        <div className="px-6 py-3 border-t border-border/50 flex gap-2 overflow-x-auto">
+        <div className="px-3 sm:px-6 py-2 sm:py-3 border-t border-border/50 flex gap-2 overflow-x-auto scrollbar-none">
           {suggestedQuestions.map((question) => (
             <button
               key={question}
@@ -449,8 +449,8 @@ const ChatInterface = ({
         </div>
         
         {/* Input */}
-        <form onSubmit={handleSubmit} className="p-4 border-t border-border/50">
-          <div className="flex gap-3">
+        <form onSubmit={handleSubmit} className="p-3 sm:p-4 border-t border-border/50">
+          <div className="flex gap-2 sm:gap-3">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -534,9 +534,9 @@ const ChatInterface = ({
         onClose={() => setShowShortcuts(false)}
       />
       
-      <section className="py-12 relative">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto space-y-6">
+      <section className="py-8 sm:py-12 relative">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
             {showStats && <FileStats files={files} />}
             {showGraph && <DependencyGraph files={files} className="h-[500px]" />}
             {chatContent}
