@@ -168,7 +168,7 @@ const Index = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="container mx-auto px-6 -mt-8 mb-8 relative z-10"
+          className="container mx-auto px-4 sm:px-6 -mt-4 sm:-mt-8 mb-6 sm:mb-8 relative z-10"
         >
           <RecentReposPanel
             repos={recentRepos}
