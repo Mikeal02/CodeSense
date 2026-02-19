@@ -16,6 +16,8 @@ import ConversationManager from "@/components/ConversationManager";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import FileDiffView from "@/components/FileDiffView";
 import PerformanceMonitor from "@/components/PerformanceMonitor";
+import StatusBar from "@/components/StatusBar";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { useCodebaseAnalysis } from "@/hooks/useCodebaseAnalysis";
 import { useRecentRepos, RecentRepo } from "@/hooks/useRecentRepos";
 import { useTheme } from "@/hooks/useTheme";
@@ -24,6 +26,7 @@ import { useActivityLog } from "@/hooks/useActivityLog";
 import { useConversations } from "@/hooks/useConversations";
 import { useNotifications } from "@/hooks/useNotifications";
 import { usePerformanceMetrics } from "@/hooks/usePerformanceMetrics";
+import { useSearchHistory } from "@/hooks/useSearchHistory";
 
 const Index = () => {
   const [showGitHubSelector, setShowGitHubSelector] = useState(false);
@@ -50,6 +53,7 @@ const Index = () => {
   const { notifications, unreadCount, addNotification, removeNotification, markAsRead, markAllAsRead, clearAll: clearNotifications } = useNotifications();
   const { conversations, activeConversation, activeConversationId, setActiveConversationId, createConversation, updateConversation, deleteConversation, togglePin, addTag, removeTag, clearAll: clearConversations } = useConversations();
   const { getStats, clearEntries, startTimer, endTimer } = usePerformanceMetrics();
+  const { history: searchHistory, addEntry: addSearchEntry } = useSearchHistory();
   
   const {
     codebase,
@@ -90,6 +94,18 @@ const Index = () => {
         e.preventDefault();
         setShowSettings(true);
       }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'j') {
+        e.preventDefault();
+        setShowActivityLog(true);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        setShowAnalytics(true);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'P') {
+        e.preventDefault();
+        setShowPerformance(true);
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -119,7 +135,6 @@ const Index = () => {
     const timerId = startTimer("ai_analysis");
     askQuestion(question);
     addActivity("question_asked", question.slice(0, 60));
-    // Note: timer ends naturally when loading completes
     setTimeout(() => endTimer(timerId), 100);
   };
 
@@ -129,7 +144,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background noise-overlay">
+    <div className="min-h-screen bg-background noise-overlay pb-7">
       <Header 
         onConnectRepo={uploadFolder} 
         githubToken={githubToken}
@@ -145,6 +160,17 @@ const Index = () => {
         onOpenPerformance={() => setShowPerformance(true)}
         isConnected={!!codebase}
       />
+
+      {/* Breadcrumbs - shown when connected */}
+      {codebase && (
+        <div className="pt-14 sm:pt-16">
+          <Breadcrumbs
+            repoName={codebase.repoName}
+            activeMode={activeMode}
+            isConnected={!!codebase}
+          />
+        </div>
+      )}
       
       <motion.div
         initial={{ opacity: 0 }}
@@ -197,6 +223,18 @@ const Index = () => {
       />
       <FeaturesSection />
       <Footer />
+
+      {/* Status Bar */}
+      <StatusBar
+        isConnected={!!codebase}
+        repoName={codebase?.repoName}
+        fileCount={codebase?.files.length || 0}
+        activeMode={activeMode}
+        isLoading={isLoading}
+        isDarkMode={isDarkMode}
+        messageCount={messages.length}
+        performanceScore={getStats().averageDuration ? Math.min(100, Math.round(1000 / (getStats().averageDuration || 1))) : undefined}
+      />
       
       {showGitHubSelector && (
         <GitHubRepoSelector

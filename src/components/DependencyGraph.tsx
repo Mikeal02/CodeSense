@@ -31,13 +31,13 @@ const getNodeType = (path: string): GraphNode["type"] => {
 };
 
 const nodeColors: Record<GraphNode["type"], string> = {
-  component: "#89b4fa", // Blue
-  hook: "#a6e3a1", // Green
-  util: "#f9e2af", // Yellow
-  page: "#cba6f7", // Mauve
-  style: "#f38ba8", // Red
-  config: "#fab387", // Peach
-  other: "#6c7086", // Gray
+  component: "hsl(217, 91%, 60%)",
+  hook: "hsl(142, 71%, 45%)",
+  util: "hsl(38, 92%, 50%)",
+  page: "hsl(265, 83%, 67%)",
+  style: "hsl(0, 84%, 60%)",
+  config: "hsl(172, 66%, 50%)",
+  other: "hsl(215, 20%, 55%)",
 };
 
 const extractImports = (content: string): string[] => {
@@ -218,7 +218,7 @@ const DependencyGraph = ({ files, className }: DependencyGraphProps) => {
   }
 
   return (
-    <div className={cn("relative bg-[#1e1e2e] rounded-xl overflow-hidden", className)}>
+    <div className={cn("relative bg-card rounded-xl overflow-hidden border border-border/50", className)}>
       {/* Controls */}
       <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
         <Button variant="secondary" size="icon" onClick={() => setZoom(z => Math.min(3, z * 1.2))} className="h-8 w-8">
@@ -233,31 +233,31 @@ const DependencyGraph = ({ files, className }: DependencyGraphProps) => {
       </div>
 
       {/* Legend */}
-      <div className="absolute top-4 left-4 z-10 bg-[#181825] rounded-lg p-3 text-xs space-y-1.5">
-        <div className="font-medium text-[#cdd6f4] mb-2 flex items-center gap-1.5">
+      <div className="absolute top-4 left-4 z-10 bg-card/95 backdrop-blur-sm rounded-lg p-3 text-xs space-y-1.5 border border-border/50">
+        <div className="font-medium text-foreground mb-2 flex items-center gap-1.5">
           <Info className="w-3.5 h-3.5" />
           Legend
         </div>
         {Object.entries(nodeColors).map(([type, color]) => (
           <div key={type} className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-[#a6adc8] capitalize">{type}</span>
+            <span className="text-muted-foreground capitalize">{type}</span>
           </div>
         ))}
       </div>
 
       {/* Selected Node Info */}
       {selectedNode && (
-        <div className="absolute bottom-4 left-4 z-10 bg-[#181825] rounded-lg p-4 max-w-xs">
+        <div className="absolute bottom-4 left-4 z-10 bg-card/95 backdrop-blur-sm rounded-lg p-4 max-w-xs border border-border/50">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-4 h-4 rounded-full" style={{ backgroundColor: selectedNode.color }} />
-            <span className="font-medium text-[#cdd6f4]">{selectedNode.name}</span>
+            <span className="font-medium text-foreground">{selectedNode.name}</span>
           </div>
-          <div className="text-xs text-[#6c7086] space-y-1">
-            <p>Type: <span className="text-[#a6adc8] capitalize">{selectedNode.type}</span></p>
-            <p>Imports: <span className="text-[#a6adc8]">{selectedNode.imports.length} files</span></p>
-            <p>Imported by: <span className="text-[#a6adc8]">{selectedNode.importedBy.length} files</span></p>
-            <p className="truncate text-[#6c7086]">{selectedNode.id}</p>
+          <div className="text-xs text-muted-foreground space-y-1">
+            <p>Type: <span className="text-foreground/80 capitalize">{selectedNode.type}</span></p>
+            <p>Imports: <span className="text-foreground/80">{selectedNode.imports.length} files</span></p>
+            <p>Imported by: <span className="text-foreground/80">{selectedNode.importedBy.length} files</span></p>
+            <p className="truncate text-muted-foreground">{selectedNode.id}</p>
           </div>
         </div>
       )}
@@ -278,13 +278,13 @@ const DependencyGraph = ({ files, className }: DependencyGraphProps) => {
             {edges.map((edge, i) => {
               const opacity = isConnected(edge.from.id) && isConnected(edge.to.id) ? 0.6 : 0.1;
               return (
-                <line
+                  <line
                   key={i}
                   x1={edge.from.x}
                   y1={edge.from.y}
                   x2={edge.to.x}
                   y2={edge.to.y}
-                  stroke="#6c7086"
+                  stroke="hsl(215, 20%, 55%)"
                   strokeWidth={1}
                   opacity={opacity}
                   markerEnd="url(#arrowhead)"
@@ -303,7 +303,7 @@ const DependencyGraph = ({ files, className }: DependencyGraphProps) => {
               refY="3.5"
               orient="auto"
             >
-              <polygon points="0 0, 10 3.5, 0 7" fill="#6c7086" opacity="0.5" />
+              <polygon points="0 0, 10 3.5, 0 7" fill="hsl(215, 20%, 55%)" opacity="0.5" />
             </marker>
           </defs>
 
@@ -337,7 +337,7 @@ const DependencyGraph = ({ files, className }: DependencyGraphProps) => {
                   <circle
                     r={node.size}
                     fill={node.color}
-                    stroke={isSelected ? "#cdd6f4" : "transparent"}
+                    stroke={isSelected ? "hsl(210, 40%, 98%)" : "transparent"}
                     strokeWidth={2}
                     className="transition-all duration-200"
                   />
@@ -346,7 +346,7 @@ const DependencyGraph = ({ files, className }: DependencyGraphProps) => {
                   <text
                     y={node.size + 14}
                     textAnchor="middle"
-                    fill="#a6adc8"
+                    fill="hsl(215, 20%, 55%)"
                     fontSize="10"
                     fontFamily="JetBrains Mono, monospace"
                   >
@@ -356,11 +356,11 @@ const DependencyGraph = ({ files, className }: DependencyGraphProps) => {
                   {/* Connection count badge */}
                   {(node.imports.length + node.importedBy.length) > 3 && (
                     <g transform={`translate(${node.size * 0.7}, ${-node.size * 0.7})`}>
-                      <circle r="8" fill="#313244" />
+                      <circle r="8" fill="hsl(220, 14%, 16%)" />
                       <text
                         textAnchor="middle"
                         dominantBaseline="central"
-                        fill="#cdd6f4"
+                        fill="hsl(210, 40%, 98%)"
                         fontSize="8"
                         fontWeight="bold"
                       >
@@ -376,7 +376,7 @@ const DependencyGraph = ({ files, className }: DependencyGraphProps) => {
       </svg>
 
       {/* Stats */}
-      <div className="absolute bottom-4 right-4 z-10 text-xs text-[#6c7086]">
+      <div className="absolute bottom-4 right-4 z-10 text-xs text-muted-foreground">
         {nodes.length} nodes • {edges.length} edges • Zoom: {(zoom * 100).toFixed(0)}%
       </div>
     </div>
