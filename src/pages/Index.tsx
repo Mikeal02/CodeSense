@@ -18,6 +18,7 @@ import FileDiffView from "@/components/FileDiffView";
 import PerformanceMonitor from "@/components/PerformanceMonitor";
 import StatusBar from "@/components/StatusBar";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import TerminalBanner from "@/components/TerminalBanner";
 import { useCodebaseAnalysis } from "@/hooks/useCodebaseAnalysis";
 import { useRecentRepos, RecentRepo } from "@/hooks/useRecentRepos";
 import { useTheme } from "@/hooks/useTheme";
@@ -187,6 +188,7 @@ const Index = () => {
           repoName={codebase?.repoName}
           githubToken={githubToken}
           onUpdateGithubToken={updateGithubToken}
+          files={codebase?.files}
         />
       </motion.div>
       
@@ -322,6 +324,13 @@ const Index = () => {
         onClose={() => setShowPerformance(false)}
         stats={getStats()}
         onClear={clearEntries}
+      />
+
+      <TerminalBanner
+        isLoading={isLoading}
+        repoName={codebase?.repoName}
+        fileCount={codebase?.files.length}
+        isConnected={!!codebase}
       />
     </div>
   );
