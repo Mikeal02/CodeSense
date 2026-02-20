@@ -325,6 +325,63 @@
       0 4px 24px -4px hsl(var(--background) / 0.5),
       inset 0 1px 0 hsl(var(--foreground) / 0.03);
   }
+
+  /* Scanline overlay for terminal aesthetic */
+  .scanlines {
+    position: relative;
+    overflow: hidden;
+  }
+  .scanlines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      hsl(var(--foreground) / 0.012) 2px,
+      hsl(var(--foreground) / 0.012) 4px
+    );
+    pointer-events: none;
+  }
+
+  /* Card with depth shadow glow */
+  .card-glow {
+    box-shadow:
+      0 0 0 1px hsl(var(--border) / 0.5),
+      0 4px 12px -2px hsl(var(--background) / 0.6),
+      0 0 40px -12px hsl(var(--primary) / 0.15);
+    transition: box-shadow 0.3s ease;
+  }
+  .card-glow:hover {
+    box-shadow:
+      0 0 0 1px hsl(var(--primary) / 0.3),
+      0 8px 24px -4px hsl(var(--background) / 0.7),
+      0 0 60px -12px hsl(var(--primary) / 0.25);
+  }
+
+  /* Gradient radial */
+  .bg-gradient-radial {
+    background: radial-gradient(var(--tw-gradient-stops));
+  }
+
+  /* Animated underline */
+  .link-underline {
+    position: relative;
+  }
+  .link-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: hsl(var(--primary));
+    transition: width 0.25s ease;
+  }
+  .link-underline:hover::after {
+    width: 100%;
+  }
 }
 
 @keyframes gradientShift {
