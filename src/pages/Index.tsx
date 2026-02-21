@@ -5,6 +5,7 @@ import HeroSection from "@/components/HeroSection";
 import ModesSection from "@/components/ModesSection";
 import ChatInterface from "@/components/ChatInterface";
 import FeaturesSection from "@/components/FeaturesSection";
+import SocialProofSection from "@/components/SocialProofSection";
 import Footer from "@/components/Footer";
 import GitHubRepoSelector from "@/components/GitHubRepoSelector";
 import RecentReposPanel from "@/components/RecentReposPanel";
@@ -223,6 +224,7 @@ const Index = () => {
         selectedFileFromPalette={selectedFileFromPalette}
         onClearSelectedFile={() => setSelectedFileFromPalette(undefined)}
       />
+      <SocialProofSection />
       <FeaturesSection />
       <Footer />
 
