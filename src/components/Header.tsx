@@ -47,6 +47,14 @@ const Header = ({
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="fixed top-0 left-0 right-0 z-50 glass-heavy"
       >
+        {/* Animated gradient border at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-[1px] overflow-hidden">
+          <motion.div
+            className="h-full w-[200%] bg-gradient-to-r from-transparent via-primary/50 to-transparent"
+            animate={{ x: ["-50%", "0%"] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+          />
+        </div>
         <div className="container mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2 sm:gap-3">

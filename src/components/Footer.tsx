@@ -110,10 +110,26 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* CTA Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-10 p-6 sm:p-8 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 text-center relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_hsl(var(--primary)/0.08)_0%,_transparent_70%)] pointer-events-none" />
+          <h3 className="text-lg sm:text-xl font-bold mb-2 relative">Ready to understand your codebase?</h3>
+          <p className="text-sm text-muted-foreground mb-4 relative">Start analyzing in seconds. No signup required.</p>
+          <button className="relative px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors">
+            Get Started Free
+            <Zap className="inline-block w-4 h-4 ml-1.5" />
+          </button>
+        </motion.div>
+
         {/* Bottom bar */}
         <div className="border-t border-border/50 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5">
-            Built with <Heart className="w-3.5 h-3.5 text-destructive fill-destructive" /> by developers, for developers
+            Built with <Heart className="w-3.5 h-3.5 text-destructive fill-destructive animate-pulse" /> by developers, for developers
           </p>
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span>© {new Date().getFullYear()} CodeSense</span>
