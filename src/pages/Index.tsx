@@ -39,6 +39,7 @@ import { useSearchHistory } from "@/hooks/useSearchHistory";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useShareReport } from "@/hooks/useShareReport";
 import { useRepoInsights } from "@/hooks/useRepoInsights";
+import { usePersistentSessions } from "@/hooks/usePersistentSessions";
 
 const Index = () => {
   const [showGitHubSelector, setShowGitHubSelector] = useState(false);
