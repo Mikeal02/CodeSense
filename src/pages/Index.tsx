@@ -32,6 +32,7 @@ import { useOnboarding } from "@/hooks/useOnboarding";
 import { useShareReport } from "@/hooks/useShareReport";
 import { useRepoInsights } from "@/hooks/useRepoInsights";
 import { usePersistentSessions } from "@/hooks/usePersistentSessions";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 
 // Lazy-load heavy workspace panels
 const RecentReposPanel = lazy(() => import("@/components/RecentReposPanel"));
@@ -78,6 +79,7 @@ const Index = () => {
   const { shareReport, isSharing } = useShareReport();
   const repoInsights = useRepoInsights();
   const { sessions, saveSession, updateSession, activeSessionId, setActiveSessionId } = usePersistentSessions();
+  const { play: playSound } = useSoundEffects();
   const {
     codebase,
     isLoading,
@@ -95,7 +97,8 @@ const Index = () => {
   // Track repos and persist sessions when connected
   useEffect(() => {
     if (codebase) {
-      // Trigger confetti
+      // Play connect sound + confetti
+      playSound("connect");
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 3000);
 
@@ -180,6 +183,7 @@ const Index = () => {
 
   const handleSelectMode = (mode: string) => {
     selectMode(mode);
+    playSound("mode-switch");
     addActivity("mode_selected", `Selected ${mode} mode`);
   };
 

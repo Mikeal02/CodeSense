@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       sessions: {
         Row: {
           active_mode: string | null
@@ -26,6 +50,7 @@ export type Database = {
           repo_name: string
           settings: Json | null
           source: string
+          user_id: string | null
         }
         Insert: {
           active_mode?: string | null
@@ -38,6 +63,7 @@ export type Database = {
           repo_name: string
           settings?: Json | null
           source?: string
+          user_id?: string | null
         }
         Update: {
           active_mode?: string | null
@@ -50,6 +76,7 @@ export type Database = {
           repo_name?: string
           settings?: Json | null
           source?: string
+          user_id?: string | null
         }
         Relationships: []
       }

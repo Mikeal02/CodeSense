@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code2, Github, Sparkles, Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Zap, Menu, Shield, FileSearch } from "lucide-react";
+import { Code2, Github, Sparkles, Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Zap, Menu, Shield, FileSearch, User, LogOut, LogIn } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
 import RateLimitStatus from "./RateLimitStatus";
 import ThemeToggle from "./ThemeToggle";
 import MagneticButton from "./MagneticButton";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface HeaderProps {
   onConnectRepo: () => void;
@@ -55,6 +58,21 @@ const Header = ({
   onOpenDiffView, onOpenPerformance, onOpenCodeReview, onOpenDepScanner, isConnected
 }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUser(session?.user ?? null);
+    });
+    supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null));
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast.success("Signed out");
+  };
 
   const toolButtons = [
     { icon: BarChart3, label: "Analytics", onClick: onOpenAnalytics, connected: true },
@@ -168,24 +186,26 @@ const Header = ({
             <div className="w-px h-5 bg-border/40 mx-1.5" />
             
             <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }} className="flex items-center gap-2">
+              {user ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">{user.email}</span>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground" onClick={handleSignOut} title="Sign Out">
+                    <LogOut className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              ) : (
+                <MagneticButton strength={0.25}>
+                  <Button variant="outline" size="sm" onClick={() => navigate("/auth")} className="gap-2 h-8 text-xs rounded-lg border-border/40 hover:border-primary/40 hover:bg-primary/[0.04]">
+                    <LogIn className="w-3.5 h-3.5" />
+                    Sign In
+                  </Button>
+                </MagneticButton>
+              )}
               <MagneticButton strength={0.25}>
                 <Button variant="outline" size="sm" onClick={onConnectRepo} className="gap-2 h-8 text-xs rounded-lg border-border/40 hover:border-primary/40 hover:bg-primary/[0.04]">
                   <Github className="w-3.5 h-3.5" />
                   Connect
                 </Button>
-              </MagneticButton>
-              <MagneticButton strength={0.25}>
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                  <Button size="sm" className="gap-2 h-8 text-xs bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg shadow-lg shadow-primary/20 relative overflow-hidden group">
-                    <span className="relative z-10 flex items-center gap-2">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      Get Started
-                    </span>
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-primary via-accent/30 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    />
-                  </Button>
-                </motion.div>
               </MagneticButton>
             </motion.div>
           </div>
@@ -246,13 +266,26 @@ const Header = ({
 
             {/* Actions */}
             <div className="space-y-2">
+              {user ? (
+                <>
+                  <div className="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground">
+                    <User className="w-3.5 h-3.5" />
+                    <span className="truncate">{user.email}</span>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => { handleSignOut(); setMobileMenuOpen(false); }} className="w-full gap-2 rounded-xl justify-start">
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <Button variant="outline" size="sm" onClick={() => { navigate("/auth"); setMobileMenuOpen(false); }} className="w-full gap-2 rounded-xl justify-start">
+                  <LogIn className="w-4 h-4" />
+                  Sign In
+                </Button>
+              )}
               <Button variant="outline" size="sm" onClick={() => { onConnectRepo(); setMobileMenuOpen(false); }} className="w-full gap-2 rounded-xl justify-start">
                 <Github className="w-4 h-4" />
                 Connect Repo
-              </Button>
-              <Button size="sm" className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl justify-start">
-                <Sparkles className="w-4 h-4" />
-                Get Started
               </Button>
             </div>
 

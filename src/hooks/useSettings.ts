@@ -26,6 +26,9 @@ export interface AppSettings {
   showComplexityWarnings: boolean;
   deepAnalysis: boolean;
   
+  // Audio
+  soundEffects: boolean;
+  
   // Privacy
   sendAnalytics: boolean;
   persistHistory: boolean;
@@ -52,6 +55,8 @@ const DEFAULT_SETTINGS: AppSettings = {
   includeComments: true,
   showComplexityWarnings: true,
   deepAnalysis: false,
+  
+  soundEffects: false,
   
   sendAnalytics: false,
   persistHistory: true,
