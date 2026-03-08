@@ -58,6 +58,21 @@ const Header = ({
   onOpenDiffView, onOpenPerformance, onOpenCodeReview, onOpenDepScanner, isConnected
 }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUser(session?.user ?? null);
+    });
+    supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null));
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast.success("Signed out");
+  };
 
   const toolButtons = [
     { icon: BarChart3, label: "Analytics", onClick: onOpenAnalytics, connected: true },
