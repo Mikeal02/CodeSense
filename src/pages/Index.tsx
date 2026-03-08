@@ -31,6 +31,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { usePerformanceMetrics } from "@/hooks/usePerformanceMetrics";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { useShareReport } from "@/hooks/useShareReport";
 
 const Index = () => {
   const [showGitHubSelector, setShowGitHubSelector] = useState(false);
