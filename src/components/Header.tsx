@@ -167,21 +167,25 @@ const Header = ({
             <div className="w-px h-5 bg-border/40 mx-1.5" />
             
             <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }} className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={onConnectRepo} className="gap-2 h-8 text-xs rounded-lg border-border/40 hover:border-primary/40 hover:bg-primary/[0.04] magnetic-hover">
-                <Github className="w-3.5 h-3.5" />
-                Connect
-              </Button>
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Button size="sm" className="gap-2 h-8 text-xs bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg shadow-lg shadow-primary/20 relative overflow-hidden group">
-                  <span className="relative z-10 flex items-center gap-2">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Get Started
-                  </span>
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-primary via-accent/30 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  />
+              <MagneticButton strength={0.25}>
+                <Button variant="outline" size="sm" onClick={onConnectRepo} className="gap-2 h-8 text-xs rounded-lg border-border/40 hover:border-primary/40 hover:bg-primary/[0.04]">
+                  <Github className="w-3.5 h-3.5" />
+                  Connect
                 </Button>
-              </motion.div>
+              </MagneticButton>
+              <MagneticButton strength={0.25}>
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <Button size="sm" className="gap-2 h-8 text-xs bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg shadow-lg shadow-primary/20 relative overflow-hidden group">
+                    <span className="relative z-10 flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      Get Started
+                    </span>
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-primary via-accent/30 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    />
+                  </Button>
+                </motion.div>
+              </MagneticButton>
             </motion.div>
           </div>
 
