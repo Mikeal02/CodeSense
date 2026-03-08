@@ -181,8 +181,13 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background noise-overlay pb-7">
-      <Header 
+    <div className="min-h-screen bg-background noise-overlay pb-7 cursor-none lg:cursor-none">
+      {/* Elite effects */}
+      <CustomCursor />
+      <CursorGlow />
+      <ScrollProgress />
+
+      <Header
         onConnectRepo={uploadFolder} 
         githubToken={githubToken}
         isDarkMode={isDarkMode}
