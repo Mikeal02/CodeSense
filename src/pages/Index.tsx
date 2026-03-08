@@ -191,6 +191,8 @@ const Index = () => {
         onOpenAnalytics={() => setShowAnalytics(true)}
         onOpenDiffView={() => setShowDiffView(true)}
         onOpenPerformance={() => setShowPerformance(true)}
+        onOpenCodeReview={() => setShowCodeReview(true)}
+        onOpenDepScanner={() => setShowDepScanner(true)}
         isConnected={!!codebase}
       />
 
