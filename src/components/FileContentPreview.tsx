@@ -1,9 +1,10 @@
-import { X, Copy, Check, FileCode, Hash, Braces, WrapText, Eye, EyeOff, ZoomIn, ZoomOut, Download, Minimize2, Maximize2, Search, ArrowUp, ArrowDown, Columns2 } from "lucide-react";
-import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { X, Copy, Check, FileCode, Hash, Braces, WrapText, ZoomIn, ZoomOut, Download, Search, ArrowUp, ArrowDown, Columns2 } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useShikiHighlighter } from "@/hooks/useShikiHighlighter";
 
 interface FileContentPreviewProps {
   filePath: string;
@@ -37,63 +38,6 @@ const getLanguageColor = (lang: string): string => {
   return colors[lang] || "hsl(var(--primary))";
 };
 
-// Catppuccin Mocha colors
-const colors = {
-  keyword: "#cba6f7", string: "#a6e3a1", comment: "#6c7086",
-  number: "#fab387", function: "#89b4fa", variable: "#f5e0dc",
-  operator: "#89dceb", property: "#f9e2af", tag: "#f38ba8",
-  attribute: "#fab387", type: "#f9e2af", decorator: "#f5c2e7",
-};
-
-const patterns: { regex: RegExp; color: string }[] = [
-  { regex: /(\/\/.*$|\/\*[\s\S]*?\*\/|#.*$)/gm, color: colors.comment },
-  { regex: /("[^"]*"|'[^']*'|`[^`]*`)/g, color: colors.string },
-  { regex: /\b(const|let|var|function|return|if|else|for|while|import|export|from|default|class|extends|new|this|async|await|try|catch|throw|typeof|instanceof|in|of|switch|case|break|continue|do|static|public|private|protected|interface|type|enum|implements|abstract|readonly|as|is|keyof|infer|never|void|null|undefined|true|false|yield|super|finally|with|debugger|delete)\b/g, color: colors.keyword },
-  { regex: /\b(string|number|boolean|object|any|unknown|Array|Promise|Record|Partial|Required|Pick|Omit|Exclude|Extract|NonNullable|ReturnType|Parameters|InstanceType|React|FC|ReactNode|JSX|Element|Map|Set|WeakMap|WeakSet|Symbol|BigInt)\b/g, color: colors.type },
-  { regex: /@([a-zA-Z_$][a-zA-Z0-9_$]*)/g, color: colors.decorator },
-  { regex: /\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g, color: colors.function },
-  { regex: /\b(\d+\.?\d*|0x[0-9a-fA-F]+|0b[01]+|0o[0-7]+)\b/g, color: colors.number },
-  { regex: /(=>|===|!==|==|!=|<=|>=|&&|\|\||[+\-*/%=<>!&|^~?:])/g, color: colors.operator },
-  { regex: /(<\/?[a-zA-Z][a-zA-Z0-9]*)/g, color: colors.tag },
-  { regex: /\.([a-zA-Z_$][a-zA-Z0-9_$]*)/g, color: colors.property },
-];
-
-const SyntaxHighlightedLine = ({ line }: { line: string }) => {
-  if (!line.trim()) return <span>{' '}</span>;
-
-  const segments: { start: number; end: number; color: string; text: string }[] = [];
-  patterns.forEach(({ regex, color }) => {
-    let match;
-    const re = new RegExp(regex.source, regex.flags);
-    while ((match = re.exec(line)) !== null) {
-      const text = match[1] || match[0];
-      const start = match.index + (match[0].indexOf(text));
-      segments.push({ start, end: start + text.length, color, text });
-    }
-  });
-
-  segments.sort((a, b) => a.start - b.start);
-  const nonOverlapping: typeof segments = [];
-  let lastEnd = 0;
-  segments.forEach(seg => {
-    if (seg.start >= lastEnd) {
-      nonOverlapping.push(seg);
-      lastEnd = seg.end;
-    }
-  });
-
-  const parts: JSX.Element[] = [];
-  let currentPos = 0;
-  nonOverlapping.forEach((seg, i) => {
-    if (seg.start > currentPos) parts.push(<span key={`t-${i}`}>{line.slice(currentPos, seg.start)}</span>);
-    parts.push(<span key={`h-${i}`} style={{ color: seg.color }}>{seg.text}</span>);
-    currentPos = seg.end;
-  });
-  if (currentPos < line.length) parts.push(<span key="end">{line.slice(currentPos)}</span>);
-
-  return <>{parts.length > 0 ? parts : line}</>;
-};
-
 const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: FileContentPreviewProps) => {
   const [copied, setCopied] = useState(false);
   const [fontSize, setFontSize] = useState(13);
@@ -106,6 +50,8 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
   const [showBreadcrumb, setShowBreadcrumb] = useState(true);
   const codeRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const { html: shikiHtml, isReady: shikiReady } = useShikiHighlighter(content, filePath);
 
   const language = getLanguageFromPath(filePath);
   const langColor = getLanguageColor(language);
@@ -191,6 +137,9 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
             <span className="text-[10px] px-1.5 py-0.5 rounded-full font-mono border border-border/30" style={{ color: langColor, borderColor: `${langColor}30` }}>
               {language}
             </span>
+            {shikiReady && (
+              <span className="text-[8px] px-1 py-0.5 rounded bg-success/10 text-success font-mono">Shiki</span>
+            )}
           </div>
           <div className="flex items-center gap-0.5 flex-shrink-0">
             <Button variant="ghost" size="icon" onClick={() => setShowSearch(!showSearch)} className="h-6 w-6" title="Find (Ctrl+F)">
@@ -286,46 +235,72 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
       {/* Code Content */}
       <div className="flex-1 overflow-hidden flex">
         <div ref={codeRef} className="flex-1 overflow-auto bg-[#1e1e2e]">
-          <div className="flex font-mono" style={{ fontSize }}>
-            {/* Line Numbers + Gutter */}
-            <div className="flex-shrink-0 text-right pr-3 pl-3 py-3 text-[#6c7086] select-none border-r border-[#313244]/50 bg-[#181825] sticky left-0 z-10">
-              {lines.map((_, i) => (
-                <div
-                  key={i}
-                  data-line={i}
-                  className={cn(
-                    "leading-[1.6] px-1 cursor-pointer hover:text-[#cdd6f4] transition-colors",
-                    highlightedLine === i && "bg-primary/10 text-primary rounded-sm",
-                    searchMatches.includes(i) && highlightedLine !== i && "bg-warning/5"
-                  )}
-                  onClick={() => setHighlightedLine(highlightedLine === i ? null : i)}
-                  style={{ fontSize: fontSize - 1 }}
-                >
-                  {i + 1}
-                </div>
-              ))}
-            </div>
-
-            {/* Code */}
-            <pre className={cn("flex-1 p-3 overflow-x-auto", wordWrap && "whitespace-pre-wrap break-all")}>
-              <code className="text-[#cdd6f4]">
-                {lines.map((line, i) => (
+          {shikiReady ? (
+            /* Shiki-powered highlighting */
+            <div className="flex font-mono" style={{ fontSize }}>
+              <div className="flex-shrink-0 text-right pr-3 pl-3 py-3 text-[#6c7086] select-none border-r border-[#313244]/50 bg-[#181825] sticky left-0 z-10">
+                {lines.map((_, i) => (
                   <div
                     key={i}
                     data-line={i}
                     className={cn(
-                      "leading-[1.6] px-1 rounded-sm transition-colors",
-                      highlightedLine === i && "bg-primary/10 border-l-2 border-primary -ml-px pl-[calc(0.25rem-1px)]",
-                      searchMatches.includes(i) && highlightedLine !== i && "bg-warning/8"
+                      "leading-[1.6] px-1 cursor-pointer hover:text-[#cdd6f4] transition-colors",
+                      highlightedLine === i && "bg-primary/10 text-primary rounded-sm",
+                      searchMatches.includes(i) && highlightedLine !== i && "bg-warning/5"
                     )}
-                    style={wordWrap ? {} : { whiteSpace: 'pre' }}
+                    onClick={() => setHighlightedLine(highlightedLine === i ? null : i)}
+                    style={{ fontSize: fontSize - 1 }}
                   >
-                    <SyntaxHighlightedLine line={line} />
+                    {i + 1}
                   </div>
                 ))}
-              </code>
-            </pre>
-          </div>
+              </div>
+              <div
+                className={cn("flex-1 p-3 overflow-x-auto shiki-container", wordWrap && "[&_pre]:whitespace-pre-wrap [&_pre]:break-all")}
+                dangerouslySetInnerHTML={{ __html: shikiHtml }}
+                style={{ fontSize }}
+              />
+            </div>
+          ) : (
+            /* Fallback: plain text with line numbers */
+            <div className="flex font-mono" style={{ fontSize }}>
+              <div className="flex-shrink-0 text-right pr-3 pl-3 py-3 text-[#6c7086] select-none border-r border-[#313244]/50 bg-[#181825] sticky left-0 z-10">
+                {lines.map((_, i) => (
+                  <div
+                    key={i}
+                    data-line={i}
+                    className={cn(
+                      "leading-[1.6] px-1 cursor-pointer hover:text-[#cdd6f4] transition-colors",
+                      highlightedLine === i && "bg-primary/10 text-primary rounded-sm",
+                      searchMatches.includes(i) && highlightedLine !== i && "bg-warning/5"
+                    )}
+                    onClick={() => setHighlightedLine(highlightedLine === i ? null : i)}
+                    style={{ fontSize: fontSize - 1 }}
+                  >
+                    {i + 1}
+                  </div>
+                ))}
+              </div>
+              <pre className={cn("flex-1 p-3 overflow-x-auto", wordWrap && "whitespace-pre-wrap break-all")}>
+                <code className="text-[#cdd6f4]">
+                  {lines.map((line, i) => (
+                    <div
+                      key={i}
+                      data-line={i}
+                      className={cn(
+                        "leading-[1.6] px-1 rounded-sm transition-colors",
+                        highlightedLine === i && "bg-primary/10 border-l-2 border-primary -ml-px pl-[calc(0.25rem-1px)]",
+                        searchMatches.includes(i) && highlightedLine !== i && "bg-warning/8"
+                      )}
+                      style={wordWrap ? {} : { whiteSpace: 'pre' }}
+                    >
+                      {line || ' '}
+                    </div>
+                  ))}
+                </code>
+              </pre>
+            </div>
+          )}
         </div>
 
         {/* Minimap */}

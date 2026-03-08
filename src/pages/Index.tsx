@@ -39,6 +39,7 @@ import { useSearchHistory } from "@/hooks/useSearchHistory";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useShareReport } from "@/hooks/useShareReport";
 import { useRepoInsights } from "@/hooks/useRepoInsights";
+import { usePersistentSessions } from "@/hooks/usePersistentSessions";
 
 const Index = () => {
   const [showGitHubSelector, setShowGitHubSelector] = useState(false);
@@ -71,6 +72,7 @@ const Index = () => {
   const onboarding = useOnboarding();
   const { shareReport, isSharing } = useShareReport();
   const repoInsights = useRepoInsights();
+  const { sessions, saveSession, updateSession, activeSessionId, setActiveSessionId } = usePersistentSessions();
   const {
     codebase,
     isLoading,
@@ -85,7 +87,7 @@ const Index = () => {
     updateGithubToken,
   } = useCodebaseAnalysis();
 
-  // Track repos when connected
+  // Track repos and persist sessions when connected
   useEffect(() => {
     if (codebase) {
       addRecentRepo({
@@ -97,12 +99,32 @@ const Index = () => {
       addActivity("repo_connected", `Connected to ${codebase.repoName}`, `${codebase.files.length} files loaded`);
       addNotification("success", "Repository Connected", `${codebase.repoName} loaded with ${codebase.files.length} files`);
       
-      // Fetch GitHub insights for GitHub repos
+      // Save persistent session
+      saveSession({
+        repo_name: codebase.repoName,
+        source: codebase.source,
+        active_mode: activeMode,
+        messages: [],
+        bookmarks: [],
+        settings: null,
+        file_count: codebase.files.length,
+      });
+
       if (codebase.source === "github") {
         repoInsights.fetchInsights(codebase.repoName, githubToken);
       }
     }
   }, [codebase?.repoName]);
+
+  // Persist messages to session when they change
+  useEffect(() => {
+    if (activeSessionId && messages.length > 0) {
+      updateSession(activeSessionId, {
+        messages: messages.map(m => ({ id: m.id, role: m.role, content: m.content })),
+        active_mode: activeMode,
+      });
+    }
+  }, [messages.length, activeMode]);
 
   // Global keyboard shortcuts
   useEffect(() => {
