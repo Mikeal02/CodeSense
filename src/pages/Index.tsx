@@ -60,7 +60,7 @@ const Index = () => {
   const { getStats, clearEntries, startTimer, endTimer } = usePerformanceMetrics();
   const { history: searchHistory, addEntry: addSearchEntry } = useSearchHistory();
   const onboarding = useOnboarding();
-  
+  const { shareReport, isSharing } = useShareReport();
   const {
     codebase,
     isLoading,
