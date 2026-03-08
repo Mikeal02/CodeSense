@@ -267,13 +267,15 @@ const Index = () => {
           animate={{ opacity: 1, y: 0 }}
           className="container mx-auto px-4 sm:px-6 -mt-4 sm:-mt-8 mb-6 sm:mb-8 relative z-10"
         >
-          <RecentReposPanel
-            repos={recentRepos}
-            onSelectRepo={handleSelectRecentRepo}
-            onRemoveRepo={removeRecentRepo}
-            onClearAll={clearRecentRepos}
-            className="max-w-xl mx-auto"
-          />
+          <Suspense fallback={null}>
+            <RecentReposPanel
+              repos={recentRepos}
+              onSelectRepo={handleSelectRecentRepo}
+              onRemoveRepo={removeRecentRepo}
+              onClearAll={clearRecentRepos}
+              className="max-w-xl mx-auto"
+            />
+          </Suspense>
         </motion.div>
       )}
       
