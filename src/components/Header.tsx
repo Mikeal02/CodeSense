@@ -91,32 +91,34 @@ const Header = ({
 
         <div className="container mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between relative">
           {/* Logo */}
-          <motion.div 
-            className="flex items-center gap-2.5 sm:gap-3" 
-            data-onboarding="logo"
-            whileHover={{ x: 2 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          >
-            <motion.div
-              className="relative"
-              whileHover={{ scale: 1.08, rotate: 3 }}
-              whileTap={{ scale: 0.92 }}
-              transition={{ type: "spring", stiffness: 500, damping: 20 }}
+          <MagneticButton strength={0.2}>
+            <motion.div 
+              className="flex items-center gap-2.5 sm:gap-3" 
+              data-onboarding="logo"
+              whileHover={{ x: 2 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-primary via-primary to-accent flex items-center justify-center shadow-lg shadow-primary/25">
-                <Code2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-primary-foreground" />
-              </div>
               <motion.div
-                className="absolute -top-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-primary rounded-full"
-                animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              />
+                className="relative"
+                whileHover={{ scale: 1.08, rotate: 3 }}
+                whileTap={{ scale: 0.92 }}
+                transition={{ type: "spring", stiffness: 500, damping: 20 }}
+              >
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-primary via-primary to-accent flex items-center justify-center shadow-lg shadow-primary/25">
+                  <Code2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-primary-foreground" />
+                </div>
+                <motion.div
+                  className="absolute -top-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-primary rounded-full"
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                />
+              </motion.div>
+              <div>
+                <h1 className="text-sm sm:text-base font-bold font-display text-foreground leading-none tracking-tight">CodeSense</h1>
+                <p className="text-[9px] sm:text-[10px] text-muted-foreground/50 hidden sm:block font-mono tracking-wider">v2.0.0</p>
+              </div>
             </motion.div>
-            <div>
-              <h1 className="text-sm sm:text-base font-bold font-display text-foreground leading-none tracking-tight">CodeSense</h1>
-              <p className="text-[9px] sm:text-[10px] text-muted-foreground/50 hidden sm:block font-mono tracking-wider">v2.0.0</p>
-            </div>
-          </motion.div>
+          </MagneticButton>
           
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-1" data-onboarding="header-tools">
