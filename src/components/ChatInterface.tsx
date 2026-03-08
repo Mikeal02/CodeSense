@@ -17,6 +17,7 @@ import BookmarksPanel from "./BookmarksPanel";
 import ExportReportModal from "./ExportReportModal";
 import KeyboardShortcutsModal from "./KeyboardShortcutsModal";
 import EmptyState from "./EmptyState";
+import TypingWave from "./TypingWave";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { motion, AnimatePresence } from "framer-motion";
 
