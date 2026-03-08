@@ -128,7 +128,7 @@ const HeroSection = ({
         className="container mx-auto px-4 sm:px-6 relative z-10"
         style={{ y: parallaxY2, scale: parallaxScale, opacity: parallaxOpacity }}
       >
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-5xl mx-auto text-center relative rounded-[2rem] px-4 sm:px-8 py-8 sm:py-10 glass-ultra card-glow">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
