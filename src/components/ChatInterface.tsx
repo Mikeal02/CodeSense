@@ -140,7 +140,7 @@ const ChatInterface = ({
 
   const chatContent = (
     <div data-onboarding="chat-interface" className={cn(
-      "rounded-2xl border border-border/30 overflow-hidden flex flex-col sm:flex-row bg-card/40 backdrop-blur-xl",
+      "rounded-2xl border border-border/35 overflow-hidden flex flex-col sm:flex-row bg-card/45 backdrop-blur-2xl card-glow",
       isFullscreen && "h-full rounded-none border-0"
     )}>
       {/* File Tree Sidebar */}
@@ -249,7 +249,7 @@ const ChatInterface = ({
         <div 
           ref={messagesContainerRef}
           className={cn(
-            "overflow-y-auto p-4 sm:p-6 space-y-5 flex-1",
+            "overflow-y-auto p-4 sm:p-6 space-y-5 flex-1 bg-gradient-to-b from-secondary/10 to-transparent",
             isFullscreen ? "h-[calc(100vh-200px)]" : "h-[380px] sm:h-[480px] lg:h-[520px]"
           )}
         >

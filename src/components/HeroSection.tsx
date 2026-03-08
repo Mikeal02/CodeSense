@@ -89,7 +89,7 @@ const HeroSection = ({
     <section 
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className="relative min-h-[90vh] sm:min-h-[95vh] flex items-center justify-center pt-14 sm:pt-16 overflow-hidden"
+      className="relative min-h-[90vh] sm:min-h-[95vh] flex items-center justify-center pt-14 sm:pt-16 overflow-hidden gradient-mesh"
     >
       <AuroraBackground />
       <ParticleCanvas />
@@ -128,13 +128,13 @@ const HeroSection = ({
         className="container mx-auto px-4 sm:px-6 relative z-10"
         style={{ y: parallaxY2, scale: parallaxScale, opacity: parallaxOpacity }}
       >
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-5xl mx-auto text-center relative rounded-[2rem] px-4 sm:px-8 py-8 sm:py-10 glass-ultra card-glow">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ delay: 0.1, duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-6 sm:mb-8 border border-primary/20 bg-primary/[0.04] backdrop-blur-md"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-6 sm:mb-8 border border-primary/30 bg-primary/[0.07] backdrop-blur-xl shadow-lg shadow-primary/10"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
@@ -241,7 +241,7 @@ const HeroSection = ({
                       placeholder="Paste GitHub repo URL..."
                       value={repoUrl}
                       onChange={(e) => setRepoUrl(e.target.value)}
-                      className="pl-10 sm:pl-12 h-12 sm:h-14 bg-card/50 backdrop-blur-sm border-border/40 text-sm sm:text-base focus:border-primary/50 focus:bg-card/70 transition-all rounded-xl"
+                      className="pl-10 sm:pl-12 h-12 sm:h-14 bg-card/70 backdrop-blur-xl border-border/50 text-sm sm:text-base focus:border-primary/60 focus:bg-card/85 transition-all rounded-2xl shadow-lg shadow-background/20"
                       disabled={isLoading}
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 text-[10px] text-muted-foreground/50">
@@ -251,7 +251,7 @@ const HeroSection = ({
                   <Button
                     type="submit"
                     size="lg"
-                    className="h-12 sm:h-14 px-7 sm:px-8 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 relative overflow-hidden group/btn rounded-xl font-semibold"
+                    className="h-12 sm:h-14 px-7 sm:px-8 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 relative overflow-hidden group/btn rounded-2xl font-semibold shadow-xl shadow-primary/20"
                     disabled={isLoading || !repoUrl.trim()}
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary-foreground/10 to-primary/0 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700" />
