@@ -140,7 +140,7 @@ const ChatInterface = ({
 
   const chatContent = (
     <div data-onboarding="chat-interface" className={cn(
-      "rounded-2xl border border-border/30 overflow-hidden flex flex-col sm:flex-row bg-card/40 backdrop-blur-xl",
+      "rounded-2xl border border-border/35 overflow-hidden flex flex-col sm:flex-row bg-card/45 backdrop-blur-2xl card-glow",
       isFullscreen && "h-full rounded-none border-0"
     )}>
       {/* File Tree Sidebar */}

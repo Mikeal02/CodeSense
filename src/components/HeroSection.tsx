@@ -89,7 +89,7 @@ const HeroSection = ({
     <section 
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className="relative min-h-[90vh] sm:min-h-[95vh] flex items-center justify-center pt-14 sm:pt-16 overflow-hidden"
+      className="relative min-h-[90vh] sm:min-h-[95vh] flex items-center justify-center pt-14 sm:pt-16 overflow-hidden gradient-mesh"
     >
       <AuroraBackground />
       <ParticleCanvas />
