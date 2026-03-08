@@ -12,17 +12,30 @@ export interface Session {
   file_count: number;
   last_accessed_at: string;
   created_at: string;
+  user_id: string | null;
 }
 
 export function usePersistentSessions() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  // Load recent sessions on mount
+  // Track auth state
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id ?? null);
+    });
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUserId(session?.user?.id ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Load recent sessions on mount and when user changes
   useEffect(() => {
     loadSessions();
-  }, []);
+  }, [userId]);
 
   const loadSessions = useCallback(async () => {
     setIsLoading(true);
@@ -41,7 +54,7 @@ export function usePersistentSessions() {
     }
   }, []);
 
-  const saveSession = useCallback(async (session: Omit<Session, "id" | "created_at" | "last_accessed_at">) => {
+  const saveSession = useCallback(async (session: Omit<Session, "id" | "created_at" | "last_accessed_at" | "user_id">) => {
     try {
       const { data, error } = await supabase
         .from("sessions")
@@ -53,6 +66,7 @@ export function usePersistentSessions() {
           bookmarks: session.bookmarks as any,
           settings: session.settings as any,
           file_count: session.file_count,
+          user_id: userId,
         })
         .select()
         .single();
@@ -64,7 +78,7 @@ export function usePersistentSessions() {
       }
     } catch {}
     return null;
-  }, []);
+  }, [userId]);
 
   const updateSession = useCallback(async (id: string, updates: Partial<Pick<Session, "messages" | "bookmarks" | "active_mode" | "settings">>) => {
     try {
@@ -104,5 +118,6 @@ export function usePersistentSessions() {
     updateSession,
     deleteSession,
     loadSessions,
+    userId,
   };
 }

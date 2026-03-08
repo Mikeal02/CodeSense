@@ -1,0 +1,16 @@
+{
+  "name": "CodeSense",
+  "short_name": "CodeSense",
+  "description": "AI-powered Codebase Understanding & Interview Prep Assistant",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0b14",
+  "theme_color": "#22c997",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}
