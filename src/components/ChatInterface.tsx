@@ -41,6 +41,44 @@ const suggestedQuestions = [
   { label: "Resume bullets", icon: "📝" },
 ];
 
+// Context-aware follow-up suggestions based on last assistant message
+const getFollowUpSuggestions = (lastMessage: string): { label: string; icon: string }[] => {
+  const lower = lastMessage.toLowerCase();
+  if (lower.includes("overview") || lower.includes("tech stack")) {
+    return [
+      { label: "Explain the architecture in detail", icon: "🏗️" },
+      { label: "What are the main entry points?", icon: "🚪" },
+      { label: "List all third-party dependencies", icon: "📦" },
+    ];
+  }
+  if (lower.includes("interview") || lower.includes("question")) {
+    return [
+      { label: "Give me harder questions", icon: "🔥" },
+      { label: "Explain like I built this myself", icon: "🧠" },
+      { label: "What would a senior engineer ask?", icon: "👨‍💻" },
+    ];
+  }
+  if (lower.includes("complexity") || lower.includes("risk") || lower.includes("coupling")) {
+    return [
+      { label: "How can I refactor the riskiest file?", icon: "🛠️" },
+      { label: "Show me the dependency chain", icon: "🔗" },
+      { label: "What tests should I write first?", icon: "✅" },
+    ];
+  }
+  if (lower.includes("flow") || lower.includes("execution") || lower.includes("step")) {
+    return [
+      { label: "What happens on initial page load?", icon: "⚡" },
+      { label: "Trace the authentication flow", icon: "🔐" },
+      { label: "How does data flow between components?", icon: "🔄" },
+    ];
+  }
+  return [
+    { label: "Tell me more about this", icon: "💬" },
+    { label: "Give me interview questions on this", icon: "💼" },
+    { label: "What are the risks here?", icon: "⚠️" },
+  ];
+};
+
 interface ChatInterfaceProps {
   isActive: boolean;
   messages: Message[];
