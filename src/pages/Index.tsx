@@ -79,6 +79,7 @@ const Index = () => {
   const { shareReport, isSharing } = useShareReport();
   const repoInsights = useRepoInsights();
   const { sessions, saveSession, updateSession, activeSessionId, setActiveSessionId } = usePersistentSessions();
+  const { play: playSound } = useSoundEffects();
   const {
     codebase,
     isLoading,
