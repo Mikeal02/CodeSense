@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
-import { X, GitCompare, ArrowLeftRight, FileCode } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, GitCompare, ArrowLeftRight, FileCode, Search, RotateCcw, Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "./ui/scroll-area";
 
@@ -14,16 +15,24 @@ interface FileDiffViewProps {
 const FileDiffView = ({ isOpen, onClose, files }: FileDiffViewProps) => {
   const [leftFile, setLeftFile] = useState<string | null>(null);
   const [rightFile, setRightFile] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showUnchanged, setShowUnchanged] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   const leftContent = useMemo(() => files.find(f => f.path === leftFile)?.content || "", [files, leftFile]);
   const rightContent = useMemo(() => files.find(f => f.path === rightFile)?.content || "", [files, rightFile]);
+
+  const filteredFiles = useMemo(() => {
+    if (!searchQuery.trim()) return files;
+    const q = searchQuery.toLowerCase();
+    return files.filter(f => f.path.toLowerCase().includes(q));
+  }, [files, searchQuery]);
 
   const diffLines = useMemo(() => {
     if (!leftContent || !rightContent) return [];
     const left = leftContent.split('\n');
     const right = rightContent.split('\n');
     const maxLen = Math.max(left.length, right.length);
-    
     return Array.from({ length: maxLen }, (_, i) => ({
       lineNum: i + 1,
       left: left[i] || '',
@@ -35,12 +44,34 @@ const FileDiffView = ({ isOpen, onClose, files }: FileDiffViewProps) => {
     }));
   }, [leftContent, rightContent]);
 
+  const displayLines = useMemo(() => {
+    if (showUnchanged) return diffLines;
+    return diffLines.filter(l => l.status !== 'same');
+  }, [diffLines, showUnchanged]);
+
   const stats = useMemo(() => {
     const added = diffLines.filter(l => l.status === 'added').length;
     const removed = diffLines.filter(l => l.status === 'removed').length;
     const modified = diffLines.filter(l => l.status === 'modified').length;
-    return { added, removed, modified, same: diffLines.length - added - removed - modified };
+    const same = diffLines.filter(l => l.status === 'same').length;
+    const similarity = diffLines.length > 0 ? Math.round((same / diffLines.length) * 100) : 0;
+    return { added, removed, modified, same, similarity };
   }, [diffLines]);
+
+  const handleCopyDiff = () => {
+    const text = diffLines
+      .filter(l => l.status !== 'same')
+      .map(l => `${l.status === 'removed' ? '-' : l.status === 'added' ? '+' : '~'} ${l.left || l.right}`)
+      .join('\n');
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleReset = () => {
+    setLeftFile(null);
+    setRightFile(null);
+  };
 
   if (!isOpen) return null;
 
@@ -48,35 +79,65 @@ const FileDiffView = ({ isOpen, onClose, files }: FileDiffViewProps) => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 z-50 bg-background/90 backdrop-blur-md flex flex-col"
+      className="fixed inset-0 z-50 bg-background/95 backdrop-blur-xl flex flex-col"
     >
       {/* Header */}
-      <div className="h-14 border-b border-border flex items-center justify-between px-6 bg-card/80">
+      <div className="h-12 border-b border-border/30 flex items-center justify-between px-4 bg-card/60 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <GitCompare className="w-5 h-5 text-primary" />
-          <span className="font-semibold">File Comparison</span>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+            <GitCompare className="w-4 h-4 text-primary" />
+          </div>
+          <span className="font-semibold text-sm">File Diff</span>
           {leftFile && rightFile && (
-            <div className="flex items-center gap-2 ml-4 text-xs">
-              <span className="text-success">+{stats.added}</span>
-              <span className="text-destructive">-{stats.removed}</span>
-              <span className="text-warning">~{stats.modified}</span>
+            <div className="flex items-center gap-2 ml-3">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-success/10 text-success font-mono">+{stats.added}</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-destructive/10 text-destructive font-mono">-{stats.removed}</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-warning/10 text-warning font-mono">~{stats.modified}</span>
+              <span className="text-[10px] text-muted-foreground/50 ml-1">{stats.similarity}% similar</span>
             </div>
           )}
         </div>
-        <Button variant="ghost" size="icon" onClick={onClose}>
-          <X className="w-4 h-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          {leftFile && rightFile && (
+            <>
+              <Button variant="ghost" size="sm" onClick={() => setShowUnchanged(!showUnchanged)} className="h-7 text-[10px] gap-1">
+                {showUnchanged ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                {showUnchanged ? "Hide" : "Show"} unchanged
+              </Button>
+              <Button variant="ghost" size="icon" onClick={handleCopyDiff} className="h-7 w-7">
+                {copied ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
+              </Button>
+              <Button variant="ghost" size="icon" onClick={handleReset} className="h-7 w-7" title="Reset">
+                <RotateCcw className="w-3.5 h-3.5" />
+              </Button>
+            </>
+          )}
+          <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7">
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* File selectors */}
-        <div className="w-64 border-r border-border bg-card/50 flex flex-col">
-          <div className="p-3 border-b border-border">
-            <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Select Files</h4>
+        {/* File selector */}
+        <div className="w-56 border-r border-border/30 bg-card/30 flex flex-col">
+          <div className="p-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground/40" />
+              <Input
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Filter files..."
+                className="h-7 pl-7 text-[11px] bg-secondary/30 border-border/30"
+              />
+            </div>
+          </div>
+          <div className="px-2 py-1 text-[9px] text-muted-foreground/40 uppercase tracking-wider">
+            {!leftFile ? "Select left file" : !rightFile ? "Select right file" : "Files"}
           </div>
           <ScrollArea className="flex-1">
-            <div className="p-2 space-y-0.5">
-              {files.map(f => {
+            <div className="px-1 space-y-0.5 pb-2">
+              {filteredFiles.map(f => {
                 const isLeft = f.path === leftFile;
                 const isRight = f.path === rightFile;
                 return (
@@ -91,16 +152,16 @@ const FileDiffView = ({ isOpen, onClose, files }: FileDiffViewProps) => {
                       }
                     }}
                     className={cn(
-                      "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2",
-                      isLeft ? "bg-info/10 text-info" :
-                      isRight ? "bg-accent/10 text-accent" :
-                      "hover:bg-secondary/50 text-muted-foreground"
+                      "w-full text-left px-2 py-1.5 rounded-md text-[11px] transition-all flex items-center gap-2",
+                      isLeft ? "bg-info/10 text-info ring-1 ring-info/20" :
+                      isRight ? "bg-accent/10 text-accent ring-1 ring-accent/20" :
+                      "hover:bg-secondary/40 text-muted-foreground/70"
                     )}
                   >
-                    <FileCode className="w-3.5 h-3.5 flex-shrink-0" />
+                    <FileCode className="w-3 h-3 flex-shrink-0" />
                     <span className="truncate">{f.path}</span>
-                    {isLeft && <span className="ml-auto text-[10px] font-medium">LEFT</span>}
-                    {isRight && <span className="ml-auto text-[10px] font-medium">RIGHT</span>}
+                    {isLeft && <span className="ml-auto text-[8px] font-bold px-1 py-0.5 rounded bg-info/20">L</span>}
+                    {isRight && <span className="ml-auto text-[8px] font-bold px-1 py-0.5 rounded bg-accent/20">R</span>}
                   </button>
                 );
               })}
@@ -111,29 +172,27 @@ const FileDiffView = ({ isOpen, onClose, files }: FileDiffViewProps) => {
         {/* Diff view */}
         <div className="flex-1 flex flex-col bg-[#1e1e2e]">
           {!leftFile || !rightFile ? (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground">
+            <div className="flex-1 flex items-center justify-center text-muted-foreground/40">
               <div className="text-center">
-                <ArrowLeftRight className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                <p>Select two files to compare</p>
-                <p className="text-sm mt-1">Click a file for left, then another for right</p>
+                <ArrowLeftRight className="w-10 h-10 mx-auto mb-3 opacity-20" />
+                <p className="text-sm">Select two files to compare</p>
+                <p className="text-xs mt-1 text-muted-foreground/30">Click first for left, then another for right</p>
               </div>
             </div>
           ) : (
             <>
-              {/* File names */}
-              <div className="flex border-b border-[#313244]">
-                <div className="flex-1 px-4 py-2 text-sm text-info font-mono border-r border-[#313244] bg-info/5">
+              <div className="flex border-b border-[#313244]/50">
+                <div className="flex-1 px-3 py-1.5 text-[11px] text-info font-mono border-r border-[#313244]/50 bg-info/5 truncate">
                   {leftFile}
                 </div>
-                <div className="flex-1 px-4 py-2 text-sm text-accent font-mono bg-accent/5">
+                <div className="flex-1 px-3 py-1.5 text-[11px] text-accent font-mono bg-accent/5 truncate">
                   {rightFile}
                 </div>
               </div>
 
-              {/* Diff content */}
               <ScrollArea className="flex-1">
-                <div className="font-mono text-xs">
-                  {diffLines.map((line, i) => (
+                <div className="font-mono text-[11px]">
+                  {displayLines.map((line, i) => (
                     <div
                       key={i}
                       className={cn(
@@ -143,23 +202,25 @@ const FileDiffView = ({ isOpen, onClose, files }: FileDiffViewProps) => {
                         line.status === 'modified' && "bg-warning/5",
                       )}
                     >
-                      <div className="w-10 text-right pr-2 py-0.5 text-[#6c7086] select-none border-r border-[#313244] bg-[#181825]/50">
+                      <div className="w-8 text-right pr-1.5 py-px text-[#6c7086]/50 select-none border-r border-[#313244]/30 bg-[#181825]/50 text-[10px]">
                         {line.lineNum}
                       </div>
                       <div className={cn(
-                        "flex-1 px-3 py-0.5 border-r border-[#313244] whitespace-pre",
-                        line.status === 'removed' && "bg-destructive/10 text-destructive/80",
-                        line.status === 'modified' && "bg-warning/10",
+                        "flex-1 px-2 py-px border-r border-[#313244]/30 whitespace-pre overflow-hidden",
+                        line.status === 'removed' && "bg-destructive/8 text-destructive/70",
+                        line.status === 'modified' && "bg-warning/8",
+                        line.status === 'same' && "text-[#cdd6f4]/60",
                       )}>
                         {line.left}
                       </div>
-                      <div className="w-10 text-right pr-2 py-0.5 text-[#6c7086] select-none border-r border-[#313244] bg-[#181825]/50">
+                      <div className="w-8 text-right pr-1.5 py-px text-[#6c7086]/50 select-none border-r border-[#313244]/30 bg-[#181825]/50 text-[10px]">
                         {line.lineNum}
                       </div>
                       <div className={cn(
-                        "flex-1 px-3 py-0.5 whitespace-pre",
-                        line.status === 'added' && "bg-success/10 text-success/80",
-                        line.status === 'modified' && "bg-warning/10",
+                        "flex-1 px-2 py-px whitespace-pre overflow-hidden",
+                        line.status === 'added' && "bg-success/8 text-success/70",
+                        line.status === 'modified' && "bg-warning/8",
+                        line.status === 'same' && "text-[#cdd6f4]/60",
                       )}>
                         {line.right}
                       </div>
@@ -170,6 +231,19 @@ const FileDiffView = ({ isOpen, onClose, files }: FileDiffViewProps) => {
             </>
           )}
         </div>
+      </div>
+
+      {/* Status bar */}
+      <div className="h-6 border-t border-border/20 bg-card/40 flex items-center px-4 text-[10px] text-muted-foreground/40">
+        <span>{files.length} files available</span>
+        {leftFile && rightFile && (
+          <>
+            <span className="mx-2">•</span>
+            <span>{displayLines.length} lines shown</span>
+            <span className="mx-2">•</span>
+            <span>{stats.similarity}% similarity</span>
+          </>
+        )}
       </div>
     </motion.div>
   );
