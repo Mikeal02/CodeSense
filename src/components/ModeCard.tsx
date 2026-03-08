@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { LucideIcon } from "lucide-react";
+import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from "framer-motion";
+import { LucideIcon, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ModeCardProps {
@@ -51,37 +51,48 @@ const ModeCard = ({ icon: Icon, title, description, isActive, onClick, disabled 
         "border hover:border-primary/60",
         "bg-secondary/30 hover:bg-secondary/50",
         isActive
-          ? "border-primary bg-primary/10 shadow-lg shadow-primary/15"
+          ? "border-primary bg-primary/10 shadow-lg shadow-primary/15 ring-1 ring-primary/20"
           : "border-border/50",
         disabled && "opacity-40 cursor-not-allowed hover:border-border/50 hover:bg-secondary/30"
       )}
     >
       {/* Shimmer sweep on hover */}
-      {hovered && !disabled && (
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          initial={{ x: "-100%", opacity: 0 }}
-          animate={{ x: "200%", opacity: 1 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          style={{
-            background: "linear-gradient(90deg, transparent, hsl(var(--primary) / 0.08), transparent)",
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {hovered && !disabled && (
+          <motion.div
+            className="absolute inset-0 pointer-events-none"
+            initial={{ x: "-100%", opacity: 0 }}
+            animate={{ x: "200%", opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            style={{
+              background: "linear-gradient(90deg, transparent, hsl(var(--primary) / 0.08), transparent)",
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Active gradient border glow */}
       {isActive && (
-        <div
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           className="absolute inset-0 rounded-xl pointer-events-none"
           style={{
-            background: "linear-gradient(135deg, hsl(var(--primary) / 0.15), hsl(var(--accent) / 0.08))",
+            background: "linear-gradient(135deg, hsl(var(--primary) / 0.12), hsl(var(--accent) / 0.06))",
           }}
         />
       )}
 
-      {/* Active indicator dot */}
+      {/* Active indicator */}
       {isActive && (
-        <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary animate-pulse-glow" />
+        <motion.span 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center"
+        >
+          <Check className="w-3 h-3 text-primary-foreground" />
+        </motion.span>
       )}
 
       <div

@@ -31,6 +31,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { usePerformanceMetrics } from "@/hooks/usePerformanceMetrics";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { useShareReport } from "@/hooks/useShareReport";
 
 const Index = () => {
   const [showGitHubSelector, setShowGitHubSelector] = useState(false);
@@ -59,7 +60,7 @@ const Index = () => {
   const { getStats, clearEntries, startTimer, endTimer } = usePerformanceMetrics();
   const { history: searchHistory, addEntry: addSearchEntry } = useSearchHistory();
   const onboarding = useOnboarding();
-  
+  const { shareReport, isSharing } = useShareReport();
   const {
     codebase,
     isLoading,
@@ -148,6 +149,22 @@ const Index = () => {
     addActivity("theme_changed", `Switched to ${isDarkMode ? 'light' : 'dark'} mode`);
   };
 
+  const handleShareReport = () => {
+    if (!codebase) return;
+    const fileSummary = codebase.files.map(f => ({
+      path: f.path,
+      lines: f.content.split("\n").length,
+      extension: f.path.split(".").pop() || "other",
+    }));
+    shareReport({
+      repoName: codebase.repoName,
+      activeMode,
+      messages: messages.map(m => ({ id: m.id, role: m.role, content: m.content })),
+      fileSummary,
+    });
+    addActivity("report_shared", `Shared report for ${codebase.repoName}`);
+  };
+
   return (
     <div className="min-h-screen bg-background noise-overlay pb-7">
       <Header 
@@ -226,6 +243,8 @@ const Index = () => {
         files={codebase?.files || []}
         selectedFileFromPalette={selectedFileFromPalette}
         onClearSelectedFile={() => setSelectedFileFromPalette(undefined)}
+        onShareReport={handleShareReport}
+        isSharing={isSharing}
       />
       <SocialProofSection />
       <FeaturesSection />

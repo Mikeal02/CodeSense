@@ -10,6 +10,7 @@ export type ActivityType =
   | "search_performed"
   | "theme_changed"
   | "conversation_saved"
+  | "report_shared"
   | "error_occurred";
 
 export interface ActivityEntry {

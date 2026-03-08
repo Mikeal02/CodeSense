@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { 
   Send, Sparkles, Code, FileCode, Copy, Check, Loader2, 
   Maximize2, Minimize2, X, FolderTree, Columns2, BarChart3,
-  Search, Bookmark, Download, Keyboard
+  Search, Bookmark, Download, Keyboard, Share2
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -48,6 +48,8 @@ interface ChatInterfaceProps {
   files?: { path: string; content: string }[];
   selectedFileFromPalette?: string;
   onClearSelectedFile?: () => void;
+  onShareReport?: () => void;
+  isSharing?: boolean;
 }
 
 const ChatInterface = ({ 
@@ -59,6 +61,8 @@ const ChatInterface = ({
   files = [],
   selectedFileFromPalette,
   onClearSelectedFile,
+  onShareReport,
+  isSharing,
 }: ChatInterfaceProps) => {
   const [input, setInput] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -265,6 +269,18 @@ const ChatInterface = ({
                 >
                   <Download className="w-4 h-4" />
                 </Button>
+                {onShareReport && messages.length > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onShareReport}
+                    disabled={isSharing}
+                    className="text-muted-foreground hover:text-foreground hover:text-primary"
+                    title="Share report link"
+                  >
+                    {isSharing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />}
+                  </Button>
+                )}
                 <div className="w-px h-4 bg-border mx-1" />
                 <Button
                   variant="ghost"
