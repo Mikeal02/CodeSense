@@ -58,7 +58,7 @@ const Header = ({
         </div>
         <div className="container mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3" data-onboarding="logo">
             <motion.div
               className="relative"
               whileHover={{ scale: 1.05 }}
