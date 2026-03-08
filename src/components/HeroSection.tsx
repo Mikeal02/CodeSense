@@ -205,7 +205,7 @@ const HeroSection = ({
                       placeholder="Paste GitHub repo URL..."
                       value={repoUrl}
                       onChange={(e) => setRepoUrl(e.target.value)}
-                      className="pl-10 sm:pl-12 h-13 sm:h-14 bg-card/50 backdrop-blur-sm border-border/40 text-sm sm:text-base focus:border-primary/50 focus:bg-card/70 transition-all rounded-xl"
+                      className="pl-10 sm:pl-12 h-12 sm:h-14 bg-card/50 backdrop-blur-sm border-border/40 text-sm sm:text-base focus:border-primary/50 focus:bg-card/70 transition-all rounded-xl"
                       disabled={isLoading}
                     />
                     {/* Command hint */}
