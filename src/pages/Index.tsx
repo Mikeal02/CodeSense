@@ -88,6 +88,11 @@ const Index = () => {
       });
       addActivity("repo_connected", `Connected to ${codebase.repoName}`, `${codebase.files.length} files loaded`);
       addNotification("success", "Repository Connected", `${codebase.repoName} loaded with ${codebase.files.length} files`);
+      
+      // Fetch GitHub insights for GitHub repos
+      if (codebase.source === "github") {
+        repoInsights.fetchInsights(codebase.repoName, githubToken);
+      }
     }
   }, [codebase?.repoName]);
 
