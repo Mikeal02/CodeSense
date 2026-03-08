@@ -216,7 +216,7 @@ const HeroSection = ({
                   <Button
                     type="submit"
                     size="lg"
-                    className="h-13 sm:h-14 px-7 sm:px-8 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 relative overflow-hidden group/btn rounded-xl font-semibold"
+                    className="h-12 sm:h-14 px-7 sm:px-8 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 relative overflow-hidden group/btn rounded-xl font-semibold"
                     disabled={isLoading || !repoUrl.trim()}
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary-foreground/10 to-primary/0 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700" />
