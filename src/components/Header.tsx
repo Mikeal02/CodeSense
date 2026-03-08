@@ -76,7 +76,7 @@ const Header = ({
           </div>
           
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1" data-onboarding="header-tools">
             <RateLimitStatus githubToken={githubToken} />
             
             {visibleTools.map((tool) => (
