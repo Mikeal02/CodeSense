@@ -76,9 +76,9 @@ const Header = ({
         className="fixed top-0 left-0 right-0 z-50"
       >
         {/* Layered frosted glass background */}
-        <div className="absolute inset-0 bg-background/50 backdrop-blur-2xl" />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.02] via-transparent to-accent/[0.02]" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-border/30" />
+        <div className="absolute inset-0 bg-background/45 backdrop-blur-3xl" />
+        <div className="absolute inset-0 gradient-mesh opacity-70" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-border/45" />
         
         {/* Animated gradient accent line */}
         <div className="absolute bottom-0 left-0 right-0 h-px overflow-hidden">
