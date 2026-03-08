@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code2, Github, Sparkles, Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Zap, Menu, Shield, FileSearch } from "lucide-react";
+import { Code2, Github, Sparkles, Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Zap, Menu, Shield, FileSearch, User, LogOut, LogIn } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
 import RateLimitStatus from "./RateLimitStatus";
 import ThemeToggle from "./ThemeToggle";
 import MagneticButton from "./MagneticButton";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface HeaderProps {
   onConnectRepo: () => void;
