@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Activity, AlertTriangle, Check, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
@@ -46,7 +46,6 @@ const RateLimitStatus = ({ githubToken, className }: RateLimitStatusProps) => {
 
   useEffect(() => {
     fetchRateLimit();
-    // Refresh every 30 seconds
     const interval = setInterval(fetchRateLimit, 30000);
     return () => clearInterval(interval);
   }, [githubToken]);
@@ -70,26 +69,26 @@ const RateLimitStatus = ({ githubToken, className }: RateLimitStatusProps) => {
             onClick={fetchRateLimit}
             disabled={isLoading}
             className={cn(
-              "h-8 gap-2 text-xs",
+              "h-7 gap-1.5 text-[10px] rounded-lg",
               isCritical && "text-destructive",
-              isLow && !isCritical && "text-yellow-500",
-              !isLow && "text-muted-foreground",
+              isLow && !isCritical && "text-warning",
+              !isLow && "text-muted-foreground/60",
               className
             )}
           >
             {isLoading ? (
-              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+              <RefreshCw className="w-3 h-3 animate-spin" />
             ) : error ? (
-              <AlertTriangle className="w-3.5 h-3.5" />
+              <AlertTriangle className="w-3 h-3" />
             ) : isCritical ? (
-              <AlertTriangle className="w-3.5 h-3.5" />
+              <AlertTriangle className="w-3 h-3" />
             ) : isLow ? (
-              <Activity className="w-3.5 h-3.5" />
+              <Activity className="w-3 h-3" />
             ) : (
-              <Check className="w-3.5 h-3.5" />
+              <Check className="w-3 h-3" />
             )}
             {rateLimit && (
-              <span>
+              <span className="font-mono">
                 {rateLimit.remaining}/{rateLimit.limit}
               </span>
             )}
@@ -97,35 +96,31 @@ const RateLimitStatus = ({ githubToken, className }: RateLimitStatusProps) => {
         </TooltipTrigger>
         <TooltipContent side="bottom" className="max-w-xs">
           <div className="space-y-2">
-            <div className="font-medium">GitHub API Rate Limit</div>
+            <div className="font-medium text-xs">GitHub API Rate Limit</div>
             {rateLimit ? (
               <>
-                <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
                   <div
                     className={cn(
-                      "h-full transition-all duration-300",
-                      isCritical ? "bg-destructive" : isLow ? "bg-yellow-500" : "bg-primary"
+                      "h-full transition-all duration-300 rounded-full",
+                      isCritical ? "bg-destructive" : isLow ? "bg-warning" : "bg-primary"
                     )}
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
-                <div className="text-xs text-muted-foreground space-y-1">
+                <div className="text-[10px] text-muted-foreground space-y-0.5">
                   <p>Remaining: {rateLimit.remaining} of {rateLimit.limit}</p>
                   <p>Used: {rateLimit.used} requests</p>
-                  {resetTime && (
-                    <p>Resets: {resetTime.toLocaleTimeString()}</p>
-                  )}
+                  {resetTime && <p>Resets: {resetTime.toLocaleTimeString()}</p>}
                 </div>
                 {githubToken ? (
-                  <p className="text-xs text-primary">✓ Using authenticated token</p>
+                  <p className="text-[10px] text-primary">✓ Authenticated token</p>
                 ) : (
-                  <p className="text-xs text-muted-foreground">
-                    Add a token for 5,000 requests/hour
-                  </p>
+                  <p className="text-[10px] text-muted-foreground">Add a token for 5,000 req/hr</p>
                 )}
               </>
             ) : error ? (
-              <p className="text-xs text-destructive">{error}</p>
+              <p className="text-[10px] text-destructive">{error}</p>
             ) : null}
           </div>
         </TooltipContent>

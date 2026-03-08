@@ -24,10 +24,17 @@ const ParticleCanvas = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const colors = [
-      "hsl(172, 66%, 50%)",   // primary teal
-      "hsl(265, 83%, 67%)",   // accent purple
-      "hsl(217, 91%, 60%)",   // info blue
+    const isDark = document.documentElement.classList.contains("dark") || !document.documentElement.classList.contains("light");
+
+    const colors = isDark ? [
+      "hsl(172, 66%, 50%)",
+      "hsl(265, 83%, 67%)",
+      "hsl(217, 91%, 60%)",
+      "hsl(142, 71%, 45%)",
+    ] : [
+      "hsl(172, 66%, 38%)",
+      "hsl(265, 83%, 58%)",
+      "hsl(217, 91%, 50%)",
     ];
 
     const resize = () => {
@@ -40,17 +47,17 @@ const ParticleCanvas = () => {
     const createParticle = (): Particle => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      size: Math.random() * 2 + 0.5,
-      opacity: Math.random() * 0.5 + 0.1,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      size: Math.random() * 1.8 + 0.4,
+      opacity: Math.random() * 0.4 + 0.05,
       color: colors[Math.floor(Math.random() * colors.length)],
       life: 0,
-      maxLife: Math.random() * 400 + 200,
+      maxLife: Math.random() * 500 + 300,
     });
 
-    // Init particles
-    for (let i = 0; i < 80; i++) {
+    const particleCount = Math.min(100, Math.floor((canvas.width * canvas.height) / 12000));
+    for (let i = 0; i < particleCount; i++) {
       particlesRef.current.push(createParticle());
     }
 
@@ -74,20 +81,17 @@ const ParticleCanvas = () => {
         const dx = p.x - mouseRef.current.x;
         const dy = p.y - mouseRef.current.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 100) {
-          const force = (100 - dist) / 100;
-          p.vx += (dx / dist) * force * 0.3;
-          p.vy += (dy / dist) * force * 0.3;
+        if (dist < 120) {
+          const force = (120 - dist) / 120;
+          p.vx += (dx / dist) * force * 0.2;
+          p.vy += (dy / dist) * force * 0.2;
         }
 
-        // Dampen velocity
         p.vx *= 0.99;
         p.vy *= 0.99;
-
         p.x += p.vx;
         p.y += p.vy;
 
-        // Wrap edges
         if (p.x < 0) p.x = canvas.width;
         if (p.x > canvas.width) p.x = 0;
         if (p.y < 0) p.y = canvas.height;
@@ -107,14 +111,16 @@ const ParticleCanvas = () => {
       });
 
       // Draw connections
-      particlesRef.current.forEach((p, i) => {
+      const maxDist = 90;
+      for (let i = 0; i < particlesRef.current.length; i++) {
+        const p = particlesRef.current[i];
         for (let j = i + 1; j < particlesRef.current.length; j++) {
           const q = particlesRef.current[j];
           const dx = p.x - q.x;
           const dy = p.y - q.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 100) {
-            const alpha = (1 - dist / 100) * 0.12;
+          if (dist < maxDist) {
+            const alpha = (1 - dist / maxDist) * 0.08;
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(q.x, q.y);
@@ -123,7 +129,7 @@ const ParticleCanvas = () => {
             ctx.stroke();
           }
         }
-      });
+      }
 
       animFrameRef.current = requestAnimationFrame(draw);
     };
@@ -141,7 +147,7 @@ const ParticleCanvas = () => {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 w-full h-full pointer-events-auto"
-      style={{ opacity: 0.6 }}
+      style={{ opacity: 0.5 }}
     />
   );
 };
