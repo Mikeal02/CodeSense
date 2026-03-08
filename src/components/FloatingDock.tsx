@@ -85,7 +85,7 @@ const FloatingDock = ({
                         initial={{ opacity: 0, y: 4, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 4, scale: 0.9 }}
-                        className="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-medium bg-popover text-popover-foreground px-2 py-1 rounded-md border border-border/50 shadow-lg whitespace-nowrap"
+                        className="absolute -top-9 left-1/2 -translate-x-1/2 text-[10px] font-medium bg-popover text-popover-foreground px-2.5 py-1 rounded-lg border border-border/50 shadow-xl whitespace-nowrap backdrop-blur-sm"
                       >
                         {item.label}
                       </motion.span>

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import {
   ChevronRight, Folder, FolderOpen, FileCode, FileJson,
   FileText, File, Search, X, Eye
@@ -130,9 +130,9 @@ const FileTreeView = ({ files, onFileSelect, selectedFile }: FileTreeViewProps) 
   const [searchQuery, setSearchQuery] = useState("");
   const [showHidden, setShowHidden] = useState(true);
   const [openPaths, setOpenPaths] = useState<Set<string>>(() => new Set());
+  const [hasAutoOpened, setHasAutoOpened] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
-  // Auto-open first level on mount
   const filteredFiles = useMemo(() => {
     let result = files;
     if (!showHidden) result = result.filter(f => !f.path.split('/').some(p => p.startsWith('.')));
@@ -143,14 +143,15 @@ const FileTreeView = ({ files, onFileSelect, selectedFile }: FileTreeViewProps) 
 
   const tree = useMemo(() => buildTree(filteredFiles), [filteredFiles]);
 
-  // Auto-open root-level folders
-  useMemo(() => {
-    if (openPaths.size === 0 && tree.length > 0) {
+  // Auto-open root-level folders on first load
+  useEffect(() => {
+    if (!hasAutoOpened && tree.length > 0) {
       const initial = new Set<string>();
       tree.forEach(n => { if (n.type === 'folder') initial.add(n.path); });
       setOpenPaths(initial);
+      setHasAutoOpened(true);
     }
-  }, [tree]);
+  }, [tree, hasAutoOpened]);
 
   const flatRows = useMemo(() => flattenTree(tree, openPaths), [tree, openPaths]);
 
