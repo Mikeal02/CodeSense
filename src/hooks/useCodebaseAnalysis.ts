@@ -339,6 +339,8 @@ export function useCodebaseAnalysis() {
     return localStorage.getItem('github_token');
   });
   const folderInputRef = useRef<HTMLInputElement | null>(null);
+  // Cache completed AI responses per mode to avoid redundant calls
+  const analysisCache = useRef<Map<string, Message[]>>(new Map());
 
   // Persist messages to session storage
   useEffect(() => {
