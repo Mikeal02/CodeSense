@@ -97,7 +97,8 @@ const Index = () => {
   // Track repos and persist sessions when connected
   useEffect(() => {
     if (codebase) {
-      // Trigger confetti
+      // Play connect sound + confetti
+      playSound("connect");
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 3000);
 
