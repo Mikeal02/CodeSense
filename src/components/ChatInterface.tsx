@@ -98,12 +98,23 @@ const ChatInterface = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Auto-scroll on new messages and during streaming
   useEffect(() => {
     if (shouldAutoScroll) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       setShouldAutoScroll(false);
     }
   }, [shouldAutoScroll]);
+
+  // Keep scrolled to bottom during streaming
+  useEffect(() => {
+    if (isLoading && messages.length > 0) {
+      const last = messages[messages.length - 1];
+      if (last?.role === "assistant") {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [isLoading, messages]);
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -341,6 +352,10 @@ const ChatInterface = ({
                         >
                           {message.content}
                         </ReactMarkdown>
+                        {/* Streaming caret: show on last assistant message while loading */}
+                        {isLoading && idx === messages.length - 1 && message.content.length > 0 && (
+                          <span className="inline-block w-[2px] h-[1em] bg-primary align-middle ml-0.5 animate-caret-blink" />
+                        )}
                       </div>
                     ) : (
                       message.content

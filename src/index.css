@@ -825,3 +825,12 @@
   padding: 0 0.25rem;
   display: block;
 }
+
+/* ========== Streaming Caret ========== */
+@keyframes caretBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.animate-caret-blink {
+  animation: caretBlink 0.8s steps(1) infinite;
+}
