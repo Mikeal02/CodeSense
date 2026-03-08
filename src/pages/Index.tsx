@@ -256,10 +256,7 @@ const Index = () => {
         )}
       </AnimatePresence>
       
-      <motion.div
-        layout
-        transition={{ layout: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }}
-      >
+      <div>
         <HeroSection 
           onSubmitRepo={connectRepo}
           onUploadFolder={uploadFolder}
@@ -273,7 +270,7 @@ const Index = () => {
           files={codebase?.files}
           repoInsights={repoInsights}
         />
-      </motion.div>
+      </div>
       
       <AnimatePresence mode="popLayout">
         {!codebase && recentRepos.length > 0 && (
