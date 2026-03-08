@@ -26,6 +26,9 @@ export interface AppSettings {
   showComplexityWarnings: boolean;
   deepAnalysis: boolean;
   
+  // Audio
+  soundEffects: boolean;
+  
   // Privacy
   sendAnalytics: boolean;
   persistHistory: boolean;
