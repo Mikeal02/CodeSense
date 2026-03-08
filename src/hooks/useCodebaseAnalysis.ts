@@ -575,6 +575,7 @@ export function useCodebaseAnalysis() {
       const data = await fetchGitHubRepo(url);
       setCodebase(data);
       setMessages([]);
+      analysisCache.current.clear();
       toast.success(`Connected to ${data.repoName}`);
     } catch (error) {
       console.error("Error connecting to repo:", error);
