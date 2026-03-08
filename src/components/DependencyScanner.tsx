@@ -168,7 +168,27 @@ const DependencyScanner = ({ isOpen, onClose, files }: DependencyScannerProps) =
         </div>
 
         {scanResult ? (
-          <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Summary Banner */}
+            {(critCount > 0 || highCount > 0) && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={cn(
+                  "mx-4 mt-3 px-4 py-2.5 rounded-lg border flex items-center gap-3",
+                  critCount > 0 ? "bg-red-500/5 border-red-500/20" : "bg-orange-500/5 border-orange-500/20"
+                )}
+              >
+                <ShieldX className={cn("w-5 h-5 shrink-0", critCount > 0 ? "text-red-400" : "text-orange-400")} />
+                <p className="text-xs text-foreground">
+                  <strong>{critCount + highCount} high-priority</strong> vulnerabilities found.
+                  {scanResult?.vulnerabilities.some(v => v.fixedIn && v.fixedIn !== "No fix available")
+                    ? " Fixes are available for some packages."
+                    : " Review and mitigate manually."}
+                </p>
+              </motion.div>
+            )}
+
             {/* Stats Bar */}
             <div className="grid grid-cols-4 gap-3 p-4 border-b border-border">
               {[

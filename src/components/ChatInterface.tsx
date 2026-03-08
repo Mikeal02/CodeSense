@@ -398,7 +398,23 @@ const ChatInterface = ({
                     ) : (
                       message.content
                     )}
-                  </div>
+                  {/* Copy button for assistant messages */}
+                  {message.role === "assistant" && message.content.length > 0 && !isLoading && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                      className="flex items-center gap-1 mt-1.5"
+                    >
+                      <button
+                        onClick={() => handleCopy(message.content, message.id)}
+                        className="flex items-center gap-1 text-[10px] text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                      >
+                        {copiedId === message.id ? <Check className="w-3 h-3 text-success" /> : <Copy className="w-3 h-3" />}
+                        {copiedId === message.id ? "Copied" : "Copy"}
+                      </button>
+                    </motion.div>
+                  )}
                 </div>
               </motion.div>
             ))
@@ -415,8 +431,30 @@ const ChatInterface = ({
           <div ref={messagesEndRef} />
         </div>
         
-        {/* Quick suggestions (shown when messages exist) */}
-        {messages.length > 0 && (
+        {/* Context-aware follow-up suggestions */}
+        {messages.length > 0 && !isLoading && (
+          <div className="px-4 sm:px-5 py-2 border-t border-border/15">
+            <p className="text-[9px] text-muted-foreground/40 mb-1.5 font-medium uppercase tracking-wider">Follow up</p>
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
+              {(() => {
+                const lastAssistant = [...messages].reverse().find(m => m.role === "assistant");
+                const suggestions = lastAssistant ? getFollowUpSuggestions(lastAssistant.content) : suggestedQuestions.slice(0, 3);
+                return suggestions.map((q) => (
+                  <button
+                    key={q.label}
+                    onClick={() => handleSuggestionClick(q.label)}
+                    disabled={isLoading}
+                    className="flex-shrink-0 px-3 py-1.5 rounded-lg text-[10px] bg-primary/[0.05] border border-primary/15 text-muted-foreground hover:text-foreground hover:bg-primary/10 hover:border-primary/30 transition-all disabled:opacity-50"
+                  >
+                    {q.icon} {q.label}
+                  </button>
+                ));
+              })()}
+            </div>
+          </div>
+        )}
+        {/* Static quick suggestions (when loading or first messages) */}
+        {messages.length > 0 && isLoading && (
           <div className="px-4 sm:px-5 py-2 border-t border-border/15 flex gap-1.5 overflow-x-auto scrollbar-none">
             {suggestedQuestions.map((q) => (
               <button

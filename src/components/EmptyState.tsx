@@ -95,6 +95,25 @@ const ErrorIllustration = () => (
   </motion.svg>
 );
 
+const NoDataIllustration = () => (
+  <motion.svg viewBox="0 0 120 120" className="w-28 h-28" initial="hidden" animate="visible">
+    <motion.rect x="25" y="35" width="70" height="50" rx="6" fill="none" stroke="hsl(var(--muted-foreground) / 0.3)" strokeWidth="1.5" variants={draw} custom={0} />
+    <motion.line x1="40" y1="50" x2="80" y2="50" stroke="hsl(var(--muted-foreground) / 0.15)" strokeWidth="1.5" strokeLinecap="round" variants={draw} custom={0.5} />
+    <motion.line x1="40" y1="58" x2="70" y2="58" stroke="hsl(var(--muted-foreground) / 0.1)" strokeWidth="1.5" strokeLinecap="round" variants={draw} custom={0.7} />
+    <motion.line x1="40" y1="66" x2="60" y2="66" stroke="hsl(var(--muted-foreground) / 0.07)" strokeWidth="1.5" strokeLinecap="round" variants={draw} custom={0.9} />
+    <motion.circle cx="60" cy="60" r="48" fill="none" stroke="hsl(var(--muted-foreground) / 0.04)" strokeWidth="1" strokeDasharray="3 5" variants={draw} custom={0.2} />
+  </motion.svg>
+);
+
+const LoadingFailedIllustration = () => (
+  <motion.svg viewBox="0 0 120 120" className="w-28 h-28" initial="hidden" animate="visible">
+    <motion.path d="M60 25L95 85H25Z" fill="none" stroke="hsl(var(--warning))" strokeWidth="2" strokeLinejoin="round" variants={draw} custom={0} />
+    <motion.line x1="60" y1="48" x2="60" y2="64" stroke="hsl(var(--warning))" strokeWidth="2.5" strokeLinecap="round" variants={draw} custom={0.5} />
+    <motion.circle cx="60" cy="73" r="2" fill="hsl(var(--warning))" variants={draw} custom={0.8} />
+    <motion.circle cx="60" cy="60" r="46" fill="none" stroke="hsl(var(--warning) / 0.06)" strokeWidth="1" strokeDasharray="4 6" variants={draw} custom={0.2} />
+  </motion.svg>
+);
+
 const illustrations: Record<IllustrationType, React.FC> = {
   "no-repo": NoRepoIllustration,
   "no-results": NoResultsIllustration,
@@ -102,6 +121,8 @@ const illustrations: Record<IllustrationType, React.FC> = {
   "no-bookmarks": NoBookmarksIllustration,
   "no-conversations": EmptyChatIllustration,
   "error": ErrorIllustration,
+  "no-data": NoDataIllustration,
+  "loading-failed": LoadingFailedIllustration,
 };
 
 const EmptyState = ({ type, title, description, action, className }: EmptyStateProps) => {
