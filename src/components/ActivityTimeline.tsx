@@ -27,6 +27,7 @@ const typeConfig: Record<ActivityType, { icon: typeof Github; color: string }> =
   theme_changed: { icon: Palette, color: "text-accent" },
   conversation_saved: { icon: Save, color: "text-primary" },
   error_occurred: { icon: AlertTriangle, color: "text-destructive" },
+  report_shared: { icon: Download, color: "text-info" },
 };
 
 const ActivityTimeline = ({ isOpen, onClose, activities, onClear }: ActivityTimelineProps) => {
