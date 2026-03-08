@@ -179,9 +179,11 @@ const HeroSection = ({
             {isConnected && repoName ? (
               <motion.div
                 key="connected"
-                initial={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
-                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.9, y: 30, filter: "blur(10px)", rotateX: -10 }}
+                animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)", rotateX: 0 }}
+                exit={{ opacity: 0, scale: 0.85, y: -20, filter: "blur(8px)", rotateX: 10 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                style={{ perspective: 1200 }}
                 className="space-y-5"
               >
                 <div className="inline-flex items-center gap-3 px-5 sm:px-6 py-3 sm:py-4 rounded-2xl bg-success/[0.08] border border-success/20 backdrop-blur-sm">
