@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import {
   ChevronRight, Folder, FolderOpen, FileCode, FileJson,
   FileText, File, Search, X, Eye
