@@ -231,20 +231,27 @@ const Index = () => {
       />
 
       {/* Breadcrumbs - shown when connected */}
-      {codebase && (
-        <div className="pt-14 sm:pt-16">
-          <Breadcrumbs
-            repoName={codebase.repoName}
-            activeMode={activeMode}
-            isConnected={!!codebase}
-          />
-        </div>
-      )}
+      <AnimatePresence>
+        {codebase && (
+          <motion.div
+            className="pt-14 sm:pt-16"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Breadcrumbs
+              repoName={codebase.repoName}
+              activeMode={activeMode}
+              isConnected={!!codebase}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        layout
+        transition={{ layout: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }}
       >
         <HeroSection 
           onSubmitRepo={connectRepo}
@@ -261,43 +268,66 @@ const Index = () => {
         />
       </motion.div>
       
-      {!codebase && recentRepos.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="container mx-auto px-4 sm:px-6 -mt-4 sm:-mt-8 mb-6 sm:mb-8 relative z-10"
-        >
-          <Suspense fallback={null}>
-            <RecentReposPanel
-              repos={recentRepos}
-              onSelectRepo={handleSelectRecentRepo}
-              onRemoveRepo={removeRecentRepo}
-              onClearAll={clearRecentRepos}
-              className="max-w-xl mx-auto"
-            />
-          </Suspense>
-        </motion.div>
-      )}
+      <AnimatePresence mode="popLayout">
+        {!codebase && recentRepos.length > 0 && (
+          <motion.div
+            key="recent-repos"
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -30, scale: 0.9, filter: "blur(8px)" }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="container mx-auto px-4 sm:px-6 -mt-4 sm:-mt-8 mb-6 sm:mb-8 relative z-10"
+          >
+            <Suspense fallback={null}>
+              <RecentReposPanel
+                repos={recentRepos}
+                onSelectRepo={handleSelectRecentRepo}
+                onRemoveRepo={removeRecentRepo}
+                onClearAll={clearRecentRepos}
+                className="max-w-xl mx-auto"
+              />
+            </Suspense>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
-      <ModesSection 
-        activeMode={activeMode} 
-        onSelectMode={handleSelectMode}
-        isConnected={!!codebase}
-      />
-      <ErrorBoundary fallbackMessage="Chat interface encountered an error. Try refreshing.">
-        <ChatInterface 
-          isActive={!!codebase}
-          messages={messages}
-          onSendMessage={handleAskQuestion}
-          isLoading={isLoading}
-          repoName={codebase?.repoName}
-          files={codebase?.files || []}
-          selectedFileFromPalette={selectedFileFromPalette}
-          onClearSelectedFile={() => setSelectedFileFromPalette(undefined)}
-          onShareReport={handleShareReport}
-          isSharing={isSharing}
+      <motion.div
+        layout
+        transition={{ layout: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }}
+      >
+        <ModesSection 
+          activeMode={activeMode} 
+          onSelectMode={handleSelectMode}
+          isConnected={!!codebase}
         />
-      </ErrorBoundary>
+      </motion.div>
+
+      <AnimatePresence mode="wait">
+        {!!codebase && (
+          <motion.div
+            key="chat-panel"
+            initial={{ opacity: 0, y: 60, scale: 0.97, filter: "blur(12px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: 40, scale: 0.97, filter: "blur(12px)" }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <ErrorBoundary fallbackMessage="Chat interface encountered an error. Try refreshing.">
+              <ChatInterface 
+                isActive={!!codebase}
+                messages={messages}
+                onSendMessage={handleAskQuestion}
+                isLoading={isLoading}
+                repoName={codebase?.repoName}
+                files={codebase?.files || []}
+                selectedFileFromPalette={selectedFileFromPalette}
+                onClearSelectedFile={() => setSelectedFileFromPalette(undefined)}
+                onShareReport={handleShareReport}
+                isSharing={isSharing}
+              />
+            </ErrorBoundary>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <SocialProofSection />
       <FeaturesSection />
       <Footer />
