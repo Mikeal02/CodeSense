@@ -124,7 +124,10 @@ const HeroSection = ({
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+      <motion.div
+        className="container mx-auto px-4 sm:px-6 relative z-10"
+        style={{ y: parallaxY2, scale: parallaxScale, opacity: parallaxOpacity }}
+      >
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
           <motion.div
