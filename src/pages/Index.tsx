@@ -64,6 +64,7 @@ const Index = () => {
   const [showPerformance, setShowPerformance] = useState(false);
   const [showCodeReview, setShowCodeReview] = useState(false);
   const [showDepScanner, setShowDepScanner] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   
   const { isDarkMode, toggleTheme } = useTheme();
   const { recentRepos, addRecentRepo, removeRecentRepo, clearRecentRepos } = useRecentRepos();
