@@ -730,7 +730,14 @@
 
 ::view-transition-new(root) {
   z-index: 9999;
-  animation: circularReveal 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: circularReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-new(root) {
+    animation: none;
+  }
 }
 
 @keyframes circularReveal {
@@ -739,6 +746,18 @@
   }
   to {
     clip-path: circle(150% at var(--reveal-x, 50%) var(--reveal-y, 0));
+  }
+}
+
+/* ========== Custom Cursor ========== */
+@media (pointer: fine) {
+  .cursor-none, .cursor-none * {
+    cursor: none !important;
+  }
+}
+@media (pointer: coarse) {
+  .cursor-none, .cursor-none * {
+    cursor: auto !important;
   }
 }
 
