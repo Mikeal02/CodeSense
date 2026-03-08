@@ -43,8 +43,56 @@ const testimonials = [
 const logos = [
   "Google", "Microsoft", "Meta", "Amazon", "Netflix", "Stripe", "Vercel", "GitHub", "Shopify", "Figma",
 ];
+const TestimonialCard = ({ testimonial: t, index: i, isVisible }: { testimonial: typeof testimonials[0]; index: number; isVisible: boolean }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 300, damping: 25 });
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 300, damping: 25 });
 
-const SocialProofSection = () => {
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    x.set((e.clientX - rect.left) / rect.width - 0.5);
+    y.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, y: 50, rotateX: -12, filter: "blur(8px)" }}
+      animate={isVisible
+        ? { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" }
+        : { opacity: 0, y: 50, rotateX: -12, filter: "blur(8px)" }
+      }
+      transition={{ delay: i * 0.14, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => { x.set(0); y.set(0); }}
+      whileHover={{ y: -6, transition: { duration: 0.25 } }}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 1000 }}
+      className="bento-card p-6 sm:p-7 group"
+    >
+      <Quote className="w-5 h-5 text-primary/20 mb-4 group-hover:text-primary/40 transition-colors" />
+      <div className="flex gap-1 mb-4">
+        {[...Array(5)].map((_, j) => (
+          <Star key={j} className="w-3.5 h-3.5 fill-warning text-warning" />
+        ))}
+      </div>
+      <p className="text-sm text-foreground/85 leading-relaxed mb-5">"{t.text}"</p>
+      <div className="flex items-center gap-3 pt-4 border-t border-border/30">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-xs font-bold text-primary-foreground shadow-lg shadow-primary/15">
+          {t.avatar}
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-foreground">{t.name}</p>
+          <p className="text-xs text-muted-foreground">{t.role}</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+
   const { ref: sectionRef, isVisible } = useScrollReveal({ threshold: 0.1 });
   const { ref: statsRef, isVisible: statsVisible } = useScrollReveal({ threshold: 0.2 });
   const { ref: testimonialsRef, isVisible: testimonialsVisible } = useScrollReveal({ threshold: 0.15 });
