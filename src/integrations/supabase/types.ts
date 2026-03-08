@@ -14,7 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      shared_reports: {
+        Row: {
+          active_mode: string | null
+          created_at: string
+          expires_at: string | null
+          file_summary: Json | null
+          id: string
+          messages: Json
+          repo_name: string
+          views: number
+        }
+        Insert: {
+          active_mode?: string | null
+          created_at?: string
+          expires_at?: string | null
+          file_summary?: Json | null
+          id?: string
+          messages?: Json
+          repo_name: string
+          views?: number
+        }
+        Update: {
+          active_mode?: string | null
+          created_at?: string
+          expires_at?: string | null
+          file_summary?: Json | null
+          id?: string
+          messages?: Json
+          repo_name?: string
+          views?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
