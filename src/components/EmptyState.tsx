@@ -11,12 +11,14 @@ interface EmptyStateProps {
   className?: string;
 }
 
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
 const draw = {
   hidden: { pathLength: 0, opacity: 0 },
   visible: (i: number) => ({
     pathLength: 1,
     opacity: 1,
-    transition: { pathLength: { delay: i * 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }, opacity: { delay: i * 0.15, duration: 0.3 } },
+    transition: { pathLength: { delay: i * 0.15, duration: 0.8, ease }, opacity: { delay: i * 0.15, duration: 0.3 } },
   }),
 };
 
