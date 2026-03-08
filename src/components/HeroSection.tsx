@@ -228,10 +228,10 @@ const HeroSection = ({
             ) : (
               <motion.div
                 key="disconnected"
-                initial={{ opacity: 0, y: 40, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -30, scale: 0.9, filter: "blur(10px)" }}
-                transition={{ delay: 0.15, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ delay: 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               >
                 {/* URL form */}
                 <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 sm:gap-3 max-w-2xl mx-auto mb-5 sm:mb-6 px-4 sm:px-0" data-onboarding="hero-input">
