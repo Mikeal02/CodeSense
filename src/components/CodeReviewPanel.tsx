@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   X, Shield, Bug, Zap, Lightbulb, AlertTriangle, ChevronDown, ChevronRight,
   Loader2, FileCode, CheckCircle2, XCircle, AlertCircle, Info, Sparkles,
-  Wand2, Copy, Check, ArrowRight, Code2, Undo2
+  Wand2, Copy, Check, ArrowRight, Code2, Undo2, Download
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
