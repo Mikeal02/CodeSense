@@ -72,6 +72,7 @@ const Index = () => {
   const onboarding = useOnboarding();
   const { shareReport, isSharing } = useShareReport();
   const repoInsights = useRepoInsights();
+  const { sessions, saveSession, updateSession, activeSessionId, setActiveSessionId } = usePersistentSessions();
   const {
     codebase,
     isLoading,
