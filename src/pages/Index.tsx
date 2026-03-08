@@ -62,6 +62,7 @@ const Index = () => {
   const { history: searchHistory, addEntry: addSearchEntry } = useSearchHistory();
   const onboarding = useOnboarding();
   const { shareReport, isSharing } = useShareReport();
+  const repoInsights = useRepoInsights();
   const {
     codebase,
     isLoading,
