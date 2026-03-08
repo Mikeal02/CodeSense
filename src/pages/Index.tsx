@@ -20,6 +20,7 @@ import PerformanceMonitor from "@/components/PerformanceMonitor";
 import StatusBar from "@/components/StatusBar";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TerminalBanner from "@/components/TerminalBanner";
+import OnboardingOverlay from "@/components/OnboardingOverlay";
 import { useCodebaseAnalysis } from "@/hooks/useCodebaseAnalysis";
 import { useRecentRepos, RecentRepo } from "@/hooks/useRecentRepos";
 import { useTheme } from "@/hooks/useTheme";
@@ -29,6 +30,7 @@ import { useConversations } from "@/hooks/useConversations";
 import { useNotifications } from "@/hooks/useNotifications";
 import { usePerformanceMetrics } from "@/hooks/usePerformanceMetrics";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
+import { useOnboarding } from "@/hooks/useOnboarding";
 
 const Index = () => {
   const [showGitHubSelector, setShowGitHubSelector] = useState(false);
@@ -56,6 +58,7 @@ const Index = () => {
   const { conversations, activeConversation, activeConversationId, setActiveConversationId, createConversation, updateConversation, deleteConversation, togglePin, addTag, removeTag, clearAll: clearConversations } = useConversations();
   const { getStats, clearEntries, startTimer, endTimer } = usePerformanceMetrics();
   const { history: searchHistory, addEntry: addSearchEntry } = useSearchHistory();
+  const onboarding = useOnboarding();
   
   const {
     codebase,
@@ -262,6 +265,16 @@ const Index = () => {
         onOpenStats={() => setShowStats(true)}
         onToggleTheme={handleToggleTheme}
         isDarkMode={isDarkMode}
+        onSelectMode={handleSelectMode}
+        activeMode={activeMode}
+        onOpenSettings={() => setShowSettings(true)}
+        onOpenAnalytics={() => setShowAnalytics(true)}
+        onOpenActivityLog={() => setShowActivityLog(true)}
+        onOpenConversations={() => setShowConversations(true)}
+        onOpenDiffView={() => setShowDiffView(true)}
+        onOpenPerformance={() => setShowPerformance(true)}
+        onStartOnboarding={onboarding.restart}
+        isConnected={!!codebase}
       />
 
       <SettingsPanel
@@ -333,6 +346,18 @@ const Index = () => {
         repoName={codebase?.repoName}
         fileCount={codebase?.files.length}
         isConnected={!!codebase}
+      />
+
+      {/* Onboarding Overlay */}
+      <OnboardingOverlay
+        isActive={onboarding.isActive}
+        step={onboarding.step}
+        currentStep={onboarding.currentStep}
+        totalSteps={onboarding.totalSteps}
+        progress={onboarding.progress}
+        onNext={onboarding.next}
+        onPrev={onboarding.prev}
+        onSkip={onboarding.skip}
       />
     </div>
   );

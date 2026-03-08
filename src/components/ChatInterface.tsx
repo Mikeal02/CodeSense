@@ -167,7 +167,7 @@ const ChatInterface = ({
   const isFileViewMode = !!selectedFile;
 
   const chatContent = (
-    <div className={cn(
+    <div data-onboarding="chat-interface" className={cn(
       "glass rounded-2xl border border-border/50 overflow-hidden flex flex-col sm:flex-row",
       isFullscreen && "h-full rounded-none border-0"
     )}>
