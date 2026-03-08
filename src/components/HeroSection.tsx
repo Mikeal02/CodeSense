@@ -104,20 +104,23 @@ const HeroSection = ({
         }}
       />
 
-      {/* Floating accents */}
+      {/* Floating accents with parallax */}
       <motion.div
         className="absolute top-[15%] right-[12%] w-24 h-24 sm:w-40 sm:h-40 border border-primary/[0.06] rounded-2xl pointer-events-none"
-        animate={{ rotate: [0, 90, 180, 270, 360], y: [0, -30, 0] }}
+        style={{ y: parallaxY1 }}
+        animate={{ rotate: [0, 90, 180, 270, 360] }}
         transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
       />
       <motion.div
         className="absolute bottom-[20%] left-[6%] w-16 h-16 sm:w-28 sm:h-28 border border-accent/[0.06] rounded-full pointer-events-none"
+        style={{ y: parallaxY2 }}
         animate={{ rotate: [360, 0], scale: [1, 1.3, 1] }}
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
         className="absolute top-[40%] left-[80%] w-3 h-3 bg-primary/20 rounded-full pointer-events-none"
-        animate={{ y: [0, -20, 0], opacity: [0.3, 0.8, 0.3] }}
+        style={{ y: parallaxY1 }}
+        animate={{ opacity: [0.3, 0.8, 0.3] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
 
