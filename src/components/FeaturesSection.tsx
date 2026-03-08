@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from "framer-motion";
 import { Shield, Zap, Brain, Lock, Code2, Globe, Layers, Cpu, ArrowRight, Sparkles } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import TextReveal from "./TextReveal";
 
 const features = [
   { icon: Brain, title: "AI-Powered Analysis", description: "Deep understanding using advanced language models with multi-modal reasoning across your entire codebase.", accent: "primary", span: "col-span-1 sm:col-span-2 lg:col-span-2", size: "large" },
