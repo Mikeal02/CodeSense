@@ -269,6 +269,18 @@ const ChatInterface = ({
                 >
                   <Download className="w-4 h-4" />
                 </Button>
+                {onShareReport && messages.length > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onShareReport}
+                    disabled={isSharing}
+                    className="text-muted-foreground hover:text-foreground hover:text-primary"
+                    title="Share report link"
+                  >
+                    {isSharing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />}
+                  </Button>
+                )}
                 <div className="w-px h-4 bg-border mx-1" />
                 <Button
                   variant="ghost"
