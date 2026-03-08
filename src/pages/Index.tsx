@@ -155,8 +155,8 @@ const Index = () => {
     setTimeout(() => endTimer(timerId), 100);
   };
 
-  const handleToggleTheme = () => {
-    toggleTheme();
+  const handleToggleTheme = (e?: React.MouseEvent | MouseEvent) => {
+    toggleTheme(e);
     addActivity("theme_changed", `Switched to ${isDarkMode ? 'light' : 'dark'} mode`);
   };
 
