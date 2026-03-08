@@ -348,81 +348,83 @@ const Index = () => {
         isConnected={!!codebase}
       />
 
-      <SettingsPanel
-        isOpen={showSettings}
-        onClose={() => setShowSettings(false)}
-        settings={settings}
-        onUpdateSetting={updateSetting}
-        onResetSettings={resetSettings}
-      />
+      <Suspense fallback={null}>
+        <SettingsPanel
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+          settings={settings}
+          onUpdateSetting={updateSetting}
+          onResetSettings={resetSettings}
+        />
 
-      <NotificationCenter
-        isOpen={showNotifications}
-        onClose={() => setShowNotifications(false)}
-        notifications={notifications}
-        unreadCount={unreadCount}
-        onMarkAsRead={markAsRead}
-        onMarkAllAsRead={markAllAsRead}
-        onRemove={removeNotification}
-        onClearAll={clearNotifications}
-      />
+        <NotificationCenter
+          isOpen={showNotifications}
+          onClose={() => setShowNotifications(false)}
+          notifications={notifications}
+          unreadCount={unreadCount}
+          onMarkAsRead={markAsRead}
+          onMarkAllAsRead={markAllAsRead}
+          onRemove={removeNotification}
+          onClearAll={clearNotifications}
+        />
 
-      <ActivityTimeline
-        isOpen={showActivityLog}
-        onClose={() => setShowActivityLog(false)}
-        activities={activities}
-        onClear={clearActivities}
-      />
+        <ActivityTimeline
+          isOpen={showActivityLog}
+          onClose={() => setShowActivityLog(false)}
+          activities={activities}
+          onClear={clearActivities}
+        />
 
-      <ConversationManager
-        isOpen={showConversations}
-        onClose={() => setShowConversations(false)}
-        conversations={conversations}
-        activeId={activeConversationId}
-        onSelect={setActiveConversationId}
-        onDelete={deleteConversation}
-        onTogglePin={togglePin}
-        onRename={(id, name) => updateConversation(id, { name })}
-        onAddTag={addTag}
-        onRemoveTag={removeTag}
-        onClearAll={clearConversations}
-        onNew={() => {
-          if (codebase) {
-            createConversation(codebase.repoName, activeMode);
-          }
-        }}
-      />
+        <ConversationManager
+          isOpen={showConversations}
+          onClose={() => setShowConversations(false)}
+          conversations={conversations}
+          activeId={activeConversationId}
+          onSelect={setActiveConversationId}
+          onDelete={deleteConversation}
+          onTogglePin={togglePin}
+          onRename={(id, name) => updateConversation(id, { name })}
+          onAddTag={addTag}
+          onRemoveTag={removeTag}
+          onClearAll={clearConversations}
+          onNew={() => {
+            if (codebase) {
+              createConversation(codebase.repoName, activeMode);
+            }
+          }}
+        />
 
-      <AnalyticsDashboard
-        isOpen={showAnalytics}
-        onClose={() => setShowAnalytics(false)}
-        files={codebase?.files || []}
-      />
+        <AnalyticsDashboard
+          isOpen={showAnalytics}
+          onClose={() => setShowAnalytics(false)}
+          files={codebase?.files || []}
+        />
 
-      <FileDiffView
-        isOpen={showDiffView}
-        onClose={() => setShowDiffView(false)}
-        files={codebase?.files || []}
-      />
+        <FileDiffView
+          isOpen={showDiffView}
+          onClose={() => setShowDiffView(false)}
+          files={codebase?.files || []}
+        />
 
-      <PerformanceMonitor
-        isOpen={showPerformance}
-        onClose={() => setShowPerformance(false)}
-        stats={getStats()}
-        onClear={clearEntries}
-      />
+        <PerformanceMonitor
+          isOpen={showPerformance}
+          onClose={() => setShowPerformance(false)}
+          stats={getStats()}
+          onClear={clearEntries}
+        />
 
-      <CodeReviewPanel
-        isOpen={showCodeReview}
-        onClose={() => setShowCodeReview(false)}
-        files={codebase?.files || []}
-      />
+        <CodeReviewPanel
+          isOpen={showCodeReview}
+          onClose={() => setShowCodeReview(false)}
+          files={codebase?.files || []}
+        />
 
-      <DependencyScanner
-        isOpen={showDepScanner}
-        onClose={() => setShowDepScanner(false)}
-        files={codebase?.files || []}
-      />
+        <DependencyScanner
+          isOpen={showDepScanner}
+          onClose={() => setShowDepScanner(false)}
+          files={codebase?.files || []}
+        />
+      </Suspense>
 
       <FloatingDock
         isConnected={!!codebase}
