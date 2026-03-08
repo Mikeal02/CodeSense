@@ -95,6 +95,10 @@ const Index = () => {
   // Track repos and persist sessions when connected
   useEffect(() => {
     if (codebase) {
+      // Trigger confetti
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3000);
+
       addRecentRepo({
         name: codebase.repoName,
         url: codebase.source === "github" ? `https://github.com/${codebase.repoName}` : "",
