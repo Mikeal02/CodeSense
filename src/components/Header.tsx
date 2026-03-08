@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code2, Github, Sparkles, Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Zap, Menu, X, Shield, FileSearch } from "lucide-react";
+import { Code2, Github, Sparkles, Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Zap, Menu, Shield, FileSearch } from "lucide-react";
 import { Button } from "./ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
 import RateLimitStatus from "./RateLimitStatus";
 import ThemeToggle from "./ThemeToggle";
 import MagneticButton from "./MagneticButton";
@@ -202,68 +203,64 @@ const Header = ({
             {onToggleTheme && (
               <ThemeToggle isDarkMode={isDarkMode} onToggle={onToggleTheme} size="sm" />
             )}
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              <AnimatePresence mode="wait">
-                <motion.div key={mobileMenuOpen ? "close" : "menu"} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
-                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                </motion.div>
-              </AnimatePresence>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => setMobileMenuOpen(true)}>
+              <Menu className="w-5 h-5" />
             </Button>
           </div>
         </div>
       </motion.header>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: -10, filter: "blur(8px)" }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed top-14 sm:top-16 left-0 right-0 z-40 bg-background/85 backdrop-blur-2xl border-b border-border/30 lg:hidden"
-          >
-            <div className="container mx-auto px-4 py-4 space-y-3">
-              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                {visibleTools.map((tool, i) => (
-                  <motion.button
-                    key={tool.label}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.04 }}
-                    onClick={() => { tool.onClick?.(); setMobileMenuOpen(false); }}
-                    className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-secondary/20 hover:bg-secondary/40 border border-border/15 transition-all active:scale-95"
-                  >
-                    <tool.icon className="w-5 h-5 text-primary" />
-                    <span className="text-[10px] text-muted-foreground">{tool.label}</span>
-                  </motion.button>
-                ))}
-                <motion.button
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: visibleTools.length * 0.04 }}
-                  onClick={() => { onOpenSettings?.(); setMobileMenuOpen(false); }}
+      {/* Mobile Slide-out Menu */}
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetContent side="right" className="w-[280px] sm:w-[320px] bg-background/95 backdrop-blur-2xl p-0">
+          <SheetHeader className="p-5 pb-3 border-b border-border/30">
+            <SheetTitle className="flex items-center gap-2.5 text-sm font-bold">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary via-primary to-accent flex items-center justify-center">
+                <Code2 className="w-3.5 h-3.5 text-primary-foreground" />
+              </div>
+              CodeSense
+            </SheetTitle>
+          </SheetHeader>
+
+          <div className="p-4 space-y-4 overflow-y-auto max-h-[calc(100vh-80px)]">
+            {/* Tool Grid */}
+            <div className="grid grid-cols-3 gap-2">
+              {visibleTools.map((tool) => (
+                <button
+                  key={tool.label}
+                  onClick={() => { tool.onClick?.(); setMobileMenuOpen(false); }}
                   className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-secondary/20 hover:bg-secondary/40 border border-border/15 transition-all active:scale-95"
                 >
-                  <Settings className="w-5 h-5 text-primary" />
-                  <span className="text-[10px] text-muted-foreground">Settings</span>
-                </motion.button>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => { onConnectRepo(); setMobileMenuOpen(false); }} className="flex-1 gap-2 rounded-xl">
-                  <Github className="w-4 h-4" />
-                  Connect Repo
-                </Button>
-                <Button size="sm" className="flex-1 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl">
-                  <Sparkles className="w-4 h-4" />
-                  Get Started
-                </Button>
-              </div>
-              <RateLimitStatus githubToken={githubToken} />
+                  <tool.icon className="w-5 h-5 text-primary" />
+                  <span className="text-[10px] text-muted-foreground">{tool.label}</span>
+                </button>
+              ))}
+              <button
+                onClick={() => { onOpenSettings?.(); setMobileMenuOpen(false); }}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-secondary/20 hover:bg-secondary/40 border border-border/15 transition-all active:scale-95"
+              >
+                <Settings className="w-5 h-5 text-primary" />
+                <span className="text-[10px] text-muted-foreground">Settings</span>
+              </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+            {/* Actions */}
+            <div className="space-y-2">
+              <Button variant="outline" size="sm" onClick={() => { onConnectRepo(); setMobileMenuOpen(false); }} className="w-full gap-2 rounded-xl justify-start">
+                <Github className="w-4 h-4" />
+                Connect Repo
+              </Button>
+              <Button size="sm" className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl justify-start">
+                <Sparkles className="w-4 h-4" />
+                Get Started
+              </Button>
+            </div>
+
+            {/* Rate Limit */}
+            <RateLimitStatus githubToken={githubToken} />
+          </div>
+        </SheetContent>
+      </Sheet>
     </>
   );
 };
