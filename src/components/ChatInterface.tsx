@@ -361,21 +361,23 @@ const ChatInterface = ({
             <motion.div
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex gap-3"
+              className="flex gap-3 items-start"
             >
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/10">
+              <motion.div
+                className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/10"
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
                 <Bot className="w-3.5 h-3.5 text-primary-foreground" />
-              </div>
+              </motion.div>
               <div className="px-4 py-3 rounded-2xl rounded-tl-md bg-secondary/30 border border-border/20">
-                <div className="flex gap-1.5">
-                  {[0, 1, 2].map(i => (
-                    <motion.div
-                      key={i}
-                      className="w-2 h-2 rounded-full bg-primary/50"
-                      animate={{ y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
-                      transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15 }}
-                    />
-                  ))}
+                <div className="flex items-center gap-2">
+                  <div className="typing-wave flex gap-[3px]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/60 inline-block" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/60 inline-block" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/60 inline-block" />
+                  </div>
+                  <span className="text-[10px] text-muted-foreground/40 font-mono">analyzing...</span>
                 </div>
               </div>
             </motion.div>
