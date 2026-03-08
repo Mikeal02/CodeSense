@@ -227,6 +227,7 @@ const ExportReportModal = ({
                 { id: "markdown", label: "Markdown", icon: FileText },
                 { id: "json", label: "JSON", icon: FileJson },
                 { id: "text", label: "Plain Text", icon: FileCode },
+                { id: "pdf", label: "PDF", icon: Printer },
               ].map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}

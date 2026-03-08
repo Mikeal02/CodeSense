@@ -56,6 +56,8 @@ const DEFAULT_SETTINGS: AppSettings = {
   showComplexityWarnings: true,
   deepAnalysis: false,
   
+  soundEffects: false,
+  
   sendAnalytics: false,
   persistHistory: true,
 };
