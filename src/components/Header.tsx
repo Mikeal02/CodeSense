@@ -266,13 +266,26 @@ const Header = ({
 
             {/* Actions */}
             <div className="space-y-2">
+              {user ? (
+                <>
+                  <div className="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground">
+                    <User className="w-3.5 h-3.5" />
+                    <span className="truncate">{user.email}</span>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => { handleSignOut(); setMobileMenuOpen(false); }} className="w-full gap-2 rounded-xl justify-start">
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <Button variant="outline" size="sm" onClick={() => { navigate("/auth"); setMobileMenuOpen(false); }} className="w-full gap-2 rounded-xl justify-start">
+                  <LogIn className="w-4 h-4" />
+                  Sign In
+                </Button>
+              )}
               <Button variant="outline" size="sm" onClick={() => { onConnectRepo(); setMobileMenuOpen(false); }} className="w-full gap-2 rounded-xl justify-start">
                 <Github className="w-4 h-4" />
                 Connect Repo
-              </Button>
-              <Button size="sm" className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl justify-start">
-                <Sparkles className="w-4 h-4" />
-                Get Started
               </Button>
             </div>
 
