@@ -116,8 +116,6 @@ const SocialProofSection = () => {
           >
             <TextReveal delay={0.05}>What developers say</TextReveal>
           </motion.p>
-            What developers say
-          </motion.p>
           <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-4">
             {testimonials.map((t, i) => (
               <motion.div
