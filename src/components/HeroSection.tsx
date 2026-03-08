@@ -183,7 +183,7 @@ const HeroSection = ({
                 transition={{ delay: 0.4 }}
               >
                 {/* URL form */}
-                <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-xl mx-auto mb-4 sm:mb-6 px-4 sm:px-0">
+                <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-xl mx-auto mb-4 sm:mb-6 px-4 sm:px-0" data-onboarding="hero-input">
                   <div className="flex-1 relative">
                     <Github className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                     <Input
