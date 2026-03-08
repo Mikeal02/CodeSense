@@ -1,5 +1,5 @@
-import { motion, useMotionValue, animate } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { motion, useMotionValue, animate, useSpring, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { Star, Users, GitBranch, Zap, TrendingUp, Award, Quote, ArrowRight } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import TextReveal from "./TextReveal";
@@ -43,6 +43,54 @@ const testimonials = [
 const logos = [
   "Google", "Microsoft", "Meta", "Amazon", "Netflix", "Stripe", "Vercel", "GitHub", "Shopify", "Figma",
 ];
+const TestimonialCard = ({ testimonial: t, index: i, isVisible }: { testimonial: typeof testimonials[0]; index: number; isVisible: boolean }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 300, damping: 25 });
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 300, damping: 25 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    x.set((e.clientX - rect.left) / rect.width - 0.5);
+    y.set((e.clientY - rect.top) / rect.height - 0.5);
+  };
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, y: 50, rotateX: -12, filter: "blur(8px)" }}
+      animate={isVisible
+        ? { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" }
+        : { opacity: 0, y: 50, rotateX: -12, filter: "blur(8px)" }
+      }
+      transition={{ delay: i * 0.14, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => { x.set(0); y.set(0); }}
+      whileHover={{ y: -6, transition: { duration: 0.25 } }}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 1000 }}
+      className="bento-card p-6 sm:p-7 group"
+    >
+      <Quote className="w-5 h-5 text-primary/20 mb-4 group-hover:text-primary/40 transition-colors" />
+      <div className="flex gap-1 mb-4">
+        {[...Array(5)].map((_, j) => (
+          <Star key={j} className="w-3.5 h-3.5 fill-warning text-warning" />
+        ))}
+      </div>
+      <p className="text-sm text-foreground/85 leading-relaxed mb-5">"{t.text}"</p>
+      <div className="flex items-center gap-3 pt-4 border-t border-border/30">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-xs font-bold text-primary-foreground shadow-lg shadow-primary/15">
+          {t.avatar}
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-foreground">{t.name}</p>
+          <p className="text-xs text-muted-foreground">{t.role}</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 const SocialProofSection = () => {
   const { ref: sectionRef, isVisible } = useScrollReveal({ threshold: 0.1 });
@@ -118,40 +166,7 @@ const SocialProofSection = () => {
           </motion.p>
           <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-4">
             {testimonials.map((t, i) => (
-              <motion.div
-                key={t.name}
-                initial={{ opacity: 0, y: 40, filter: "blur(6px)" }}
-                animate={testimonialsVisible 
-                  ? { opacity: 1, y: 0, filter: "blur(0px)" } 
-                  : { opacity: 0, y: 40, filter: "blur(6px)" }
-                }
-                transition={{ delay: i * 0.12, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                className="bento-card p-6 sm:p-7 group"
-              >
-                {/* Quote icon */}
-                <Quote className="w-5 h-5 text-primary/20 mb-4 group-hover:text-primary/40 transition-colors" />
-
-                {/* Stars */}
-                <div className="flex gap-1 mb-4">
-                  {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="w-3.5 h-3.5 fill-warning text-warning" />
-                  ))}
-                </div>
-
-                <p className="text-sm text-foreground/85 leading-relaxed mb-5">
-                  "{t.text}"
-                </p>
-
-                <div className="flex items-center gap-3 pt-4 border-t border-border/30">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-xs font-bold text-primary-foreground shadow-lg shadow-primary/15">
-                    {t.avatar}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}</p>
-                  </div>
-                </div>
-              </motion.div>
+              <TestimonialCard key={t.name} testimonial={t} index={i} isVisible={testimonialsVisible} />
             ))}
           </div>
         </div>

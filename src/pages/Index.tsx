@@ -18,6 +18,7 @@ import CursorGlow from "@/components/CursorGlow";
 import ScrollProgress from "@/components/ScrollProgress";
 import CustomCursor from "@/components/CustomCursor";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import ConfettiExplosion from "@/components/ConfettiExplosion";
 import { useCodebaseAnalysis } from "@/hooks/useCodebaseAnalysis";
 import { useRecentRepos, RecentRepo } from "@/hooks/useRecentRepos";
 import { useTheme } from "@/hooks/useTheme";
@@ -63,6 +64,7 @@ const Index = () => {
   const [showPerformance, setShowPerformance] = useState(false);
   const [showCodeReview, setShowCodeReview] = useState(false);
   const [showDepScanner, setShowDepScanner] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   
   const { isDarkMode, toggleTheme } = useTheme();
   const { recentRepos, addRecentRepo, removeRecentRepo, clearRecentRepos } = useRecentRepos();
@@ -93,6 +95,10 @@ const Index = () => {
   // Track repos and persist sessions when connected
   useEffect(() => {
     if (codebase) {
+      // Trigger confetti
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3000);
+
       addRecentRepo({
         name: codebase.repoName,
         url: codebase.source === "github" ? `https://github.com/${codebase.repoName}` : "",
@@ -211,6 +217,7 @@ const Index = () => {
       <CustomCursor />
       <CursorGlow />
       <ScrollProgress />
+      <ConfettiExplosion active={showConfetti} />
 
       <Header
         onConnectRepo={uploadFolder} 
