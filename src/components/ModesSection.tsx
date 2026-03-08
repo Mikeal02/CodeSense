@@ -51,11 +51,10 @@ const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionPro
     if (mode) onSelectMode(mode.id);
   };
 
-  // Register and cleanup keyboard handler
-  useState(() => {
+  useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  });
+  }, [isConnected]);
 
   return (
     <section ref={sectionRef} className="py-14 sm:py-20 lg:py-24 relative" data-onboarding="modes-section">
