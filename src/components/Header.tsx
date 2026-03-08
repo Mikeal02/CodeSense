@@ -28,7 +28,7 @@ const Header = ({
   onConnectRepo, githubToken, isDarkMode = true, onToggleTheme,
   unreadNotifications = 0, onOpenNotifications, onOpenSettings,
   onOpenActivityLog, onOpenConversations, onOpenAnalytics,
-  onOpenDiffView, onOpenPerformance, isConnected
+  onOpenDiffView, onOpenPerformance, onOpenCodeReview, onOpenDepScanner, isConnected
 }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
