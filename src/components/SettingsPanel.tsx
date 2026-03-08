@@ -259,6 +259,12 @@ const SettingsPanel = ({
                         checked={settings.autoSaveConversations}
                         onChange={(v) => onUpdateSetting("autoSaveConversations", v)}
                       />
+                      <SettingToggle
+                        label="Sound Effects"
+                        description="Play subtle audio cues on key actions"
+                        checked={settings.soundEffects}
+                        onChange={(v) => onUpdateSetting("soundEffects", v)}
+                      />
                     </div>
                   )}
 
