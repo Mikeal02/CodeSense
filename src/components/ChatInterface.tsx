@@ -172,7 +172,7 @@ const ChatInterface = ({
               </button>
             )}
           </div>
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden" style={{ minHeight: 0 }}>
             <FileTreeView files={files} onFileSelect={setSelectedFile} selectedFile={selectedFile} />
           </div>
         </div>

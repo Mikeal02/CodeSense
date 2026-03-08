@@ -246,7 +246,7 @@ const FileTreeView = ({ files, onFileSelect, selectedFile }: FileTreeViewProps) 
       </div>
 
       {/* Virtualized Tree */}
-      <div ref={parentRef} className="flex-1 overflow-y-auto px-1">
+      <div ref={parentRef} className="flex-1 overflow-y-auto px-1" style={{ minHeight: 0 }}>
         {filteredFiles.length === 0 ? (
           <div className="p-4 text-center text-muted-foreground/40 text-[11px]">
             No files match "{searchQuery}"
