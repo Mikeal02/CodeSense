@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { Shield, Zap, Brain, Lock, Code2, Globe, Layers, Cpu, ArrowRight } from "lucide-react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const features = [
   { icon: Brain, title: "AI-Powered Analysis", description: "Deep understanding of your codebase using advanced language models with multi-modal reasoning.", accent: "hsl(var(--primary))" },
@@ -13,7 +14,7 @@ const features = [
   { icon: Cpu, title: "Performance Monitoring", description: "Track analysis speed, operation metrics, and optimize your workflow.", accent: "hsl(var(--warning))" },
 ];
 
-const TiltFeatureCard = ({ feature, index }: { feature: typeof features[0]; index: number }) => {
+const TiltFeatureCard = ({ feature, index, sectionVisible }: { feature: typeof features[0]; index: number; sectionVisible: boolean }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
 
@@ -34,10 +35,12 @@ const TiltFeatureCard = ({ feature, index }: { feature: typeof features[0]; inde
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.07 }}
+      initial={{ opacity: 0, y: 40, filter: "blur(6px)" }}
+      animate={sectionVisible 
+        ? { opacity: 1, y: 0, filter: "blur(0px)" } 
+        : { opacity: 0, y: 40, filter: "blur(6px)" }
+      }
+      transition={{ duration: 0.6, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => { x.set(0); y.set(0); setHovered(false); }}
@@ -47,7 +50,7 @@ const TiltFeatureCard = ({ feature, index }: { feature: typeof features[0]; inde
       <div className={`
         relative p-5 sm:p-6 rounded-2xl border transition-all duration-300 overflow-hidden
         ${hovered
-          ? "border-primary/40 bg-card/70 shadow-xl"
+          ? "border-primary/40 bg-card/70 shadow-xl shadow-primary/5"
           : "border-border/50 bg-card/30"
         }
       `}>
@@ -60,6 +63,21 @@ const TiltFeatureCard = ({ feature, index }: { feature: typeof features[0]; inde
             }}
           />
         )}
+
+        {/* Animated border on hover */}
+        <motion.div
+          className="absolute inset-0 rounded-2xl pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: hovered ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+          style={{
+            background: `conic-gradient(from 180deg, transparent 60%, ${feature.accent}30, transparent 100%)`,
+            mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+            maskComposite: "exclude",
+            WebkitMaskComposite: "xor",
+            padding: "1px",
+          }}
+        />
 
         {/* Icon */}
         <div
@@ -96,8 +114,10 @@ const TiltFeatureCard = ({ feature, index }: { feature: typeof features[0]; inde
 };
 
 const FeaturesSection = () => {
+  const { ref, isVisible } = useScrollReveal({ threshold: 0.08 });
+
   return (
-    <section className="py-16 sm:py-20 lg:py-28 border-t border-border/50 relative overflow-hidden">
+    <section ref={ref} className="py-16 sm:py-20 lg:py-28 border-t border-border/50 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.02] to-transparent pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-32 bg-gradient-to-b from-transparent to-border/50 pointer-events-none" />
@@ -106,14 +126,14 @@ const FeaturesSection = () => {
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-12 sm:mb-16"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
+            animate={isVisible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+            transition={{ delay: 0.1 }}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/50 bg-secondary/30 mb-4 text-xs text-muted-foreground"
           >
             <Layers className="w-3.5 h-3.5 text-primary" />
@@ -128,15 +148,15 @@ const FeaturesSection = () => {
         {/* Cards grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {features.map((feature, i) => (
-            <TiltFeatureCard key={feature.title} feature={feature} index={i} />
+            <TiltFeatureCard key={feature.title} feature={feature} index={i} sectionVisible={isVisible} />
           ))}
         </div>
 
         {/* Bottom CTA strip */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
           className="mt-12 sm:mt-16 text-center"
         >
           <div className="inline-flex items-center gap-3 px-5 py-3 rounded-xl glass border border-primary/20 text-sm text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all cursor-pointer group">

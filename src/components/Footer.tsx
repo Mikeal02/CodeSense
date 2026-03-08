@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Code2, Github, Twitter, Heart, Mail, Zap, ArrowUpRight, Terminal } from "lucide-react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const Footer = () => {
   const [time, setTime] = useState(new Date());
+  const { ref, isVisible } = useScrollReveal({ threshold: 0.1 });
 
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
@@ -22,9 +24,10 @@ const Footer = () => {
 
   return (
     <motion.footer
+      ref={ref}
       initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
+      animate={isVisible ? { opacity: 1 } : { opacity: 0 }}
+      transition={{ duration: 0.8 }}
       className="relative border-t border-border/50 overflow-hidden"
     >
       {/* Top gradient edge */}
@@ -37,7 +40,12 @@ const Footer = () => {
         {/* Main grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10 mb-12 sm:mb-14">
           {/* Brand */}
-          <div className="sm:col-span-2">
+          <motion.div 
+            className="sm:col-span-2"
+            initial={{ opacity: 0, x: -20 }}
+            animate={isVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+          >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/20">
                 <Code2 className="w-5 h-5 text-primary-foreground" />
@@ -56,10 +64,14 @@ const Footer = () => {
               <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
               All systems operational
             </div>
-          </div>
+          </motion.div>
 
           {/* Features */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
             <h4 className="font-semibold mb-4 text-xs uppercase tracking-widest text-muted-foreground">Features</h4>
             <ul className="space-y-2.5">
               {links.Features.map((item) => (
@@ -71,10 +83,14 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Resources */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          >
             <h4 className="font-semibold mb-4 text-xs uppercase tracking-widest text-muted-foreground">Resources</h4>
             <ul className="space-y-2.5">
               {links.Resources.map((item) => (
@@ -86,10 +102,14 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Community */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+          >
             <h4 className="font-semibold mb-4 text-xs uppercase tracking-widest text-muted-foreground">Community</h4>
             <ul className="space-y-2.5">
               {links.Community.map(({ label, icon: Icon }) => (
@@ -107,14 +127,14 @@ const Footer = () => {
               <Terminal className="w-3.5 h-3.5 text-primary/50" />
               <span>{time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* CTA Banner */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
           className="mb-10 p-6 sm:p-8 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 text-center relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_hsl(var(--primary)/0.08)_0%,_transparent_70%)] pointer-events-none" />
