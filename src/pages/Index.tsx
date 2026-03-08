@@ -24,6 +24,9 @@ import FloatingDock from "@/components/FloatingDock";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TerminalBanner from "@/components/TerminalBanner";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
+import CursorGlow from "@/components/CursorGlow";
+import ScrollProgress from "@/components/ScrollProgress";
+import CustomCursor from "@/components/CustomCursor";
 import { useCodebaseAnalysis } from "@/hooks/useCodebaseAnalysis";
 import { useRecentRepos, RecentRepo } from "@/hooks/useRecentRepos";
 import { useTheme } from "@/hooks/useTheme";
@@ -178,8 +181,13 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background noise-overlay pb-7">
-      <Header 
+    <div className="min-h-screen bg-background noise-overlay pb-7 cursor-none lg:cursor-none">
+      {/* Elite effects */}
+      <CustomCursor />
+      <CursorGlow />
+      <ScrollProgress />
+
+      <Header
         onConnectRepo={uploadFolder} 
         githubToken={githubToken}
         isDarkMode={isDarkMode}

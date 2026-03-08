@@ -2,7 +2,7 @@ import { ArrowRight, FolderUp, Github, Zap, Loader2, User, Key, Check, Terminal,
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useState, useRef } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, useScroll } from "framer-motion";
 import ParticleCanvas from "./ParticleCanvas";
 import TypewriterText from "./TypewriterText";
 import RepoHealthScore from "./RepoHealthScore";
@@ -55,6 +55,16 @@ const HeroSection = ({
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
+  // Parallax scroll
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+  const parallaxY1 = useTransform(scrollYProgress, [0, 1], [0, -120]);
+  const parallaxY2 = useTransform(scrollYProgress, [0, 1], [0, -60]);
+  const parallaxScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
+  const parallaxOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (repoUrl.trim() && !isLoading) onSubmitRepo(repoUrl);
@@ -94,24 +104,30 @@ const HeroSection = ({
         }}
       />
 
-      {/* Floating accents */}
+      {/* Floating accents with parallax */}
       <motion.div
         className="absolute top-[15%] right-[12%] w-24 h-24 sm:w-40 sm:h-40 border border-primary/[0.06] rounded-2xl pointer-events-none"
-        animate={{ rotate: [0, 90, 180, 270, 360], y: [0, -30, 0] }}
+        style={{ y: parallaxY1 }}
+        animate={{ rotate: [0, 90, 180, 270, 360] }}
         transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
       />
       <motion.div
         className="absolute bottom-[20%] left-[6%] w-16 h-16 sm:w-28 sm:h-28 border border-accent/[0.06] rounded-full pointer-events-none"
+        style={{ y: parallaxY2 }}
         animate={{ rotate: [360, 0], scale: [1, 1.3, 1] }}
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
         className="absolute top-[40%] left-[80%] w-3 h-3 bg-primary/20 rounded-full pointer-events-none"
-        animate={{ y: [0, -20, 0], opacity: [0.3, 0.8, 0.3] }}
+        style={{ y: parallaxY1 }}
+        animate={{ opacity: [0.3, 0.8, 0.3] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+      <motion.div
+        className="container mx-auto px-4 sm:px-6 relative z-10"
+        style={{ y: parallaxY2, scale: parallaxScale, opacity: parallaxOpacity }}
+      >
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
           <motion.div
@@ -340,7 +356,7 @@ const HeroSection = ({
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };
