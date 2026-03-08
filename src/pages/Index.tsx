@@ -217,6 +217,7 @@ const Index = () => {
           githubToken={githubToken}
           onUpdateGithubToken={updateGithubToken}
           files={codebase?.files}
+          repoInsights={repoInsights}
         />
       </motion.div>
       
