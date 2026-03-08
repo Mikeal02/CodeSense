@@ -388,6 +388,17 @@ const CodeReviewPanel = ({ isOpen, onClose, files }: CodeReviewPanelProps) => {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {totalAppliedCount > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleExportPatch}
+                className="gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Export Patch ({totalAppliedCount})
+              </Button>
+            )}
             {codeFiles.length > 0 && (
               <Button
                 size="sm"
