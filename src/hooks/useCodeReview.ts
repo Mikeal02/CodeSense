@@ -11,6 +11,8 @@ export interface CodeReviewIssue {
   title: string;
   description: string;
   suggestion?: string;
+  beforeCode?: string;
+  afterCode?: string;
 }
 
 export interface CodeReviewResult {

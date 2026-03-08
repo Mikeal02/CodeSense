@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, Shield, Bug, Zap, Lightbulb, AlertTriangle, ChevronDown, ChevronRight,
-  Loader2, FileCode, CheckCircle2, XCircle, AlertCircle, Info, Sparkles
+  Loader2, FileCode, CheckCircle2, XCircle, AlertCircle, Info, Sparkles,
+  Wand2, Copy, Check, ArrowRight, Code2, Undo2
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { CodeReviewResult, CodeReviewIssue, useCodeReview } from "@/hooks/useCodeReview";
 import { ScrollArea } from "./ui/scroll-area";
+import { toast } from "sonner";
 
 interface CodeReviewPanelProps {
   isOpen: boolean;
@@ -33,7 +35,7 @@ const ScoreGauge = ({ score }: { score: number }) => {
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
-  const color = score >= 80 ? "hsl(var(--success))" : score >= 60 ? "hsl(var(--warning))" : "hsl(var(--destructive))";
+  const color = score >= 80 ? "hsl(142 71% 45%)" : score >= 60 ? "hsl(48 96% 53%)" : "hsl(0 84% 60%)";
   const grade = score >= 90 ? "A+" : score >= 80 ? "A" : score >= 70 ? "B" : score >= 60 ? "C" : score >= 50 ? "D" : "F";
 
   return (
@@ -63,37 +65,108 @@ const ScoreGauge = ({ score }: { score: number }) => {
   );
 };
 
-const IssueCard = ({ issue, index }: { issue: CodeReviewIssue; index: number }) => {
+const DiffView = ({ beforeCode, afterCode }: { beforeCode: string; afterCode: string }) => {
+  const beforeLines = beforeCode.split("\n");
+  const afterLines = afterCode.split("\n");
+
+  return (
+    <div className="rounded-lg border border-border overflow-hidden text-xs font-mono">
+      {/* Before */}
+      <div className="bg-red-500/5 border-b border-border">
+        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border/50">
+          <div className="w-2 h-2 rounded-full bg-red-400" />
+          <span className="text-[10px] font-sans font-medium text-red-400">Before</span>
+        </div>
+        <div className="p-2 overflow-x-auto">
+          {beforeLines.map((line, i) => (
+            <div key={i} className="flex">
+              <span className="w-6 text-right pr-2 text-muted-foreground/40 select-none shrink-0">{i + 1}</span>
+              <span className="text-red-300/80 whitespace-pre">{line}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* After */}
+      <div className="bg-green-500/5">
+        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border/50">
+          <div className="w-2 h-2 rounded-full bg-green-400" />
+          <span className="text-[10px] font-sans font-medium text-green-400">After (Fixed)</span>
+        </div>
+        <div className="p-2 overflow-x-auto">
+          {afterLines.map((line, i) => (
+            <div key={i} className="flex">
+              <span className="w-6 text-right pr-2 text-muted-foreground/40 select-none shrink-0">{i + 1}</span>
+              <span className="text-green-300/80 whitespace-pre">{line}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const IssueCard = ({
+  issue,
+  index,
+  appliedFixes,
+  onApplyFix,
+  onUndoFix,
+  onCopyFix,
+}: {
+  issue: CodeReviewIssue;
+  index: number;
+  appliedFixes: Set<number>;
+  onApplyFix: (idx: number) => void;
+  onUndoFix: (idx: number) => void;
+  onCopyFix: (code: string) => void;
+}) => {
   const [expanded, setExpanded] = useState(false);
   const cat = categoryConfig[issue.category];
   const sev = severityConfig[issue.severity];
   const CatIcon = cat.icon;
-  const SevIcon = sev.icon;
+  const hasFix = !!(issue.beforeCode && issue.afterCode);
+  const isApplied = appliedFixes.has(index);
 
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.05 }}
-      className={cn("border rounded-lg overflow-hidden", cat.border)}
+      className={cn(
+        "border rounded-lg overflow-hidden transition-all",
+        isApplied ? "border-green-500/30 bg-green-500/5" : cat.border
+      )}
     >
       <button
         onClick={() => setExpanded(!expanded)}
-        className={cn("w-full flex items-center gap-3 p-3 text-left hover:bg-muted/30 transition-colors")}
+        className="w-full flex items-center gap-3 p-3 text-left hover:bg-muted/30 transition-colors"
       >
-        <CatIcon className={cn("w-4 h-4 shrink-0", cat.color)} />
+        {isApplied ? (
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-green-400" />
+        ) : (
+          <CatIcon className={cn("w-4 h-4 shrink-0", cat.color)} />
+        )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-foreground truncate">{issue.title}</span>
+            <span className={cn("text-sm font-medium truncate", isApplied ? "text-green-400 line-through opacity-70" : "text-foreground")}>
+              {issue.title}
+            </span>
             {issue.line && (
               <span className="text-xs text-muted-foreground font-mono shrink-0">L{issue.line}</span>
             )}
           </div>
         </div>
-        <span className={cn("text-[10px] font-medium uppercase px-1.5 py-0.5 rounded", sev.bg, sev.color)}>
-          {issue.severity}
-        </span>
-        {expanded ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {hasFix && !isApplied && (
+            <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+              <Wand2 className="w-2.5 h-2.5 inline mr-0.5" />FIX
+            </span>
+          )}
+          <span className={cn("text-[10px] font-medium uppercase px-1.5 py-0.5 rounded", sev.bg, sev.color)}>
+            {issue.severity}
+          </span>
+          {expanded ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
+        </div>
       </button>
       <AnimatePresence>
         {expanded && (
@@ -103,12 +176,58 @@ const IssueCard = ({ issue, index }: { issue: CodeReviewIssue; index: number }) 
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="px-3 pb-3 space-y-2 border-t border-border/50 pt-2">
+            <div className="px-3 pb-3 space-y-3 border-t border-border/50 pt-2">
               <p className="text-xs text-muted-foreground leading-relaxed">{issue.description}</p>
+
               {issue.suggestion && (
                 <div className="bg-muted/50 rounded-md p-2">
                   <p className="text-[10px] font-medium text-primary mb-1">💡 Suggestion</p>
                   <pre className="text-xs text-foreground/80 whitespace-pre-wrap font-mono">{issue.suggestion}</pre>
+                </div>
+              )}
+
+              {hasFix && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Code2 className="w-3.5 h-3.5 text-primary" />
+                    <span className="text-[11px] font-semibold text-foreground">Auto-Fix Preview</span>
+                    <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground">Before → After</span>
+                  </div>
+
+                  <DiffView beforeCode={issue.beforeCode!} afterCode={issue.afterCode!} />
+
+                  <div className="flex items-center gap-2 pt-1">
+                    {isApplied ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-xs gap-1.5 border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10"
+                        onClick={(e) => { e.stopPropagation(); onUndoFix(index); }}
+                      >
+                        <Undo2 className="w-3 h-3" />
+                        Undo Fix
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        className="h-7 text-xs gap-1.5"
+                        onClick={(e) => { e.stopPropagation(); onApplyFix(index); }}
+                      >
+                        <Wand2 className="w-3 h-3" />
+                        Apply Fix
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 text-xs gap-1.5"
+                      onClick={(e) => { e.stopPropagation(); onCopyFix(issue.afterCode!); }}
+                    >
+                      <Copy className="w-3 h-3" />
+                      Copy Fixed Code
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -123,13 +242,18 @@ const CodeReviewPanel = ({ isOpen, onClose, files }: CodeReviewPanelProps) => {
   const { reviews, isReviewing, reviewFile } = useCodeReview();
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [filterCategory, setFilterCategory] = useState<string | null>(null);
+  const [appliedFixes, setAppliedFixes] = useState<Map<string, Set<number>>>(new Map());
 
   const codeFiles = files.filter((f) => !f.path.endsWith(".json") && !f.path.endsWith(".md") && !f.path.endsWith(".yaml"));
   const currentReview = selectedFile ? reviews.get(selectedFile) : null;
+  const currentApplied = selectedFile ? (appliedFixes.get(selectedFile) || new Set()) : new Set<number>();
 
   const filteredIssues = currentReview?.issues.filter(
     (i) => !filterCategory || i.category === filterCategory
   ) || [];
+
+  const fixableCount = currentReview?.issues.filter((i) => i.beforeCode && i.afterCode).length || 0;
+  const appliedCount = currentApplied.size;
 
   const handleReview = async (path: string) => {
     setSelectedFile(path);
@@ -146,6 +270,48 @@ const CodeReviewPanel = ({ isOpen, onClose, files }: CodeReviewPanelProps) => {
       }
     }
   };
+
+  const handleApplyFix = useCallback((issueIndex: number) => {
+    if (!selectedFile) return;
+    setAppliedFixes((prev) => {
+      const next = new Map(prev);
+      const set = new Set(next.get(selectedFile) || []);
+      set.add(issueIndex);
+      next.set(selectedFile, set);
+      return next;
+    });
+    toast.success("Fix applied (preview only)");
+  }, [selectedFile]);
+
+  const handleUndoFix = useCallback((issueIndex: number) => {
+    if (!selectedFile) return;
+    setAppliedFixes((prev) => {
+      const next = new Map(prev);
+      const set = new Set(next.get(selectedFile) || []);
+      set.delete(issueIndex);
+      next.set(selectedFile, set);
+      return next;
+    });
+    toast.info("Fix undone");
+  }, [selectedFile]);
+
+  const handleCopyFix = useCallback((code: string) => {
+    navigator.clipboard.writeText(code);
+    toast.success("Fixed code copied to clipboard");
+  }, []);
+
+  const handleApplyAll = useCallback(() => {
+    if (!selectedFile || !currentReview) return;
+    const fixableIndices = currentReview.issues
+      .map((issue, idx) => (issue.beforeCode && issue.afterCode ? idx : -1))
+      .filter((idx) => idx !== -1);
+    setAppliedFixes((prev) => {
+      const next = new Map(prev);
+      next.set(selectedFile, new Set(fixableIndices));
+      return next;
+    });
+    toast.success(`${fixableIndices.length} fixes applied (preview only)`);
+  }, [selectedFile, currentReview]);
 
   const allIssues = Array.from(reviews.values()).flatMap((r) => r.issues);
   const avgScore = reviews.size > 0
@@ -210,6 +376,7 @@ const CodeReviewPanel = ({ isOpen, onClose, files }: CodeReviewPanelProps) => {
                   const review = reviews.get(file.path);
                   const isActive = selectedFile === file.path;
                   const isLoading = isReviewing === file.path;
+                  const fileApplied = appliedFixes.get(file.path)?.size || 0;
 
                   return (
                     <button
@@ -224,12 +391,17 @@ const CodeReviewPanel = ({ isOpen, onClose, files }: CodeReviewPanelProps) => {
                       <span className="truncate flex-1 text-xs">{file.path.split("/").pop()}</span>
                       {isLoading && <Loader2 className="w-3 h-3 animate-spin text-primary shrink-0" />}
                       {review && !isLoading && (
-                        <span className={cn(
-                          "text-[10px] font-bold shrink-0",
-                          review.score >= 80 ? "text-green-400" : review.score >= 60 ? "text-yellow-400" : "text-red-400"
-                        )}>
-                          {review.score}
-                        </span>
+                        <div className="flex items-center gap-1 shrink-0">
+                          {fileApplied > 0 && (
+                            <span className="text-[9px] text-green-400 font-mono">{fileApplied}✓</span>
+                          )}
+                          <span className={cn(
+                            "text-[10px] font-bold",
+                            review.score >= 80 ? "text-green-400" : review.score >= 60 ? "text-yellow-400" : "text-red-400"
+                          )}>
+                            {review.score}
+                          </span>
+                        </div>
                       )}
                     </button>
                   );
@@ -249,6 +421,32 @@ const CodeReviewPanel = ({ isOpen, onClose, files }: CodeReviewPanelProps) => {
                     <div className="flex-1">
                       <h3 className="font-medium text-foreground mb-1">{selectedFile}</h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">{currentReview.summary}</p>
+
+                      {/* Fix stats banner */}
+                      {fixableCount > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-3 flex items-center gap-3 p-2.5 rounded-lg bg-primary/5 border border-primary/15"
+                        >
+                          <Wand2 className="w-4 h-4 text-primary" />
+                          <div className="flex-1">
+                            <span className="text-xs font-medium text-foreground">
+                              {fixableCount} auto-fixable issue{fixableCount > 1 ? "s" : ""}
+                            </span>
+                            {appliedCount > 0 && (
+                              <span className="text-xs text-green-400 ml-2">({appliedCount} applied)</span>
+                            )}
+                          </div>
+                          {appliedCount < fixableCount && (
+                            <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={handleApplyAll}>
+                              <Wand2 className="w-3 h-3" />
+                              Apply All Fixes
+                            </Button>
+                          )}
+                        </motion.div>
+                      )}
+
                       <div className="flex gap-2 mt-3 flex-wrap">
                         <button
                           onClick={() => setFilterCategory(null)}
@@ -284,9 +482,20 @@ const CodeReviewPanel = ({ isOpen, onClose, files }: CodeReviewPanelProps) => {
                 {/* Issues */}
                 <ScrollArea className="flex-1 p-4">
                   <div className="space-y-2">
-                    {filteredIssues.map((issue, idx) => (
-                      <IssueCard key={idx} issue={issue} index={idx} />
-                    ))}
+                    {filteredIssues.map((issue, idx) => {
+                      const globalIdx = currentReview.issues.indexOf(issue);
+                      return (
+                        <IssueCard
+                          key={idx}
+                          issue={issue}
+                          index={idx}
+                          appliedFixes={currentApplied}
+                          onApplyFix={() => handleApplyFix(globalIdx)}
+                          onUndoFix={() => handleUndoFix(globalIdx)}
+                          onCopyFix={handleCopyFix}
+                        />
+                      );
+                    })}
                     {filteredIssues.length === 0 && (
                       <div className="text-center py-12">
                         <CheckCircle2 className="w-10 h-10 mx-auto text-green-400 mb-3" />
@@ -297,7 +506,6 @@ const CodeReviewPanel = ({ isOpen, onClose, files }: CodeReviewPanelProps) => {
                 </ScrollArea>
               </>
             ) : reviews.size > 0 ? (
-              /* Aggregate view */
               <div className="flex-1 p-6 overflow-y-auto">
                 <div className="text-center mb-6">
                   <ScoreGauge score={avgScore} />

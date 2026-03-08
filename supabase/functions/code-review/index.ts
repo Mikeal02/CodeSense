@@ -36,7 +36,11 @@ Categories:
 Severity levels: "critical", "high", "medium", "low"
 
 For each issue, provide:
-- category, severity, line (approximate), title, description, suggestion (code fix if applicable)
+- category, severity, line (approximate), title, description, suggestion (text explanation)
+- beforeCode: the exact problematic code snippet from the file (1-10 lines)
+- afterCode: the corrected/improved code that should replace it
+
+The beforeCode and afterCode fields are critical — they enable one-click auto-fix. Make sure beforeCode matches the actual file content as closely as possible, and afterCode is a drop-in replacement.
 
 Also provide an overall score 0-100 and a short summary.`;
 
@@ -57,7 +61,7 @@ Also provide an overall score 0-100 and a short summary.`;
             type: "function",
             function: {
               name: "submit_code_review",
-              description: "Submit the code review results",
+              description: "Submit the code review results with auto-fix suggestions",
               parameters: {
                 type: "object",
                 properties: {
@@ -74,6 +78,8 @@ Also provide an overall score 0-100 and a short summary.`;
                         title: { type: "string" },
                         description: { type: "string" },
                         suggestion: { type: "string" },
+                        beforeCode: { type: "string", description: "The problematic code snippet from the file" },
+                        afterCode: { type: "string", description: "The corrected code that should replace beforeCode" },
                       },
                       required: ["category", "severity", "title", "description"],
                     },
