@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code2, Github, Sparkles, Moon, Sun, Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Zap, Menu, X, ChevronDown } from "lucide-react";
+import { Code2, Github, Sparkles, Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Zap, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import RateLimitStatus from "./RateLimitStatus";
+import ThemeToggle from "./ThemeToggle";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -94,9 +95,7 @@ const Header = ({
             </Button>
             
             {onToggleTheme && (
-              <Button variant="ghost" size="icon" onClick={onToggleTheme} className="h-9 w-9" title={isDarkMode ? "Light mode" : "Dark mode"}>
-                {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              </Button>
+              <ThemeToggle isDarkMode={isDarkMode} onToggle={onToggleTheme} />
             )}
             
             <Button variant="ghost" size="icon" className="h-9 w-9" onClick={onOpenSettings} title="Settings (Ctrl+,)">
@@ -118,7 +117,7 @@ const Header = ({
           </div>
 
           {/* Mobile / Tablet Controls */}
-          <div className="flex lg:hidden items-center gap-1">
+          <div className="flex lg:hidden items-center gap-1.5">
             <Button variant="ghost" size="icon" className="h-8 w-8 relative" onClick={onOpenNotifications}>
               <Bell className="w-4 h-4" />
               {unreadNotifications > 0 && (
@@ -128,9 +127,7 @@ const Header = ({
               )}
             </Button>
             {onToggleTheme && (
-              <Button variant="ghost" size="icon" onClick={onToggleTheme} className="h-8 w-8">
-                {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              </Button>
+              <ThemeToggle isDarkMode={isDarkMode} onToggle={onToggleTheme} size="sm" />
             )}
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

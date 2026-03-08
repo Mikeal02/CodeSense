@@ -4,6 +4,7 @@ import {
   Briefcase, Brain, AlertTriangle, GitBranch, FileText, Lock, Link2
 } from "lucide-react";
 import ModeCard from "./ModeCard";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 interface ModesSectionProps {
   activeMode: string;
@@ -27,24 +28,35 @@ const modes = [
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.04, delayChildren: 0.1 } }
+  visible: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.15 } }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 15, scale: 0.95 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.3 } }
+  hidden: { opacity: 0, y: 24, scale: 0.93, filter: "blur(4px)" },
+  visible: { 
+    opacity: 1, y: 0, scale: 1, filter: "blur(0px)",
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } 
+  }
 };
 
 const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionProps) => {
+  const { ref: sectionRef, isVisible } = useScrollReveal({ threshold: 0.1 });
+
   return (
-    <section className="py-12 sm:py-16 lg:py-20 relative">
+    <section ref={sectionRef} className="py-12 sm:py-16 lg:py-20 relative">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-8 sm:mb-12"
         >
+          <motion.div
+            initial={{ width: 0 }}
+            animate={isVisible ? { width: 64 } : { width: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="h-[2px] bg-gradient-to-r from-primary to-accent mx-auto mb-6 rounded-full"
+          />
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3 sm:mb-4">Choose Your Mode</h2>
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
             {isConnected 
@@ -57,8 +69,7 @@ const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionPro
         <motion.div 
           variants={containerVariants}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
+          animate={isVisible ? "visible" : "hidden"}
           className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4"
         >
           {modes.map((mode) => (

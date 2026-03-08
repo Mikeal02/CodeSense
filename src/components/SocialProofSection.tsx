@@ -1,6 +1,7 @@
 import { motion, useMotionValue, animate } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { Star, Users, GitBranch, Zap, TrendingUp, Award } from "lucide-react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const stats = [
   { icon: Users, value: 12400, suffix: "+", label: "Developers" },
@@ -9,14 +10,15 @@ const stats = [
   { icon: TrendingUp, value: 99, suffix: "%", label: "Uptime" },
 ];
 
-const AnimatedCounter = ({ value, suffix, decimals = 0 }: { value: number; suffix: string; decimals?: number }) => {
+const AnimatedCounter = ({ value, suffix, decimals = 0, animate: shouldAnimate }: { value: number; suffix: string; decimals?: number; animate: boolean }) => {
   const ref = useRef<HTMLSpanElement>(null);
   const motionVal = useMotionValue(0);
 
   useEffect(() => {
+    if (!shouldAnimate) return;
     const controls = animate(motionVal, value, {
-      duration: 2,
-      ease: "easeOut",
+      duration: 2.2,
+      ease: [0.16, 1, 0.3, 1],
       onUpdate: (v) => {
         if (ref.current) {
           ref.current.textContent = decimals > 0
@@ -26,7 +28,7 @@ const AnimatedCounter = ({ value, suffix, decimals = 0 }: { value: number; suffi
       },
     });
     return () => controls.stop();
-  }, [value, suffix, decimals]);
+  }, [shouldAnimate, value, suffix, decimals]);
 
   return <span ref={ref}>0</span>;
 };
@@ -42,8 +44,12 @@ const logos = [
 ];
 
 const SocialProofSection = () => {
+  const { ref: sectionRef, isVisible } = useScrollReveal({ threshold: 0.1 });
+  const { ref: statsRef, isVisible: statsVisible } = useScrollReveal({ threshold: 0.2 });
+  const { ref: testimonialsRef, isVisible: testimonialsVisible } = useScrollReveal({ threshold: 0.15 });
+
   return (
-    <section className="py-16 sm:py-24 relative overflow-hidden">
+    <section ref={sectionRef} className="py-16 sm:py-24 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/20 to-background pointer-events-none" />
 
@@ -51,8 +57,8 @@ const SocialProofSection = () => {
         {/* Trusted-by marquee */}
         <motion.div
           initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          animate={isVisible ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.8 }}
           className="mb-16 sm:mb-20"
         >
           <p className="text-center text-xs uppercase tracking-[0.2em] text-muted-foreground mb-8">
@@ -79,19 +85,18 @@ const SocialProofSection = () => {
         </motion.div>
 
         {/* Stats bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-16 sm:mb-20">
+        <div ref={statsRef} className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-16 sm:mb-20">
           {stats.map((stat, i) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={statsVisible ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 30, scale: 0.95 }}
+              transition={{ delay: i * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className="text-center p-5 sm:p-6 rounded-2xl glass border border-border/30 group hover:border-primary/30 transition-all"
             >
               <stat.icon className="w-5 h-5 mx-auto mb-3 text-primary group-hover:scale-110 transition-transform" />
               <div className="text-2xl sm:text-3xl font-bold text-foreground mb-1 font-mono">
-                <AnimatedCounter value={stat.value} suffix={stat.suffix} decimals={stat.decimals} />
+                <AnimatedCounter value={stat.value} suffix={stat.suffix} decimals={stat.decimals} animate={statsVisible} />
               </div>
               <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
             </motion.div>
@@ -99,19 +104,16 @@ const SocialProofSection = () => {
         </div>
 
         {/* Testimonials */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="space-y-6 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-5"
-        >
+        <div ref={testimonialsRef} className="space-y-6 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-5">
           {testimonials.map((t, i) => (
             <motion.div
               key={t.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.12 }}
+              initial={{ opacity: 0, y: 40, filter: "blur(4px)" }}
+              animate={testimonialsVisible 
+                ? { opacity: 1, y: 0, filter: "blur(0px)" } 
+                : { opacity: 0, y: 40, filter: "blur(4px)" }
+              }
+              transition={{ delay: i * 0.15, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="p-5 sm:p-6 rounded-2xl border border-border/40 bg-card/40 backdrop-blur-sm hover:border-primary/30 hover:bg-card/60 transition-all group"
             >
               {/* Stars */}
@@ -136,13 +138,13 @@ const SocialProofSection = () => {
               </div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
 
         {/* Award badge */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
+          animate={isVisible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+          transition={{ delay: 0.4 }}
           className="mt-12 sm:mt-16 flex justify-center"
         >
           <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full glass border border-primary/20">
