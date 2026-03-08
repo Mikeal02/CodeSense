@@ -22,7 +22,7 @@ interface RateLimitData {
   used: number;
 }
 
-const RateLimitStatus = ({ githubToken, className }: RateLimitStatusProps) => {
+const RateLimitStatus = React.forwardRef<HTMLDivElement, RateLimitStatusProps>(({ githubToken, className }, ref) => {
   const [rateLimit, setRateLimit] = useState<RateLimitData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
