@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
@@ -8,17 +8,7 @@ import FeaturesSection from "@/components/FeaturesSection";
 import SocialProofSection from "@/components/SocialProofSection";
 import Footer from "@/components/Footer";
 import GitHubRepoSelector from "@/components/GitHubRepoSelector";
-import RecentReposPanel from "@/components/RecentReposPanel";
 import CommandPalette from "@/components/CommandPalette";
-import SettingsPanel from "@/components/SettingsPanel";
-import NotificationCenter from "@/components/NotificationCenter";
-import ActivityTimeline from "@/components/ActivityTimeline";
-import ConversationManager from "@/components/ConversationManager";
-import AnalyticsDashboard from "@/components/AnalyticsDashboard";
-import FileDiffView from "@/components/FileDiffView";
-import PerformanceMonitor from "@/components/PerformanceMonitor";
-import CodeReviewPanel from "@/components/CodeReviewPanel";
-import DependencyScanner from "@/components/DependencyScanner";
 import StatusBar from "@/components/StatusBar";
 import FloatingDock from "@/components/FloatingDock";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -27,6 +17,7 @@ import OnboardingOverlay from "@/components/OnboardingOverlay";
 import CursorGlow from "@/components/CursorGlow";
 import ScrollProgress from "@/components/ScrollProgress";
 import CustomCursor from "@/components/CustomCursor";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { useCodebaseAnalysis } from "@/hooks/useCodebaseAnalysis";
 import { useRecentRepos, RecentRepo } from "@/hooks/useRecentRepos";
 import { useTheme } from "@/hooks/useTheme";
@@ -40,6 +31,18 @@ import { useOnboarding } from "@/hooks/useOnboarding";
 import { useShareReport } from "@/hooks/useShareReport";
 import { useRepoInsights } from "@/hooks/useRepoInsights";
 import { usePersistentSessions } from "@/hooks/usePersistentSessions";
+
+// Lazy-load heavy workspace panels
+const RecentReposPanel = lazy(() => import("@/components/RecentReposPanel"));
+const SettingsPanel = lazy(() => import("@/components/SettingsPanel"));
+const NotificationCenter = lazy(() => import("@/components/NotificationCenter"));
+const ActivityTimeline = lazy(() => import("@/components/ActivityTimeline"));
+const ConversationManager = lazy(() => import("@/components/ConversationManager"));
+const AnalyticsDashboard = lazy(() => import("@/components/AnalyticsDashboard"));
+const FileDiffView = lazy(() => import("@/components/FileDiffView"));
+const PerformanceMonitor = lazy(() => import("@/components/PerformanceMonitor"));
+const CodeReviewPanel = lazy(() => import("@/components/CodeReviewPanel"));
+const DependencyScanner = lazy(() => import("@/components/DependencyScanner"));
 
 const Index = () => {
   const [showGitHubSelector, setShowGitHubSelector] = useState(false);
@@ -264,13 +267,15 @@ const Index = () => {
           animate={{ opacity: 1, y: 0 }}
           className="container mx-auto px-4 sm:px-6 -mt-4 sm:-mt-8 mb-6 sm:mb-8 relative z-10"
         >
-          <RecentReposPanel
-            repos={recentRepos}
-            onSelectRepo={handleSelectRecentRepo}
-            onRemoveRepo={removeRecentRepo}
-            onClearAll={clearRecentRepos}
-            className="max-w-xl mx-auto"
-          />
+          <Suspense fallback={null}>
+            <RecentReposPanel
+              repos={recentRepos}
+              onSelectRepo={handleSelectRecentRepo}
+              onRemoveRepo={removeRecentRepo}
+              onClearAll={clearRecentRepos}
+              className="max-w-xl mx-auto"
+            />
+          </Suspense>
         </motion.div>
       )}
       
@@ -279,18 +284,20 @@ const Index = () => {
         onSelectMode={handleSelectMode}
         isConnected={!!codebase}
       />
-      <ChatInterface 
-        isActive={!!codebase}
-        messages={messages}
-        onSendMessage={handleAskQuestion}
-        isLoading={isLoading}
-        repoName={codebase?.repoName}
-        files={codebase?.files || []}
-        selectedFileFromPalette={selectedFileFromPalette}
-        onClearSelectedFile={() => setSelectedFileFromPalette(undefined)}
-        onShareReport={handleShareReport}
-        isSharing={isSharing}
-      />
+      <ErrorBoundary fallbackMessage="Chat interface encountered an error. Try refreshing.">
+        <ChatInterface 
+          isActive={!!codebase}
+          messages={messages}
+          onSendMessage={handleAskQuestion}
+          isLoading={isLoading}
+          repoName={codebase?.repoName}
+          files={codebase?.files || []}
+          selectedFileFromPalette={selectedFileFromPalette}
+          onClearSelectedFile={() => setSelectedFileFromPalette(undefined)}
+          onShareReport={handleShareReport}
+          isSharing={isSharing}
+        />
+      </ErrorBoundary>
       <SocialProofSection />
       <FeaturesSection />
       <Footer />
@@ -341,81 +348,83 @@ const Index = () => {
         isConnected={!!codebase}
       />
 
-      <SettingsPanel
-        isOpen={showSettings}
-        onClose={() => setShowSettings(false)}
-        settings={settings}
-        onUpdateSetting={updateSetting}
-        onResetSettings={resetSettings}
-      />
+      <Suspense fallback={null}>
+        <SettingsPanel
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+          settings={settings}
+          onUpdateSetting={updateSetting}
+          onResetSettings={resetSettings}
+        />
 
-      <NotificationCenter
-        isOpen={showNotifications}
-        onClose={() => setShowNotifications(false)}
-        notifications={notifications}
-        unreadCount={unreadCount}
-        onMarkAsRead={markAsRead}
-        onMarkAllAsRead={markAllAsRead}
-        onRemove={removeNotification}
-        onClearAll={clearNotifications}
-      />
+        <NotificationCenter
+          isOpen={showNotifications}
+          onClose={() => setShowNotifications(false)}
+          notifications={notifications}
+          unreadCount={unreadCount}
+          onMarkAsRead={markAsRead}
+          onMarkAllAsRead={markAllAsRead}
+          onRemove={removeNotification}
+          onClearAll={clearNotifications}
+        />
 
-      <ActivityTimeline
-        isOpen={showActivityLog}
-        onClose={() => setShowActivityLog(false)}
-        activities={activities}
-        onClear={clearActivities}
-      />
+        <ActivityTimeline
+          isOpen={showActivityLog}
+          onClose={() => setShowActivityLog(false)}
+          activities={activities}
+          onClear={clearActivities}
+        />
 
-      <ConversationManager
-        isOpen={showConversations}
-        onClose={() => setShowConversations(false)}
-        conversations={conversations}
-        activeId={activeConversationId}
-        onSelect={setActiveConversationId}
-        onDelete={deleteConversation}
-        onTogglePin={togglePin}
-        onRename={(id, name) => updateConversation(id, { name })}
-        onAddTag={addTag}
-        onRemoveTag={removeTag}
-        onClearAll={clearConversations}
-        onNew={() => {
-          if (codebase) {
-            createConversation(codebase.repoName, activeMode);
-          }
-        }}
-      />
+        <ConversationManager
+          isOpen={showConversations}
+          onClose={() => setShowConversations(false)}
+          conversations={conversations}
+          activeId={activeConversationId}
+          onSelect={setActiveConversationId}
+          onDelete={deleteConversation}
+          onTogglePin={togglePin}
+          onRename={(id, name) => updateConversation(id, { name })}
+          onAddTag={addTag}
+          onRemoveTag={removeTag}
+          onClearAll={clearConversations}
+          onNew={() => {
+            if (codebase) {
+              createConversation(codebase.repoName, activeMode);
+            }
+          }}
+        />
 
-      <AnalyticsDashboard
-        isOpen={showAnalytics}
-        onClose={() => setShowAnalytics(false)}
-        files={codebase?.files || []}
-      />
+        <AnalyticsDashboard
+          isOpen={showAnalytics}
+          onClose={() => setShowAnalytics(false)}
+          files={codebase?.files || []}
+        />
 
-      <FileDiffView
-        isOpen={showDiffView}
-        onClose={() => setShowDiffView(false)}
-        files={codebase?.files || []}
-      />
+        <FileDiffView
+          isOpen={showDiffView}
+          onClose={() => setShowDiffView(false)}
+          files={codebase?.files || []}
+        />
 
-      <PerformanceMonitor
-        isOpen={showPerformance}
-        onClose={() => setShowPerformance(false)}
-        stats={getStats()}
-        onClear={clearEntries}
-      />
+        <PerformanceMonitor
+          isOpen={showPerformance}
+          onClose={() => setShowPerformance(false)}
+          stats={getStats()}
+          onClear={clearEntries}
+        />
 
-      <CodeReviewPanel
-        isOpen={showCodeReview}
-        onClose={() => setShowCodeReview(false)}
-        files={codebase?.files || []}
-      />
+        <CodeReviewPanel
+          isOpen={showCodeReview}
+          onClose={() => setShowCodeReview(false)}
+          files={codebase?.files || []}
+        />
 
-      <DependencyScanner
-        isOpen={showDepScanner}
-        onClose={() => setShowDepScanner(false)}
-        files={codebase?.files || []}
-      />
+        <DependencyScanner
+          isOpen={showDepScanner}
+          onClose={() => setShowDepScanner(false)}
+          files={codebase?.files || []}
+        />
+      </Suspense>
 
       <FloatingDock
         isConnected={!!codebase}

@@ -29,10 +29,10 @@ const tabs: { id: SettingsTab; label: string; icon: typeof Brain }[] = [
 ];
 
 const aiModels = [
-  { id: "google/gemini-2.5-flash", name: "Gemini 2.5 Flash", desc: "Fast & balanced" },
-  { id: "google/gemini-2.5-pro", name: "Gemini 2.5 Pro", desc: "Best quality" },
-  { id: "google/gemini-2.5-flash-lite", name: "Gemini Flash Lite", desc: "Fastest" },
-  { id: "openai/gpt-5", name: "GPT-5", desc: "Most capable" },
+  { id: "google/gemini-3-flash-preview", name: "Gemini 3 Flash", desc: "Latest & fastest high-quality" },
+  { id: "google/gemini-3.1-pro-preview", name: "Gemini 3.1 Pro", desc: "Best reasoning" },
+  { id: "google/gemini-2.5-flash", name: "Gemini 2.5 Flash", desc: "Balanced & reliable" },
+  { id: "openai/gpt-5.2", name: "GPT-5.2", desc: "Enhanced reasoning" },
   { id: "openai/gpt-5-mini", name: "GPT-5 Mini", desc: "Cost effective" },
 ];
 
