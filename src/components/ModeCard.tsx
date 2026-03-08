@@ -82,15 +82,25 @@ const ModeCard = ({ icon: Icon, title, description, isActive, onClick, disabled 
       {/* Active indicator with spring animation */}
       <AnimatePresence>
         {isActive && (
-          <motion.span 
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            exit={{ scale: 0, rotate: 180 }}
-            transition={{ type: "spring", stiffness: 500, damping: 20 }}
-            className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/30 z-10"
-          >
-            <Check className="w-3 h-3 text-primary-foreground" />
-          </motion.span>
+          <>
+            <motion.span 
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              exit={{ scale: 0, rotate: 180 }}
+              transition={{ type: "spring", stiffness: 500, damping: 15, mass: 0.8 }}
+              className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/30 z-10"
+            >
+              <Check className="w-3 h-3 text-primary-foreground" />
+            </motion.span>
+            {/* Ripple burst on active */}
+            <motion.div
+              initial={{ scale: 0, opacity: 0.6 }}
+              animate={{ scale: 3, opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="absolute inset-0 rounded-xl border-2 border-primary/40 pointer-events-none"
+              style={{ transformOrigin: "center" }}
+            />
+          </>
         )}
       </AnimatePresence>
 
