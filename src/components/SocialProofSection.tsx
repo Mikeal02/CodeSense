@@ -92,7 +92,7 @@ const TestimonialCard = ({ testimonial: t, index: i, isVisible }: { testimonial:
   );
 };
 
-
+const SocialProofSection = () => {
   const { ref: sectionRef, isVisible } = useScrollReveal({ threshold: 0.1 });
   const { ref: statsRef, isVisible: statsVisible } = useScrollReveal({ threshold: 0.2 });
   const { ref: testimonialsRef, isVisible: testimonialsVisible } = useScrollReveal({ threshold: 0.15 });
