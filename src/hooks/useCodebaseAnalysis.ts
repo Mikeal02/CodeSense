@@ -443,6 +443,16 @@ export function useCodebaseAnalysis() {
       return;
     }
 
+    // Return cached results for mode-only requests (not custom questions)
+    if (!question) {
+      const cacheKey = `${codebase.repoName}:${mode}`;
+      const cached = analysisCache.current.get(cacheKey);
+      if (cached) {
+        setMessages(cached);
+        return;
+      }
+    }
+
     setIsLoading(true);
     const userMessage: Message = {
       id: Date.now().toString(),
