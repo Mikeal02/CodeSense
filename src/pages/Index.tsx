@@ -387,6 +387,16 @@ const Index = () => {
         files={codebase?.files || []}
       />
 
+      <FloatingDock
+        isConnected={!!codebase}
+        onOpenCommandPalette={() => setShowCommandPalette(true)}
+        onOpenCodeReview={() => setShowCodeReview(true)}
+        onOpenDepScanner={() => setShowDepScanner(true)}
+        onOpenAnalytics={() => setShowAnalytics(true)}
+        onOpenDiffView={() => setShowDiffView(true)}
+        onOpenConversations={() => setShowConversations(true)}
+      />
+
       <TerminalBanner
         isLoading={isLoading}
         repoName={codebase?.repoName}
