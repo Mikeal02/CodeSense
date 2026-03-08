@@ -203,7 +203,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background noise-overlay pb-7 cursor-none lg:cursor-none">
+    <div className="min-h-screen bg-background gradient-mesh noise-overlay pb-7 overflow-x-clip">
       {/* Elite effects */}
       <CustomCursor />
       <CursorGlow />

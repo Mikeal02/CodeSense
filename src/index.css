@@ -749,10 +749,10 @@
   }
 }
 
-/* ========== Custom Cursor ========== */
+/* ========== Cursor behavior (native cursor always visible) ========== */
 @media (pointer: fine) {
   .cursor-none, .cursor-none * {
-    cursor: none !important;
+    cursor: auto !important;
   }
 }
 @media (pointer: coarse) {
