@@ -2,7 +2,7 @@ import { ArrowRight, FolderUp, Github, Zap, Loader2, User, Key, Check, Terminal,
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useState, useRef } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, useScroll } from "framer-motion";
 import ParticleCanvas from "./ParticleCanvas";
 import TypewriterText from "./TypewriterText";
 import RepoHealthScore from "./RepoHealthScore";
