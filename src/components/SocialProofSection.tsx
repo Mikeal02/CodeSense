@@ -1,5 +1,5 @@
-import { motion, useMotionValue, animate } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { motion, useMotionValue, animate, useSpring, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { Star, Users, GitBranch, Zap, TrendingUp, Award, Quote, ArrowRight } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import TextReveal from "./TextReveal";
