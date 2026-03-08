@@ -36,7 +36,7 @@ const itemVariants = {
   hidden: { opacity: 0, y: 30, scale: 0.9, filter: "blur(6px)", rotateY: -15 },
   visible: { 
     opacity: 1, y: 0, scale: 1, filter: "blur(0px)", rotateY: 0,
-    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], type: "spring", stiffness: 200, damping: 20 } 
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const } 
   }
 };
 
