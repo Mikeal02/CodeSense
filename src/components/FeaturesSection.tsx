@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from "framer-motion";
 import { Shield, Zap, Brain, Lock, Code2, Globe, Layers, Cpu, ArrowRight, Sparkles } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import TextReveal from "./TextReveal";
 
 const features = [
   { icon: Brain, title: "AI-Powered Analysis", description: "Deep understanding using advanced language models with multi-modal reasoning across your entire codebase.", accent: "primary", span: "col-span-1 sm:col-span-2 lg:col-span-2", size: "large" },
@@ -173,7 +174,7 @@ const FeaturesSection = () => {
             Capabilities
           </motion.div>
           <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-4 sm:mb-5 tracking-tight">
-            Everything You Need
+            <TextReveal>Everything You Need</TextReveal>
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4 leading-relaxed">
             A comprehensive toolkit for understanding, analyzing, and preparing to discuss any codebase — from a 5-file script to a 50k-line monorepo.

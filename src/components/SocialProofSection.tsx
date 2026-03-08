@@ -2,6 +2,7 @@ import { motion, useMotionValue, animate } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { Star, Users, GitBranch, Zap, TrendingUp, Award, Quote, ArrowRight } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import TextReveal from "./TextReveal";
 
 const stats = [
   { icon: Users, value: 12400, suffix: "+", label: "Developers", color: "primary" },
@@ -63,7 +64,7 @@ const SocialProofSection = () => {
           className="mb-18 sm:mb-24"
         >
           <p className="text-center text-[10px] uppercase tracking-[0.25em] text-muted-foreground/60 mb-8">
-            Trusted by engineers at
+            <TextReveal delay={0.1}>Trusted by engineers at</TextReveal>
           </p>
           <div className="relative overflow-hidden">
             <div className="absolute left-0 top-0 bottom-0 w-32 sm:w-48 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
@@ -113,7 +114,7 @@ const SocialProofSection = () => {
             animate={testimonialsVisible ? { opacity: 1 } : { opacity: 0 }}
             className="text-center text-[10px] uppercase tracking-[0.25em] text-muted-foreground/60 mb-8"
           >
-            What developers say
+            <TextReveal delay={0.05}>What developers say</TextReveal>
           </motion.p>
           <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-4">
             {testimonials.map((t, i) => (
