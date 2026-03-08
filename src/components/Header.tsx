@@ -19,6 +19,8 @@ interface HeaderProps {
   onOpenAnalytics?: () => void;
   onOpenDiffView?: () => void;
   onOpenPerformance?: () => void;
+  onOpenCodeReview?: () => void;
+  onOpenDepScanner?: () => void;
   isConnected?: boolean;
 }
 
