@@ -481,7 +481,8 @@ export function useCodebaseAnalysis() {
       ]);
 
       let buffer = "";
-      while (true) {
+      let streamDone = false;
+      while (!streamDone) {
         const { done, value } = await reader.read();
         if (done) break;
 
@@ -497,7 +498,10 @@ export function useCodebaseAnalysis() {
           if (!line.startsWith("data: ")) continue;
 
           const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") break;
+          if (jsonStr === "[DONE]") {
+            streamDone = true;
+            break;
+          }
 
           try {
             const parsed = JSON.parse(jsonStr);
@@ -511,10 +515,27 @@ export function useCodebaseAnalysis() {
               );
             }
           } catch {
-            buffer = line + "\n" + buffer;
+            // Incomplete JSON — put back just the data payload for next chunk
+            buffer = jsonStr;
             break;
           }
         }
+      }
+
+      // Final flush for any remaining buffer
+      if (buffer.trim() && buffer.trim() !== "[DONE]") {
+        try {
+          const parsed = JSON.parse(buffer.startsWith("data: ") ? buffer.slice(6).trim() : buffer.trim());
+          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+          if (content) {
+            assistantContent += content;
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantMessageId ? { ...m, content: assistantContent } : m
+              )
+            );
+          }
+        } catch { /* ignore partial leftovers */ }
       }
     } catch (error) {
       console.error("Analysis error:", error);
