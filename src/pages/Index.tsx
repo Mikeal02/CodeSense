@@ -183,6 +183,7 @@ const Index = () => {
 
   const handleSelectMode = (mode: string) => {
     selectMode(mode);
+    playSound("mode-switch");
     addActivity("mode_selected", `Selected ${mode} mode`);
   };
 
