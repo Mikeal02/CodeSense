@@ -398,6 +398,7 @@ const ChatInterface = ({
                     ) : (
                       message.content
                     )}
+                  </div>
                   {/* Copy button for assistant messages */}
                   {message.role === "assistant" && message.content.length > 0 && !isLoading && (
                     <motion.div
