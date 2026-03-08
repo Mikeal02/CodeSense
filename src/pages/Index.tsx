@@ -243,6 +243,8 @@ const Index = () => {
         files={codebase?.files || []}
         selectedFileFromPalette={selectedFileFromPalette}
         onClearSelectedFile={() => setSelectedFileFromPalette(undefined)}
+        onShareReport={handleShareReport}
+        isSharing={isSharing}
       />
       <SocialProofSection />
       <FeaturesSection />
