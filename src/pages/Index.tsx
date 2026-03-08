@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
@@ -8,17 +8,7 @@ import FeaturesSection from "@/components/FeaturesSection";
 import SocialProofSection from "@/components/SocialProofSection";
 import Footer from "@/components/Footer";
 import GitHubRepoSelector from "@/components/GitHubRepoSelector";
-import RecentReposPanel from "@/components/RecentReposPanel";
 import CommandPalette from "@/components/CommandPalette";
-import SettingsPanel from "@/components/SettingsPanel";
-import NotificationCenter from "@/components/NotificationCenter";
-import ActivityTimeline from "@/components/ActivityTimeline";
-import ConversationManager from "@/components/ConversationManager";
-import AnalyticsDashboard from "@/components/AnalyticsDashboard";
-import FileDiffView from "@/components/FileDiffView";
-import PerformanceMonitor from "@/components/PerformanceMonitor";
-import CodeReviewPanel from "@/components/CodeReviewPanel";
-import DependencyScanner from "@/components/DependencyScanner";
 import StatusBar from "@/components/StatusBar";
 import FloatingDock from "@/components/FloatingDock";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -27,6 +17,7 @@ import OnboardingOverlay from "@/components/OnboardingOverlay";
 import CursorGlow from "@/components/CursorGlow";
 import ScrollProgress from "@/components/ScrollProgress";
 import CustomCursor from "@/components/CustomCursor";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { useCodebaseAnalysis } from "@/hooks/useCodebaseAnalysis";
 import { useRecentRepos, RecentRepo } from "@/hooks/useRecentRepos";
 import { useTheme } from "@/hooks/useTheme";
@@ -40,6 +31,18 @@ import { useOnboarding } from "@/hooks/useOnboarding";
 import { useShareReport } from "@/hooks/useShareReport";
 import { useRepoInsights } from "@/hooks/useRepoInsights";
 import { usePersistentSessions } from "@/hooks/usePersistentSessions";
+
+// Lazy-load heavy workspace panels
+const RecentReposPanel = lazy(() => import("@/components/RecentReposPanel"));
+const SettingsPanel = lazy(() => import("@/components/SettingsPanel"));
+const NotificationCenter = lazy(() => import("@/components/NotificationCenter"));
+const ActivityTimeline = lazy(() => import("@/components/ActivityTimeline"));
+const ConversationManager = lazy(() => import("@/components/ConversationManager"));
+const AnalyticsDashboard = lazy(() => import("@/components/AnalyticsDashboard"));
+const FileDiffView = lazy(() => import("@/components/FileDiffView"));
+const PerformanceMonitor = lazy(() => import("@/components/PerformanceMonitor"));
+const CodeReviewPanel = lazy(() => import("@/components/CodeReviewPanel"));
+const DependencyScanner = lazy(() => import("@/components/DependencyScanner"));
 
 const Index = () => {
   const [showGitHubSelector, setShowGitHubSelector] = useState(false);
