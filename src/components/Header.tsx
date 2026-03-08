@@ -35,6 +35,8 @@ const Header = ({
   const toolButtons = [
     { icon: BarChart3, label: "Analytics", onClick: onOpenAnalytics, connected: true },
     { icon: GitCompare, label: "Compare", onClick: onOpenDiffView, connected: true },
+    { icon: FileSearch, label: "Code Review", onClick: onOpenCodeReview, connected: true },
+    { icon: Shield, label: "Security", onClick: onOpenDepScanner, connected: true },
     { icon: MessageSquare, label: "Conversations", onClick: onOpenConversations, connected: true },
     { icon: Clock, label: "Activity", onClick: onOpenActivityLog, connected: false },
     { icon: Zap, label: "Performance", onClick: onOpenPerformance, connected: false },
