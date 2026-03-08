@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { motion } from "framer-motion";
 import { 
-  GitBranch, FileCode, Cpu, Wifi, WifiOff, Clock, 
-  Loader2, Terminal, HardDrive, Zap, Eye
+  GitBranch, FileCode, Cpu, WifiOff, Clock, 
+  Loader2, Terminal, Zap, Eye
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +17,7 @@ interface StatusBarProps {
   performanceScore?: number;
 }
 
-const StatusBar = ({
+const StatusBar = memo(({
   isConnected,
   repoName,
   fileCount,
@@ -27,16 +27,10 @@ const StatusBar = ({
   messageCount,
   performanceScore,
 }: StatusBarProps) => {
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [memoryUsage, setMemoryUsage] = useState(0);
   const [uptime, setUptime] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-      setUptime(prev => prev + 1);
-      setMemoryUsage(Math.round(40 + Math.random() * 30));
-    }, 1000);
+    const interval = setInterval(() => setUptime(prev => prev + 1), 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -56,7 +50,6 @@ const StatusBar = ({
     >
       {/* Left section */}
       <div className="flex items-center gap-2.5">
-        {/* Connection status */}
         <div className={cn(
           "flex items-center gap-1.5 px-2 py-0.5 rounded-sm",
           isConnected ? "text-success" : "text-muted-foreground/50"
@@ -110,11 +103,6 @@ const StatusBar = ({
           <span>{messageCount} msgs</span>
         </div>
 
-        <div className="flex items-center gap-1.5 text-foreground/30">
-          <HardDrive className="w-3 h-3" />
-          <span>{memoryUsage}MB</span>
-        </div>
-
         {performanceScore !== undefined && (
           <div className={cn(
             "flex items-center gap-1.5",
@@ -142,6 +130,8 @@ const StatusBar = ({
       </div>
     </motion.div>
   );
-};
+});
+
+StatusBar.displayName = "StatusBar";
 
 export default StatusBar;

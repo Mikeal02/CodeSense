@@ -23,11 +23,12 @@ const CursorGlow = () => {
       aria-hidden="true"
     >
       <motion.div
-        className="absolute w-[500px] h-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        className="absolute w-[400px] h-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
           x: springX,
           y: springY,
-          background: "radial-gradient(circle, hsl(var(--primary) / 0.06) 0%, hsl(var(--accent) / 0.02) 40%, transparent 70%)",
+          background: "radial-gradient(circle, hsl(var(--primary) / 0.08) 0%, hsl(var(--accent) / 0.04) 35%, transparent 65%)",
+          filter: "blur(2px)",
         }}
       />
     </motion.div>
