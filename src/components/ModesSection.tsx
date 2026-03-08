@@ -29,14 +29,14 @@ const modes = [
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.04, delayChildren: 0.1 } }
+  visible: { opacity: 1, transition: { staggerChildren: 0.035, delayChildren: 0.05 } }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.95, filter: "blur(4px)" },
+  hidden: { opacity: 0, y: 30, scale: 0.9, filter: "blur(6px)", rotateY: -15 },
   visible: { 
-    opacity: 1, y: 0, scale: 1, filter: "blur(0px)",
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } 
+    opacity: 1, y: 0, scale: 1, filter: "blur(0px)", rotateY: 0,
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const } 
   }
 };
 

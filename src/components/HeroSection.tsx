@@ -179,9 +179,11 @@ const HeroSection = ({
             {isConnected && repoName ? (
               <motion.div
                 key="connected"
-                initial={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
-                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.9, y: 30, filter: "blur(10px)", rotateX: -10 }}
+                animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)", rotateX: 0 }}
+                exit={{ opacity: 0, scale: 0.85, y: -20, filter: "blur(8px)", rotateX: 10 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                style={{ perspective: 1200 }}
                 className="space-y-5"
               >
                 <div className="inline-flex items-center gap-3 px-5 sm:px-6 py-3 sm:py-4 rounded-2xl bg-success/[0.08] border border-success/20 backdrop-blur-sm">
@@ -227,10 +229,10 @@ const HeroSection = ({
             ) : (
               <motion.div
                 key="disconnected"
-                initial={{ opacity: 0, y: 25 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ delay: 0.45, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -30, scale: 0.9, filter: "blur(10px)" }}
+                transition={{ delay: 0.15, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               >
                 {/* URL form */}
                 <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 sm:gap-3 max-w-2xl mx-auto mb-5 sm:mb-6 px-4 sm:px-0" data-onboarding="hero-input">
