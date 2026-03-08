@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      sessions: {
+        Row: {
+          active_mode: string | null
+          bookmarks: Json
+          created_at: string
+          file_count: number | null
+          id: string
+          last_accessed_at: string
+          messages: Json
+          repo_name: string
+          settings: Json | null
+          source: string
+        }
+        Insert: {
+          active_mode?: string | null
+          bookmarks?: Json
+          created_at?: string
+          file_count?: number | null
+          id?: string
+          last_accessed_at?: string
+          messages?: Json
+          repo_name: string
+          settings?: Json | null
+          source?: string
+        }
+        Update: {
+          active_mode?: string | null
+          bookmarks?: Json
+          created_at?: string
+          file_count?: number | null
+          id?: string
+          last_accessed_at?: string
+          messages?: Json
+          repo_name?: string
+          settings?: Json | null
+          source?: string
+        }
+        Relationships: []
+      }
       shared_reports: {
         Row: {
           active_mode: string | null

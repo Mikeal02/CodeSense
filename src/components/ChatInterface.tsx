@@ -16,6 +16,7 @@ import CodeSearchModal from "./CodeSearchModal";
 import BookmarksPanel from "./BookmarksPanel";
 import ExportReportModal from "./ExportReportModal";
 import KeyboardShortcutsModal from "./KeyboardShortcutsModal";
+import EmptyState from "./EmptyState";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -253,32 +254,24 @@ const ChatInterface = ({
         >
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center mb-5 mx-auto">
-                  <Sparkles className="w-8 h-8 text-primary/50" />
-                </div>
-                <h4 className="text-lg font-semibold text-foreground mb-2">Ready to Analyze</h4>
-                <p className="text-muted-foreground text-sm max-w-sm mb-6">
-                  Select a mode above or ask a question to start exploring your codebase.
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md mx-auto">
-                  {suggestedQuestions.map((q) => (
-                    <button
-                      key={q.label}
-                      onClick={() => handleSuggestionClick(q.label)}
-                      disabled={isLoading}
-                      className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs bg-secondary/30 border border-border/20 text-muted-foreground hover:text-foreground hover:bg-secondary/50 hover:border-primary/20 transition-all disabled:opacity-50 text-left"
-                    >
-                      <span>{q.icon}</span>
-                      <span>{q.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
+              <EmptyState
+                type="empty-chat"
+                title="Ready to Analyze"
+                description="Select a mode above or ask a question to start exploring your codebase."
+              />
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md mx-auto mt-2">
+                {suggestedQuestions.map((q) => (
+                  <button
+                    key={q.label}
+                    onClick={() => handleSuggestionClick(q.label)}
+                    disabled={isLoading}
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs bg-secondary/30 border border-border/20 text-muted-foreground hover:text-foreground hover:bg-secondary/50 hover:border-primary/20 transition-all disabled:opacity-50 text-left"
+                  >
+                    <span>{q.icon}</span>
+                    <span>{q.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
             messages.map((message, idx) => (
