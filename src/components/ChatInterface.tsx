@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { 
   Send, Sparkles, Code, FileCode, Copy, Check, Loader2, 
   Maximize2, Minimize2, X, FolderTree, Columns2, BarChart3,
-  Search, Bookmark, Download, Keyboard
+  Search, Bookmark, Download, Keyboard, Share2
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
