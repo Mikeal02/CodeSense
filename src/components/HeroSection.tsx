@@ -55,6 +55,16 @@ const HeroSection = ({
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
+  // Parallax scroll
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+  const parallaxY1 = useTransform(scrollYProgress, [0, 1], [0, -120]);
+  const parallaxY2 = useTransform(scrollYProgress, [0, 1], [0, -60]);
+  const parallaxScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
+  const parallaxOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (repoUrl.trim() && !isLoading) onSubmitRepo(repoUrl);
