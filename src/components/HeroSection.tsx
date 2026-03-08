@@ -224,6 +224,7 @@ const HeroSection = ({
                     onClick={onOpenGitHubSelector}
                     disabled={isLoading}
                     className="gap-2 w-full sm:w-auto hover:border-primary/50 transition-colors"
+                    data-onboarding="github-browse"
                   >
                     <User className="w-4 h-4" />
                     Browse GitHub Repos

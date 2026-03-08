@@ -43,7 +43,7 @@ const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionPro
   const { ref: sectionRef, isVisible } = useScrollReveal({ threshold: 0.1 });
 
   return (
-    <section ref={sectionRef} className="py-12 sm:py-16 lg:py-20 relative">
+    <section ref={sectionRef} className="py-12 sm:py-16 lg:py-20 relative" data-onboarding="modes-section">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
