@@ -17,6 +17,8 @@ import ConversationManager from "@/components/ConversationManager";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import FileDiffView from "@/components/FileDiffView";
 import PerformanceMonitor from "@/components/PerformanceMonitor";
+import CodeReviewPanel from "@/components/CodeReviewPanel";
+import DependencyScanner from "@/components/DependencyScanner";
 import StatusBar from "@/components/StatusBar";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TerminalBanner from "@/components/TerminalBanner";
@@ -51,6 +53,8 @@ const Index = () => {
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showDiffView, setShowDiffView] = useState(false);
   const [showPerformance, setShowPerformance] = useState(false);
+  const [showCodeReview, setShowCodeReview] = useState(false);
+  const [showDepScanner, setShowDepScanner] = useState(false);
   
   const { isDarkMode, toggleTheme } = useTheme();
   const { recentRepos, addRecentRepo, removeRecentRepo, clearRecentRepos } = useRecentRepos();
@@ -187,6 +191,8 @@ const Index = () => {
         onOpenAnalytics={() => setShowAnalytics(true)}
         onOpenDiffView={() => setShowDiffView(true)}
         onOpenPerformance={() => setShowPerformance(true)}
+        onOpenCodeReview={() => setShowCodeReview(true)}
+        onOpenDepScanner={() => setShowDepScanner(true)}
         isConnected={!!codebase}
       />
 
@@ -366,6 +372,18 @@ const Index = () => {
         onClose={() => setShowPerformance(false)}
         stats={getStats()}
         onClear={clearEntries}
+      />
+
+      <CodeReviewPanel
+        isOpen={showCodeReview}
+        onClose={() => setShowCodeReview(false)}
+        files={codebase?.files || []}
+      />
+
+      <DependencyScanner
+        isOpen={showDepScanner}
+        onClose={() => setShowDepScanner(false)}
+        files={codebase?.files || []}
       />
 
       <TerminalBanner

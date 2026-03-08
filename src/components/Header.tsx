@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code2, Github, Sparkles, Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Zap, Menu, X, Command } from "lucide-react";
+import { Code2, Github, Sparkles, Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Zap, Menu, X, Command, Shield, FileSearch } from "lucide-react";
 import { Button } from "./ui/button";
 import RateLimitStatus from "./RateLimitStatus";
 import ThemeToggle from "./ThemeToggle";
@@ -19,6 +19,8 @@ interface HeaderProps {
   onOpenAnalytics?: () => void;
   onOpenDiffView?: () => void;
   onOpenPerformance?: () => void;
+  onOpenCodeReview?: () => void;
+  onOpenDepScanner?: () => void;
   isConnected?: boolean;
 }
 
@@ -26,13 +28,15 @@ const Header = ({
   onConnectRepo, githubToken, isDarkMode = true, onToggleTheme,
   unreadNotifications = 0, onOpenNotifications, onOpenSettings,
   onOpenActivityLog, onOpenConversations, onOpenAnalytics,
-  onOpenDiffView, onOpenPerformance, isConnected
+  onOpenDiffView, onOpenPerformance, onOpenCodeReview, onOpenDepScanner, isConnected
 }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toolButtons = [
     { icon: BarChart3, label: "Analytics", onClick: onOpenAnalytics, connected: true },
     { icon: GitCompare, label: "Compare", onClick: onOpenDiffView, connected: true },
+    { icon: FileSearch, label: "Code Review", onClick: onOpenCodeReview, connected: true },
+    { icon: Shield, label: "Security", onClick: onOpenDepScanner, connected: true },
     { icon: MessageSquare, label: "Conversations", onClick: onOpenConversations, connected: true },
     { icon: Clock, label: "Activity", onClick: onOpenActivityLog, connected: false },
     { icon: Zap, label: "Performance", onClick: onOpenPerformance, connected: false },
