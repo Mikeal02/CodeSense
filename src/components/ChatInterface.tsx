@@ -341,6 +341,10 @@ const ChatInterface = ({
                         >
                           {message.content}
                         </ReactMarkdown>
+                        {/* Streaming caret: show on last assistant message while loading */}
+                        {isLoading && idx === messages.length - 1 && message.content.length > 0 && (
+                          <span className="inline-block w-[2px] h-[1em] bg-primary align-middle ml-0.5 animate-caret-blink" />
+                        )}
                       </div>
                     ) : (
                       message.content
