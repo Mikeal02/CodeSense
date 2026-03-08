@@ -549,9 +549,18 @@ export function useCodebaseAnalysis() {
           }
         } catch { /* ignore partial leftovers */ }
       }
+
+      // Cache completed mode analysis (not custom questions)
+      if (!question && codebase) {
+        const cacheKey = `${codebase.repoName}:${mode}`;
+        setMessages((prev) => {
+          analysisCache.current.set(cacheKey, prev);
+          return prev;
+        });
+      }
     } catch (error) {
       console.error("Analysis error:", error);
-      toast.error(error instanceof Error ? error.message : "Analysis failed");
+      toast.error(error instanceof Error ? error.message : "Analysis failed. Please try again.");
       setMessages((prev) =>
         prev.filter((m) => m.role !== "assistant" || m.content !== "")
       );
