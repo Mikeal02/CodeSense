@@ -4,6 +4,7 @@ import { Code2, Github, Sparkles, Bell, Settings, Clock, MessageSquare, BarChart
 import { Button } from "./ui/button";
 import RateLimitStatus from "./RateLimitStatus";
 import ThemeToggle from "./ThemeToggle";
+import MagneticButton from "./MagneticButton";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -90,32 +91,34 @@ const Header = ({
 
         <div className="container mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between relative">
           {/* Logo */}
-          <motion.div 
-            className="flex items-center gap-2.5 sm:gap-3" 
-            data-onboarding="logo"
-            whileHover={{ x: 2 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          >
-            <motion.div
-              className="relative"
-              whileHover={{ scale: 1.08, rotate: 3 }}
-              whileTap={{ scale: 0.92 }}
-              transition={{ type: "spring", stiffness: 500, damping: 20 }}
+          <MagneticButton strength={0.2}>
+            <motion.div 
+              className="flex items-center gap-2.5 sm:gap-3" 
+              data-onboarding="logo"
+              whileHover={{ x: 2 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-primary via-primary to-accent flex items-center justify-center shadow-lg shadow-primary/25">
-                <Code2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-primary-foreground" />
-              </div>
               <motion.div
-                className="absolute -top-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-primary rounded-full"
-                animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              />
+                className="relative"
+                whileHover={{ scale: 1.08, rotate: 3 }}
+                whileTap={{ scale: 0.92 }}
+                transition={{ type: "spring", stiffness: 500, damping: 20 }}
+              >
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-primary via-primary to-accent flex items-center justify-center shadow-lg shadow-primary/25">
+                  <Code2 className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-primary-foreground" />
+                </div>
+                <motion.div
+                  className="absolute -top-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-primary rounded-full"
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                />
+              </motion.div>
+              <div>
+                <h1 className="text-sm sm:text-base font-bold font-display text-foreground leading-none tracking-tight">CodeSense</h1>
+                <p className="text-[9px] sm:text-[10px] text-muted-foreground/50 hidden sm:block font-mono tracking-wider">v2.0.0</p>
+              </div>
             </motion.div>
-            <div>
-              <h1 className="text-sm sm:text-base font-bold font-display text-foreground leading-none tracking-tight">CodeSense</h1>
-              <p className="text-[9px] sm:text-[10px] text-muted-foreground/50 hidden sm:block font-mono tracking-wider">v2.0.0</p>
-            </div>
-          </motion.div>
+          </MagneticButton>
           
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-1" data-onboarding="header-tools">
@@ -164,21 +167,25 @@ const Header = ({
             <div className="w-px h-5 bg-border/40 mx-1.5" />
             
             <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }} className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={onConnectRepo} className="gap-2 h-8 text-xs rounded-lg border-border/40 hover:border-primary/40 hover:bg-primary/[0.04] magnetic-hover">
-                <Github className="w-3.5 h-3.5" />
-                Connect
-              </Button>
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Button size="sm" className="gap-2 h-8 text-xs bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg shadow-lg shadow-primary/20 relative overflow-hidden group">
-                  <span className="relative z-10 flex items-center gap-2">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Get Started
-                  </span>
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-primary via-accent/30 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  />
+              <MagneticButton strength={0.25}>
+                <Button variant="outline" size="sm" onClick={onConnectRepo} className="gap-2 h-8 text-xs rounded-lg border-border/40 hover:border-primary/40 hover:bg-primary/[0.04]">
+                  <Github className="w-3.5 h-3.5" />
+                  Connect
                 </Button>
-              </motion.div>
+              </MagneticButton>
+              <MagneticButton strength={0.25}>
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <Button size="sm" className="gap-2 h-8 text-xs bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg shadow-lg shadow-primary/20 relative overflow-hidden group">
+                    <span className="relative z-10 flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      Get Started
+                    </span>
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-primary via-accent/30 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    />
+                  </Button>
+                </motion.div>
+              </MagneticButton>
             </motion.div>
           </div>
 
