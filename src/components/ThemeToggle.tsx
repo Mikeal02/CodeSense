@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface ThemeToggleProps {
   isDarkMode: boolean;
-  onToggle: () => void;
+  onToggle: (e: React.MouseEvent) => void;
   size?: "sm" | "md";
   className?: string;
 }
