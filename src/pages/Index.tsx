@@ -295,16 +295,13 @@ const Index = () => {
         )}
       </AnimatePresence>
       
-      <motion.div
-        layout
-        transition={{ layout: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }}
-      >
+      <div>
         <ModesSection 
           activeMode={activeMode} 
           onSelectMode={handleSelectMode}
           isConnected={!!codebase}
         />
-      </motion.div>
+      </div>
 
       <AnimatePresence mode="wait">
         {!!codebase && (
