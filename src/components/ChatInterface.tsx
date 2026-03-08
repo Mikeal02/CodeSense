@@ -16,6 +16,7 @@ import CodeSearchModal from "./CodeSearchModal";
 import BookmarksPanel from "./BookmarksPanel";
 import ExportReportModal from "./ExportReportModal";
 import KeyboardShortcutsModal from "./KeyboardShortcutsModal";
+import EmptyState from "./EmptyState";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { motion, AnimatePresence } from "framer-motion";
 
