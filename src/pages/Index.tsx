@@ -149,6 +149,22 @@ const Index = () => {
     addActivity("theme_changed", `Switched to ${isDarkMode ? 'light' : 'dark'} mode`);
   };
 
+  const handleShareReport = () => {
+    if (!codebase) return;
+    const fileSummary = codebase.files.map(f => ({
+      path: f.path,
+      lines: f.content.split("\n").length,
+      extension: f.path.split(".").pop() || "other",
+    }));
+    shareReport({
+      repoName: codebase.repoName,
+      activeMode,
+      messages: messages.map(m => ({ id: m.id, role: m.role, content: m.content })),
+      fileSummary,
+    });
+    addActivity("report_shared", `Shared report for ${codebase.repoName}`);
+  };
+
   return (
     <div className="min-h-screen bg-background noise-overlay pb-7">
       <Header 
