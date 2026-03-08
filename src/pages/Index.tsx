@@ -217,6 +217,7 @@ const Index = () => {
       <CustomCursor />
       <CursorGlow />
       <ScrollProgress />
+      <ConfettiExplosion active={showConfetti} />
 
       <Header
         onConnectRepo={uploadFolder} 
