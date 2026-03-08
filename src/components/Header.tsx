@@ -58,7 +58,7 @@ const Header = ({
         </div>
         <div className="container mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3" data-onboarding="logo">
             <motion.div
               className="relative"
               whileHover={{ scale: 1.05 }}
@@ -76,7 +76,7 @@ const Header = ({
           </div>
           
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1" data-onboarding="header-tools">
             <RateLimitStatus githubToken={githubToken} />
             
             {visibleTools.map((tool) => (
@@ -95,7 +95,9 @@ const Header = ({
             </Button>
             
             {onToggleTheme && (
-              <ThemeToggle isDarkMode={isDarkMode} onToggle={onToggleTheme} />
+              <div data-onboarding="theme-toggle">
+                <ThemeToggle isDarkMode={isDarkMode} onToggle={onToggleTheme} />
+              </div>
             )}
             
             <Button variant="ghost" size="icon" className="h-9 w-9" onClick={onOpenSettings} title="Settings (Ctrl+,)">
