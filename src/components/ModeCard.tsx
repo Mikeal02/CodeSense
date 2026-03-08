@@ -36,8 +36,12 @@ const ModeCard = ({ icon: Icon, title, description, isActive, onClick, disabled 
       onMouseMove={handleMouseMove}
       onMouseEnter={() => !disabled && setHovered(true)}
       onMouseLeave={() => { x.set(0); y.set(0); setHovered(false); }}
-      whileTap={!disabled ? { scale: 0.96 } : undefined}
+      whileTap={!disabled ? { scale: 0.92, rotateZ: -1 } : undefined}
+      whileHover={!disabled ? { y: -4 } : undefined}
       style={{ rotateX: disabled ? 0 : rotateX, rotateY: disabled ? 0 : rotateY, transformStyle: "preserve-3d", perspective: 800 }}
+      layout
+      layoutId={`mode-card-${title}`}
+      transition={{ layout: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } }}
       className={cn(
         "w-full p-3 sm:p-4 rounded-xl text-left transition-all duration-300 group relative overflow-hidden",
         "border",
