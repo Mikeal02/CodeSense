@@ -48,6 +48,8 @@ interface ChatInterfaceProps {
   files?: { path: string; content: string }[];
   selectedFileFromPalette?: string;
   onClearSelectedFile?: () => void;
+  onShareReport?: () => void;
+  isSharing?: boolean;
 }
 
 const ChatInterface = ({ 
