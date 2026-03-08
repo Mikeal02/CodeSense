@@ -32,6 +32,7 @@ import { useOnboarding } from "@/hooks/useOnboarding";
 import { useShareReport } from "@/hooks/useShareReport";
 import { useRepoInsights } from "@/hooks/useRepoInsights";
 import { usePersistentSessions } from "@/hooks/usePersistentSessions";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 
 // Lazy-load heavy workspace panels
 const RecentReposPanel = lazy(() => import("@/components/RecentReposPanel"));
