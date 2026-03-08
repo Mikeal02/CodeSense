@@ -32,6 +32,7 @@ import { usePerformanceMetrics } from "@/hooks/usePerformanceMetrics";
 import { useSearchHistory } from "@/hooks/useSearchHistory";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useShareReport } from "@/hooks/useShareReport";
+import { useRepoInsights } from "@/hooks/useRepoInsights";
 
 const Index = () => {
   const [showGitHubSelector, setShowGitHubSelector] = useState(false);
@@ -61,6 +62,7 @@ const Index = () => {
   const { history: searchHistory, addEntry: addSearchEntry } = useSearchHistory();
   const onboarding = useOnboarding();
   const { shareReport, isSharing } = useShareReport();
+  const repoInsights = useRepoInsights();
   const {
     codebase,
     isLoading,
@@ -86,6 +88,11 @@ const Index = () => {
       });
       addActivity("repo_connected", `Connected to ${codebase.repoName}`, `${codebase.files.length} files loaded`);
       addNotification("success", "Repository Connected", `${codebase.repoName} loaded with ${codebase.files.length} files`);
+      
+      // Fetch GitHub insights for GitHub repos
+      if (codebase.source === "github") {
+        repoInsights.fetchInsights(codebase.repoName, githubToken);
+      }
     }
   }, [codebase?.repoName]);
 
@@ -210,6 +217,7 @@ const Index = () => {
           githubToken={githubToken}
           onUpdateGithubToken={updateGithubToken}
           files={codebase?.files}
+          repoInsights={repoInsights}
         />
       </motion.div>
       
