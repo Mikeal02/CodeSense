@@ -356,7 +356,7 @@ const HeroSection = ({
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };
