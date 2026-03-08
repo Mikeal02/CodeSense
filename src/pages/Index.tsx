@@ -256,10 +256,7 @@ const Index = () => {
         )}
       </AnimatePresence>
       
-      <motion.div
-        layout
-        transition={{ layout: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }}
-      >
+      <div>
         <HeroSection 
           onSubmitRepo={connectRepo}
           onUploadFolder={uploadFolder}
@@ -273,16 +270,16 @@ const Index = () => {
           files={codebase?.files}
           repoInsights={repoInsights}
         />
-      </motion.div>
+      </div>
       
       <AnimatePresence mode="popLayout">
         {!codebase && recentRepos.length > 0 && (
           <motion.div
             key="recent-repos"
-            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            initial={{ opacity: 0, y: 30, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -30, scale: 0.9, filter: "blur(8px)" }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className="container mx-auto px-4 sm:px-6 -mt-4 sm:-mt-8 mb-6 sm:mb-8 relative z-10"
           >
             <Suspense fallback={null}>
@@ -298,25 +295,22 @@ const Index = () => {
         )}
       </AnimatePresence>
       
-      <motion.div
-        layout
-        transition={{ layout: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }}
-      >
+      <div>
         <ModesSection 
           activeMode={activeMode} 
           onSelectMode={handleSelectMode}
           isConnected={!!codebase}
         />
-      </motion.div>
+      </div>
 
       <AnimatePresence mode="wait">
         {!!codebase && (
           <motion.div
             key="chat-panel"
-            initial={{ opacity: 0, y: 60, scale: 0.97, filter: "blur(12px)" }}
-            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: 40, scale: 0.97, filter: "blur(12px)" }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, y: 40, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30, scale: 0.98 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
             <ErrorBoundary fallbackMessage="Chat interface encountered an error. Try refreshing.">
               <ChatInterface 

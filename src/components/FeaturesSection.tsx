@@ -54,13 +54,13 @@ const BentoCard = ({ feature, index, sectionVisible }: { feature: typeof feature
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: 50, filter: "blur(12px)", rotateX: -8 }}
+      initial={{ opacity: 0, y: 35 }}
       animate={sectionVisible 
-        ? { opacity: 1, y: 0, filter: "blur(0px)", rotateX: 0 } 
-        : { opacity: 0, y: 50, filter: "blur(12px)", rotateX: -8 }
+        ? { opacity: 1, y: 0 } 
+        : { opacity: 0, y: 35 }
       }
-      transition={{ duration: 0.9, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ y: -6, transition: { duration: 0.3, ease: "easeOut" } }}
+      transition={{ duration: 0.6, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ y: -5, transition: { duration: 0.25, ease: "easeOut" } }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => { x.set(0); y.set(0); setHovered(false); }}
