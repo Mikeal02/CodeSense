@@ -374,6 +374,18 @@ const Index = () => {
         onClear={clearEntries}
       />
 
+      <CodeReviewPanel
+        isOpen={showCodeReview}
+        onClose={() => setShowCodeReview(false)}
+        files={codebase?.files || []}
+      />
+
+      <DependencyScanner
+        isOpen={showDepScanner}
+        onClose={() => setShowDepScanner(false)}
+        files={codebase?.files || []}
+      />
+
       <TerminalBanner
         isLoading={isLoading}
         repoName={codebase?.repoName}
