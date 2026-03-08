@@ -284,18 +284,20 @@ const Index = () => {
         onSelectMode={handleSelectMode}
         isConnected={!!codebase}
       />
-      <ChatInterface 
-        isActive={!!codebase}
-        messages={messages}
-        onSendMessage={handleAskQuestion}
-        isLoading={isLoading}
-        repoName={codebase?.repoName}
-        files={codebase?.files || []}
-        selectedFileFromPalette={selectedFileFromPalette}
-        onClearSelectedFile={() => setSelectedFileFromPalette(undefined)}
-        onShareReport={handleShareReport}
-        isSharing={isSharing}
-      />
+      <ErrorBoundary fallbackMessage="Chat interface encountered an error. Try refreshing.">
+        <ChatInterface 
+          isActive={!!codebase}
+          messages={messages}
+          onSendMessage={handleAskQuestion}
+          isLoading={isLoading}
+          repoName={codebase?.repoName}
+          files={codebase?.files || []}
+          selectedFileFromPalette={selectedFileFromPalette}
+          onClearSelectedFile={() => setSelectedFileFromPalette(undefined)}
+          onShareReport={handleShareReport}
+          isSharing={isSharing}
+        />
+      </ErrorBoundary>
       <SocialProofSection />
       <FeaturesSection />
       <Footer />
