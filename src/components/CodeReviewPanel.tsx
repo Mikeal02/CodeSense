@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   X, Shield, Bug, Zap, Lightbulb, AlertTriangle, ChevronDown, ChevronRight,
   Loader2, FileCode, CheckCircle2, XCircle, AlertCircle, Info, Sparkles,
-  Wand2, Copy, Check, ArrowRight, Code2, Undo2
+  Wand2, Copy, Check, ArrowRight, Code2, Undo2, Download
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
@@ -313,6 +313,47 @@ const CodeReviewPanel = ({ isOpen, onClose, files }: CodeReviewPanelProps) => {
     toast.success(`${fixableIndices.length} fixes applied (preview only)`);
   }, [selectedFile, currentReview]);
 
+  const handleExportPatch = useCallback(() => {
+    const totalApplied = Array.from(appliedFixes.entries()).reduce((sum, [, s]) => sum + s.size, 0);
+    if (totalApplied === 0) {
+      toast.error("No fixes applied to export");
+      return;
+    }
+
+    let patch = "";
+    for (const [filePath, fixIndices] of appliedFixes.entries()) {
+      if (fixIndices.size === 0) continue;
+      const review = reviews.get(filePath);
+      if (!review) continue;
+
+      patch += `--- a/${filePath}\n+++ b/${filePath}\n`;
+      for (const idx of Array.from(fixIndices).sort((a, b) => a - b)) {
+        const issue = review.issues[idx];
+        if (!issue?.beforeCode || !issue?.afterCode) continue;
+
+        const beforeLines = issue.beforeCode.split("\n");
+        const afterLines = issue.afterCode.split("\n");
+        const startLine = issue.line || 1;
+
+        patch += `@@ -${startLine},${beforeLines.length} +${startLine},${afterLines.length} @@ ${issue.title}\n`;
+        beforeLines.forEach((l) => (patch += `-${l}\n`));
+        afterLines.forEach((l) => (patch += `+${l}\n`));
+      }
+      patch += "\n";
+    }
+
+    const blob = new Blob([patch], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "code-review-fixes.patch";
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Exported ${totalApplied} fix(es) as patch file`);
+  }, [appliedFixes, reviews]);
+
+  const totalAppliedCount = Array.from(appliedFixes.values()).reduce((sum, s) => sum + s.size, 0);
+
   const allIssues = Array.from(reviews.values()).flatMap((r) => r.issues);
   const avgScore = reviews.size > 0
     ? Math.round(Array.from(reviews.values()).reduce((s, r) => s + r.score, 0) / reviews.size)
@@ -347,6 +388,17 @@ const CodeReviewPanel = ({ isOpen, onClose, files }: CodeReviewPanelProps) => {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {totalAppliedCount > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleExportPatch}
+                className="gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Export Patch ({totalAppliedCount})
+              </Button>
+            )}
             {codeFiles.length > 0 && (
               <Button
                 size="sm"
