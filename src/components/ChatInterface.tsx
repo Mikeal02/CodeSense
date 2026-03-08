@@ -61,6 +61,8 @@ const ChatInterface = ({
   files = [],
   selectedFileFromPalette,
   onClearSelectedFile,
+  onShareReport,
+  isSharing,
 }: ChatInterfaceProps) => {
   const [input, setInput] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
