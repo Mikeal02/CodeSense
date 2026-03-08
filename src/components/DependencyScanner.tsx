@@ -42,14 +42,26 @@ const VulnCard = ({ vuln, index }: { vuln: Vulnerability; index: number }) => {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-sm font-medium text-foreground">{vuln.package}</span>
-            <span className="text-[10px] font-mono text-muted-foreground">v{vuln.version}</span>
+            <span className="text-[10px] font-mono text-muted-foreground bg-muted/40 px-1.5 py-0.5 rounded">v{vuln.version}</span>
+            {/* CVSS Score Badge */}
+            {vuln.severity === "critical" && (
+              <span className="text-[9px] font-bold text-red-300 bg-red-500/20 px-1.5 py-0.5 rounded-full ring-1 ring-red-500/30 animate-pulse">CVSS 9.0+</span>
+            )}
+            {vuln.severity === "high" && (
+              <span className="text-[9px] font-bold text-orange-300 bg-orange-500/20 px-1.5 py-0.5 rounded-full ring-1 ring-orange-500/30">CVSS 7.0+</span>
+            )}
           </div>
           <p className="text-xs text-muted-foreground truncate mt-0.5">{vuln.title}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <span className={cn("text-[10px] font-bold uppercase px-1.5 py-0.5 rounded", cfg.bg, cfg.color)}>
+          <span className={cn("text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ring-1", cfg.bg, cfg.color, cfg.ring)}>
             {vuln.severity}
           </span>
+          {vuln.fixedIn && vuln.fixedIn !== "No fix available" && (
+            <span className="text-[9px] bg-success/10 text-success px-1.5 py-0.5 rounded-full ring-1 ring-success/20">
+              Fix ✓
+            </span>
+          )}
           {expanded ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
         </div>
       </button>
