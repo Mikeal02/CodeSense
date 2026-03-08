@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-type IllustrationType = "no-repo" | "no-results" | "empty-chat" | "no-bookmarks" | "no-conversations" | "error";
+type IllustrationType = "no-repo" | "no-results" | "empty-chat" | "no-bookmarks" | "no-conversations" | "error" | "no-data" | "loading-failed";
 
 interface EmptyStateProps {
   type: IllustrationType;
