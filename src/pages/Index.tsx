@@ -17,6 +17,8 @@ import ConversationManager from "@/components/ConversationManager";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import FileDiffView from "@/components/FileDiffView";
 import PerformanceMonitor from "@/components/PerformanceMonitor";
+import CodeReviewPanel from "@/components/CodeReviewPanel";
+import DependencyScanner from "@/components/DependencyScanner";
 import StatusBar from "@/components/StatusBar";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TerminalBanner from "@/components/TerminalBanner";
