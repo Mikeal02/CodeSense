@@ -118,40 +118,7 @@ const SocialProofSection = () => {
           </motion.p>
           <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-4">
             {testimonials.map((t, i) => (
-              <motion.div
-                key={t.name}
-                initial={{ opacity: 0, y: 40, filter: "blur(6px)" }}
-                animate={testimonialsVisible 
-                  ? { opacity: 1, y: 0, filter: "blur(0px)" } 
-                  : { opacity: 0, y: 40, filter: "blur(6px)" }
-                }
-                transition={{ delay: i * 0.12, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                className="bento-card p-6 sm:p-7 group"
-              >
-                {/* Quote icon */}
-                <Quote className="w-5 h-5 text-primary/20 mb-4 group-hover:text-primary/40 transition-colors" />
-
-                {/* Stars */}
-                <div className="flex gap-1 mb-4">
-                  {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="w-3.5 h-3.5 fill-warning text-warning" />
-                  ))}
-                </div>
-
-                <p className="text-sm text-foreground/85 leading-relaxed mb-5">
-                  "{t.text}"
-                </p>
-
-                <div className="flex items-center gap-3 pt-4 border-t border-border/30">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-xs font-bold text-primary-foreground shadow-lg shadow-primary/15">
-                    {t.avatar}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}</p>
-                  </div>
-                </div>
-              </motion.div>
+              <TestimonialCard key={t.name} testimonial={t} index={i} isVisible={testimonialsVisible} />
             ))}
           </div>
         </div>
