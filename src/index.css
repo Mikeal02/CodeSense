@@ -803,3 +803,18 @@
   opacity: 1;
   pointer-events: auto;
 }
+
+/* ========== Shiki Syntax Highlighting ========== */
+.shiki-container pre {
+  background: transparent !important;
+  margin: 0;
+  padding: 0;
+}
+.shiki-container code {
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.6;
+}
+.shiki-container .line {
+  padding: 0 0.25rem;
+  display: block;
+}
