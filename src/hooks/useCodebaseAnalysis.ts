@@ -339,6 +339,8 @@ export function useCodebaseAnalysis() {
     return localStorage.getItem('github_token');
   });
   const folderInputRef = useRef<HTMLInputElement | null>(null);
+  // Cache completed AI responses per mode to avoid redundant calls
+  const analysisCache = useRef<Map<string, Message[]>>(new Map());
 
   // Persist messages to session storage
   useEffect(() => {
@@ -441,6 +443,16 @@ export function useCodebaseAnalysis() {
       return;
     }
 
+    // Return cached results for mode-only requests (not custom questions)
+    if (!question) {
+      const cacheKey = `${codebase.repoName}:${mode}`;
+      const cached = analysisCache.current.get(cacheKey);
+      if (cached) {
+        setMessages(cached);
+        return;
+      }
+    }
+
     setIsLoading(true);
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -481,7 +493,8 @@ export function useCodebaseAnalysis() {
       ]);
 
       let buffer = "";
-      while (true) {
+      let streamDone = false;
+      while (!streamDone) {
         const { done, value } = await reader.read();
         if (done) break;
 
@@ -497,7 +510,10 @@ export function useCodebaseAnalysis() {
           if (!line.startsWith("data: ")) continue;
 
           const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") break;
+          if (jsonStr === "[DONE]") {
+            streamDone = true;
+            break;
+          }
 
           try {
             const parsed = JSON.parse(jsonStr);
@@ -511,14 +527,40 @@ export function useCodebaseAnalysis() {
               );
             }
           } catch {
-            buffer = line + "\n" + buffer;
+            // Incomplete JSON — put back just the data payload for next chunk
+            buffer = jsonStr;
             break;
           }
         }
       }
+
+      // Final flush for any remaining buffer
+      if (buffer.trim() && buffer.trim() !== "[DONE]") {
+        try {
+          const parsed = JSON.parse(buffer.startsWith("data: ") ? buffer.slice(6).trim() : buffer.trim());
+          const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+          if (content) {
+            assistantContent += content;
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantMessageId ? { ...m, content: assistantContent } : m
+              )
+            );
+          }
+        } catch { /* ignore partial leftovers */ }
+      }
+
+      // Cache completed mode analysis (not custom questions)
+      if (!question && codebase) {
+        const cacheKey = `${codebase.repoName}:${mode}`;
+        setMessages((prev) => {
+          analysisCache.current.set(cacheKey, prev);
+          return prev;
+        });
+      }
     } catch (error) {
       console.error("Analysis error:", error);
-      toast.error(error instanceof Error ? error.message : "Analysis failed");
+      toast.error(error instanceof Error ? error.message : "Analysis failed. Please try again.");
       setMessages((prev) =>
         prev.filter((m) => m.role !== "assistant" || m.content !== "")
       );
@@ -533,6 +575,7 @@ export function useCodebaseAnalysis() {
       const data = await fetchGitHubRepo(url);
       setCodebase(data);
       setMessages([]);
+      analysisCache.current.clear();
       toast.success(`Connected to ${data.repoName}`);
     } catch (error) {
       console.error("Error connecting to repo:", error);

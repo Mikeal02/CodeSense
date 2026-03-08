@@ -63,7 +63,7 @@ const ChatInterface = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFileTree, setShowFileTree] = useState(false);
   const [selectedFile, setSelectedFile] = useState<string | undefined>();
-  const [shouldAutoScroll, setShouldAutoScroll] = useState(false);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const [showSplitView, setShowSplitView] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showGraph, setShowGraph] = useState(false);
@@ -106,15 +106,15 @@ const ChatInterface = ({
     }
   }, [shouldAutoScroll]);
 
-  // Keep scrolled to bottom during streaming
+  // Keep scrolled to bottom during streaming — trigger on content changes
   useEffect(() => {
-    if (isLoading && messages.length > 0) {
+    if (messages.length > 0) {
       const last = messages[messages.length - 1];
-      if (last?.role === "assistant") {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      if (last?.role === "assistant" && isLoading) {
+        messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
       }
     }
-  }, [isLoading, messages]);
+  }, [isLoading, messages, messages.length > 0 ? messages[messages.length - 1]?.content?.length : 0]);
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -172,7 +172,7 @@ const ChatInterface = ({
               </button>
             )}
           </div>
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden" style={{ minHeight: 0 }}>
             <FileTreeView files={files} onFileSelect={setSelectedFile} selectedFile={selectedFile} />
           </div>
         </div>

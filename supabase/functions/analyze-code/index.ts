@@ -130,7 +130,14 @@ serve(async (req) => {
 
     const systemPrompt = MODE_PROMPTS[mode] || MODE_PROMPTS.ask;
     
-    let userMessage = `Here is the codebase to analyze:\n\n${codebase}`;
+    // Truncate codebase to avoid token limits (roughly 120k chars = ~30k tokens)
+    const maxCodebaseLength = 120000;
+    let codebaseText = codebase || "";
+    if (codebaseText.length > maxCodebaseLength) {
+      codebaseText = codebaseText.slice(0, maxCodebaseLength) + "\n\n[... truncated for length ...]";
+    }
+    
+    let userMessage = `Here is the codebase to analyze:\n\n${codebaseText}`;
     
     if (question) {
       userMessage += `\n\nUser question: ${question}`;
@@ -143,31 +150,32 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userMessage },
         ],
         stream: true,
+        max_tokens: 4096,
       }),
     });
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
+        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please wait a moment and try again." }), {
           status: 429,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Payment required. Please add credits to continue." }), {
+        return new Response(JSON.stringify({ error: "AI usage limit reached. Please add credits to continue." }), {
           status: 402,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const errorText = await response.text();
       console.error("AI gateway error:", response.status, errorText);
-      throw new Error(`AI gateway error: ${response.status}`);
+      throw new Error(`AI analysis failed (${response.status}). Please try again.`);
     }
 
     return new Response(response.body, {
@@ -176,7 +184,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Error in analyze-code function:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: error instanceof Error ? error.message : "Analysis failed. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
