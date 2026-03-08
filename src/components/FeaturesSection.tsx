@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { Shield, Zap, Brain, Lock, Code2, Globe, Layers, Cpu, ArrowRight, Sparkles, BarChart3 } from "lucide-react";
+import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from "framer-motion";
+import { Shield, Zap, Brain, Lock, Code2, Globe, Layers, Cpu, ArrowRight, Sparkles } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const features = [
@@ -27,29 +27,38 @@ const BentoCard = ({ feature, index, sectionVisible }: { feature: typeof feature
   const [hovered, setHovered] = useState(false);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
   
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [5, -5]), { stiffness: 300, damping: 30 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-5, 5]), { stiffness: 300, damping: 30 });
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [6, -6]), { stiffness: 350, damping: 25 });
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-6, 6]), { stiffness: 350, damping: 25 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
-    x.set((e.clientX - rect.left) / rect.width - 0.5);
-    y.set((e.clientY - rect.top) / rect.height - 0.5);
+    const nx = (e.clientX - rect.left) / rect.width;
+    const ny = (e.clientY - rect.top) / rect.height;
+    x.set(nx - 0.5);
+    y.set(ny - 0.5);
+    mouseX.set(nx);
+    mouseY.set(ny);
   };
 
   const color = accentColors[feature.accent] || accentColors.primary;
   const isLarge = feature.size === "large";
 
+  const spotlightX = useTransform(mouseX, [0, 1], ["0%", "100%"]);
+  const spotlightY = useTransform(mouseY, [0, 1], ["0%", "100%"]);
+
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: 40, filter: "blur(8px)" }}
+      initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
       animate={sectionVisible 
         ? { opacity: 1, y: 0, filter: "blur(0px)" } 
-        : { opacity: 0, y: 40, filter: "blur(8px)" }
+        : { opacity: 0, y: 40, filter: "blur(10px)" }
       }
-      transition={{ duration: 0.7, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.8, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => { x.set(0); y.set(0); setHovered(false); }}
@@ -57,47 +66,63 @@ const BentoCard = ({ feature, index, sectionVisible }: { feature: typeof feature
       className={`relative cursor-default ${feature.span}`}
     >
       <div className={`
-        bento-card relative overflow-hidden transition-all duration-400
+        bento-card relative overflow-hidden transition-all duration-500
         ${isLarge ? "p-6 sm:p-8" : "p-5 sm:p-6"}
         ${hovered ? "border-primary/30" : ""}
       `}>
-        {/* Spotlight radial gradient on hover */}
-        {hovered && (
-          <motion.div
-            className="absolute inset-0 pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{
-              background: `radial-gradient(circle at 50% 0%, ${color}12 0%, transparent 60%)`,
-            }}
-          />
-        )}
+        {/* Dynamic spotlight following cursor */}
+        <AnimatePresence>
+          {hovered && (
+            <motion.div
+              className="absolute inset-0 pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              style={{
+                background: `radial-gradient(400px circle at ${spotlightX.get()} ${spotlightY.get()}, ${color}10 0%, transparent 60%)`,
+              }}
+            />
+          )}
+        </AnimatePresence>
 
-        {/* Top accent line */}
+        {/* Top accent line with glow */}
         <motion.div
           className="absolute top-0 left-0 right-0 h-px"
           style={{ background: color }}
           initial={{ scaleX: 0, opacity: 0 }}
-          animate={{ scaleX: hovered ? 1 : 0, opacity: hovered ? 0.5 : 0 }}
-          transition={{ duration: 0.4 }}
+          animate={{ scaleX: hovered ? 1 : 0, opacity: hovered ? 0.6 : 0 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         />
-
-        {/* Icon */}
-        <div
-          className={`${isLarge ? "w-14 h-14" : "w-11 h-11"} rounded-xl flex items-center justify-center mb-4 transition-all duration-400 relative`}
-          style={{
-            background: hovered ? `${color}15` : "hsl(var(--secondary) / 0.4)",
-            boxShadow: hovered ? `0 0 24px ${color}20` : "none",
-          }}
-        >
-          <feature.icon
-            className={`${isLarge ? "w-7 h-7" : "w-5 h-5"} transition-all duration-300`}
-            style={{ color: hovered ? color : "hsl(var(--muted-foreground))" }}
+        {hovered && (
+          <motion.div
+            className="absolute top-0 left-0 right-0 h-2 blur-sm pointer-events-none"
+            style={{ background: color, opacity: 0.15 }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.4 }}
           />
-        </div>
+        )}
 
-        <h3 className={`${isLarge ? "text-base sm:text-lg" : "text-sm"} font-semibold mb-2 text-foreground transition-colors`}>
+        {/* Icon with animated background */}
+        <motion.div
+          animate={{
+            scale: hovered ? 1.08 : 1,
+            backgroundColor: hovered ? `${color}18` : "hsl(var(--secondary) / 0.4)",
+            boxShadow: hovered ? `0 0 28px ${color}20` : "0 0 0 transparent",
+          }}
+          transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+          className={`${isLarge ? "w-14 h-14" : "w-11 h-11"} rounded-xl flex items-center justify-center mb-4 relative`}
+        >
+          <motion.div
+            animate={{ color: hovered ? color : "hsl(var(--muted-foreground))" }}
+            transition={{ duration: 0.25 }}
+          >
+            <feature.icon className={`${isLarge ? "w-7 h-7" : "w-5 h-5"}`} />
+          </motion.div>
+        </motion.div>
+
+        <h3 className={`${isLarge ? "text-base sm:text-lg" : "text-sm"} font-semibold mb-2 text-foreground transition-colors tracking-tight`}>
           {feature.title}
         </h3>
         <p className={`${isLarge ? "text-sm" : "text-xs"} text-muted-foreground leading-relaxed`}>
@@ -106,9 +131,13 @@ const BentoCard = ({ feature, index, sectionVisible }: { feature: typeof feature
 
         {/* Corner decoration for large cards */}
         {isLarge && (
-          <div className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none opacity-[0.03]">
+          <motion.div
+            className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none"
+            animate={{ opacity: hovered ? 0.05 : 0.02 }}
+            transition={{ duration: 0.3 }}
+          >
             <feature.icon className="w-full h-full" />
-          </div>
+          </motion.div>
         )}
       </div>
     </motion.div>
@@ -138,7 +167,9 @@ const FeaturesSection = () => {
             transition={{ delay: 0.1 }}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/40 bg-secondary/20 backdrop-blur-sm mb-5 text-xs text-muted-foreground"
           >
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 3, repeat: Infinity }}>
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+            </motion.div>
             Capabilities
           </motion.div>
           <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-4 sm:mb-5 tracking-tight">
@@ -163,11 +194,14 @@ const FeaturesSection = () => {
           transition={{ delay: 0.6, duration: 0.5 }}
           className="mt-14 sm:mt-18 text-center"
         >
-          <div className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl glass border border-primary/15 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all cursor-pointer group">
+          <motion.div
+            whileHover={{ scale: 1.02, y: -1 }}
+            className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl glass border border-primary/15 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all cursor-pointer group"
+          >
             <Zap className="w-4 h-4 text-primary" />
             <span>Paste a GitHub URL above to see it in action</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>
