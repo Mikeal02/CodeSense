@@ -82,6 +82,9 @@ const HeroSection = ({
     >
       <AuroraBackground />
       <ParticleCanvas />
+      
+      {/* Code Rain overlay */}
+      <CodeRainCanvas />
 
       <motion.div
         className="absolute inset-0 pointer-events-none"
