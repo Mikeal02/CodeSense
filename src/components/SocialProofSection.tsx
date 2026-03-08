@@ -114,6 +114,8 @@ const SocialProofSection = () => {
             animate={testimonialsVisible ? { opacity: 1 } : { opacity: 0 }}
             className="text-center text-[10px] uppercase tracking-[0.25em] text-muted-foreground/60 mb-8"
           >
+            <TextReveal delay={0.05}>What developers say</TextReveal>
+          </motion.p>
             What developers say
           </motion.p>
           <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-4">
