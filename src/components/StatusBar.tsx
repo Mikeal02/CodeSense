@@ -54,6 +54,7 @@ const StatusBar = ({
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5, duration: 0.3 }}
       className="fixed bottom-0 left-0 right-0 z-40 h-7 bg-card/95 backdrop-blur-xl border-t border-border/60 flex items-center justify-between px-3 text-[11px] font-mono select-none"
+      data-onboarding="status-bar"
     >
       {/* Left section */}
       <div className="flex items-center gap-3">
