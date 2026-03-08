@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { 
   Download, FileText, FileJson, Copy, Check, X, 
-  FileCode, BarChart3, MessageSquare
+  FileCode, BarChart3, MessageSquare, Printer
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ interface ExportReportModalProps {
   messages: Message[];
 }
 
-type ExportFormat = "markdown" | "json" | "text";
+type ExportFormat = "markdown" | "json" | "text" | "pdf";
 type ExportContent = "all" | "chat" | "structure" | "stats";
 
 const ExportReportModal = ({
