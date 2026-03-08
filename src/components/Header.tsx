@@ -4,6 +4,7 @@ import { Code2, Github, Sparkles, Bell, Settings, Clock, MessageSquare, BarChart
 import { Button } from "./ui/button";
 import RateLimitStatus from "./RateLimitStatus";
 import ThemeToggle from "./ThemeToggle";
+import MagneticButton from "./MagneticButton";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
