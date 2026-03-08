@@ -10,7 +10,7 @@ interface HeaderProps {
   onConnectRepo: () => void;
   githubToken?: string | null;
   isDarkMode?: boolean;
-  onToggleTheme?: () => void;
+  onToggleTheme?: (e?: React.MouseEvent) => void;
   unreadNotifications?: number;
   onOpenNotifications?: () => void;
   onOpenSettings?: () => void;

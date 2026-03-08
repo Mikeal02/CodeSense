@@ -8,6 +8,7 @@ import TypewriterText from "./TypewriterText";
 import RepoHealthScore from "./RepoHealthScore";
 import RepoInsights from "./RepoInsights";
 import AuroraBackground from "./AuroraBackground";
+import CodeRainCanvas from "./CodeRainCanvas";
 import { FileContent } from "@/hooks/useCodebaseAnalysis";
 import { RepoInsightsData } from "@/hooks/useRepoInsights";
 
@@ -82,6 +83,9 @@ const HeroSection = ({
     >
       <AuroraBackground />
       <ParticleCanvas />
+      
+      {/* Code Rain overlay */}
+      <CodeRainCanvas />
 
       <motion.div
         className="absolute inset-0 pointer-events-none"

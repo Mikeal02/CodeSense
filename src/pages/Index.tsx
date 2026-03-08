@@ -20,6 +20,7 @@ import PerformanceMonitor from "@/components/PerformanceMonitor";
 import CodeReviewPanel from "@/components/CodeReviewPanel";
 import DependencyScanner from "@/components/DependencyScanner";
 import StatusBar from "@/components/StatusBar";
+import FloatingDock from "@/components/FloatingDock";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TerminalBanner from "@/components/TerminalBanner";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
@@ -155,8 +156,8 @@ const Index = () => {
     setTimeout(() => endTimer(timerId), 100);
   };
 
-  const handleToggleTheme = () => {
-    toggleTheme();
+  const handleToggleTheme = (e?: React.MouseEvent | MouseEvent) => {
+    toggleTheme(e);
     addActivity("theme_changed", `Switched to ${isDarkMode ? 'light' : 'dark'} mode`);
   };
 
@@ -384,6 +385,16 @@ const Index = () => {
         isOpen={showDepScanner}
         onClose={() => setShowDepScanner(false)}
         files={codebase?.files || []}
+      />
+
+      <FloatingDock
+        isConnected={!!codebase}
+        onOpenCommandPalette={() => setShowCommandPalette(true)}
+        onOpenCodeReview={() => setShowCodeReview(true)}
+        onOpenDepScanner={() => setShowDepScanner(true)}
+        onOpenAnalytics={() => setShowAnalytics(true)}
+        onOpenDiffView={() => setShowDiffView(true)}
+        onOpenConversations={() => setShowConversations(true)}
       />
 
       <TerminalBanner
