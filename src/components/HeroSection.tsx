@@ -6,8 +6,10 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-mo
 import ParticleCanvas from "./ParticleCanvas";
 import TypewriterText from "./TypewriterText";
 import RepoHealthScore from "./RepoHealthScore";
+import RepoInsights from "./RepoInsights";
 import AuroraBackground from "./AuroraBackground";
 import { FileContent } from "@/hooks/useCodebaseAnalysis";
+import { RepoInsightsData } from "@/hooks/useRepoInsights";
 
 interface HeroSectionProps {
   onSubmitRepo: (url: string) => void;
@@ -20,6 +22,7 @@ interface HeroSectionProps {
   githubToken?: string | null;
   onUpdateGithubToken?: (token: string | null) => void;
   files?: FileContent[];
+  repoInsights?: RepoInsightsData;
 }
 
 const heroSubtitles = [
@@ -41,11 +44,12 @@ const stats = [
 const HeroSection = ({
   onSubmitRepo, onUploadFolder, onLoadDemo, onOpenGitHubSelector,
   isLoading, isConnected, repoName, githubToken, onUpdateGithubToken,
-  files = [],
+  files = [], repoInsights,
 }: HeroSectionProps) => {
   const [repoUrl, setRepoUrl] = useState("");
   const [showTokenInput, setShowTokenInput] = useState(false);
   const [tokenInput, setTokenInput] = useState(githubToken || "");
+  const [showInsights, setShowInsights] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -76,13 +80,9 @@ const HeroSection = ({
       onMouseMove={handleMouseMove}
       className="relative min-h-[90vh] sm:min-h-[95vh] flex items-center justify-center pt-14 sm:pt-16 overflow-hidden"
     >
-      {/* Aurora background */}
       <AuroraBackground />
-
-      {/* Particle layer */}
       <ParticleCanvas />
 
-      {/* Interactive spotlight */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -90,7 +90,7 @@ const HeroSection = ({
         }}
       />
 
-      {/* Floating geometric accents */}
+      {/* Floating accents */}
       <motion.div
         className="absolute top-[15%] right-[12%] w-24 h-24 sm:w-40 sm:h-40 border border-primary/[0.06] rounded-2xl pointer-events-none"
         animate={{ rotate: [0, 90, 180, 270, 360], y: [0, -30, 0] }}
@@ -105,11 +105,6 @@ const HeroSection = ({
         className="absolute top-[40%] left-[80%] w-3 h-3 bg-primary/20 rounded-full pointer-events-none"
         animate={{ y: [0, -20, 0], opacity: [0.3, 0.8, 0.3] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute top-[60%] left-[15%] w-2 h-2 bg-accent/20 rounded-full pointer-events-none"
-        animate={{ y: [0, 15, 0], opacity: [0.2, 0.6, 0.2] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
       />
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
@@ -149,22 +144,17 @@ const HeroSection = ({
             </span>
           </motion.h1>
 
-          {/* Typewriter subtitle */}
+          {/* Typewriter */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
             className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-10 h-8 flex items-center justify-center"
           >
-            <TypewriterText
-              phrases={heroSubtitles}
-              typingSpeed={50}
-              deletingSpeed={25}
-              pauseTime={2200}
-            />
+            <TypewriterText phrases={heroSubtitles} typingSpeed={50} deletingSpeed={25} pauseTime={2200} />
           </motion.div>
 
-          {/* Connected state: show health score */}
+          {/* Connected / Disconnected states */}
           <AnimatePresence mode="wait">
             {isConnected && repoName ? (
               <motion.div
@@ -181,6 +171,32 @@ const HeroSection = ({
 
                 {files.length > 0 && (
                   <RepoHealthScore files={files} repoName={repoName} />
+                )}
+
+                {/* GitHub Insights Toggle */}
+                {repoInsights && (repoInsights.metadata || repoInsights.isLoading) && (
+                  <div className="max-w-2xl mx-auto">
+                    <button
+                      onClick={() => setShowInsights(!showInsights)}
+                      className="text-[11px] text-primary/60 hover:text-primary transition-colors flex items-center gap-1.5 mx-auto mb-3"
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      {showInsights ? "Hide" : "Show"} GitHub Insights
+                    </button>
+                    <AnimatePresence>
+                      {showInsights && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="overflow-hidden"
+                        >
+                          <RepoInsights insights={repoInsights} repoName={repoName} />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 )}
 
                 <p className="text-muted-foreground text-sm flex items-center justify-center gap-2">
@@ -208,7 +224,6 @@ const HeroSection = ({
                       className="pl-10 sm:pl-12 h-12 sm:h-14 bg-card/50 backdrop-blur-sm border-border/40 text-sm sm:text-base focus:border-primary/50 focus:bg-card/70 transition-all rounded-xl"
                       disabled={isLoading}
                     />
-                    {/* Command hint */}
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 text-[10px] text-muted-foreground/50">
                       <kbd className="px-1.5 py-0.5 rounded bg-secondary/60 border border-border/30 font-mono">⌘K</kbd>
                     </div>
@@ -298,7 +313,7 @@ const HeroSection = ({
                   </button>
                 </div>
 
-                {/* Animated stats ticker */}
+                {/* Stats ticker */}
                 <div className="mt-12 sm:mt-16 relative">
                   <div className="flex justify-center flex-wrap gap-6 sm:gap-10 px-4">
                     {stats.map((stat, i) => (
