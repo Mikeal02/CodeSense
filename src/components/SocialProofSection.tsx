@@ -2,6 +2,7 @@ import { motion, useMotionValue, animate } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { Star, Users, GitBranch, Zap, TrendingUp, Award, Quote, ArrowRight } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import TextReveal from "./TextReveal";
 
 const stats = [
   { icon: Users, value: 12400, suffix: "+", label: "Developers", color: "primary" },
