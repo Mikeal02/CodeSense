@@ -42,6 +42,20 @@ const itemVariants = {
 const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionProps) => {
   const { ref: sectionRef, isVisible } = useScrollReveal({ threshold: 0.1 });
 
+  // Keyboard shortcuts for modes (1-0 keys)
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (!isConnected) return;
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    const mode = modes.find(m => m.hotkey === e.key);
+    if (mode) onSelectMode(mode.id);
+  };
+
+  // Register and cleanup keyboard handler
+  useState(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  });
+
   return (
     <section ref={sectionRef} className="py-14 sm:py-20 lg:py-24 relative" data-onboarding="modes-section">
       {/* Subtle background gradient */}
@@ -61,12 +75,13 @@ const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionPro
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/40 bg-secondary/20 backdrop-blur-sm mb-5 text-xs text-muted-foreground"
           >
             <Sparkles className="w-3.5 h-3.5 text-primary" />
-            Analysis Modes
+            11 Analysis Modes
+            {isConnected && <span className="text-[9px] text-primary/50 font-mono ml-1">Press 1-0</span>}
           </motion.div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 tracking-tight">Choose Your Mode</h2>
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
             {isConnected 
-              ? "Select a mode to analyze your codebase with AI"
+              ? "Select a mode to analyze your codebase with AI — or press a number key"
               : "Connect a repository first, then select how you want to explore it"
             }
           </p>
@@ -83,6 +98,13 @@ const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionPro
               {!isConnected && (
                 <div className="absolute top-2 right-2 z-10">
                   <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground/40" />
+                </div>
+              )}
+              {isConnected && mode.hotkey && (
+                <div className="absolute top-2 left-2 z-10">
+                  <kbd className="text-[8px] px-1 py-0.5 rounded bg-secondary/60 border border-border/30 font-mono text-muted-foreground/40">
+                    {mode.hotkey}
+                  </kbd>
                 </div>
               )}
               <ModeCard
