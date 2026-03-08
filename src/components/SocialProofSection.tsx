@@ -64,7 +64,7 @@ const SocialProofSection = () => {
           className="mb-18 sm:mb-24"
         >
           <p className="text-center text-[10px] uppercase tracking-[0.25em] text-muted-foreground/60 mb-8">
-            Trusted by engineers at
+            <TextReveal delay={0.1}>Trusted by engineers at</TextReveal>
           </p>
           <div className="relative overflow-hidden">
             <div className="absolute left-0 top-0 bottom-0 w-32 sm:w-48 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
