@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Terminal, X, Minimize2 } from "lucide-react";
+import { Terminal, X } from "lucide-react";
 
 interface TerminalBannerProps {
   isLoading: boolean;
@@ -64,41 +64,30 @@ const TerminalBanner = ({ isLoading, repoName, fileCount, isConnected }: Termina
         initial={{ opacity: 0, y: 20, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20 }}
-        className="fixed bottom-8 right-4 sm:right-6 z-50 w-[340px] sm:w-[420px]"
+        className="fixed bottom-8 right-4 sm:right-6 z-50 w-[320px] sm:w-[400px]"
       >
-        <div className="glass-heavy rounded-xl border border-border/60 overflow-hidden shadow-2xl">
+        <div className="rounded-xl border border-border/20 overflow-hidden shadow-2xl shadow-background/60 bg-card/80 backdrop-blur-2xl">
           {/* Title bar */}
-          <div className="flex items-center gap-2 px-3 py-2 bg-secondary/60 border-b border-border/50">
+          <div className="flex items-center gap-2 px-3 py-2 bg-secondary/30 border-b border-border/20">
             <div className="flex gap-1.5">
-              <button
-                onClick={() => setVisible(false)}
-                className="w-3 h-3 rounded-full bg-destructive/80 hover:bg-destructive transition-colors"
-              />
-              <button
-                onClick={() => setMinimized(!minimized)}
-                className="w-3 h-3 rounded-full bg-warning/80 hover:bg-warning transition-colors"
-              />
-              <div className="w-3 h-3 rounded-full bg-success/40" />
+              <button onClick={() => setVisible(false)} className="w-3 h-3 rounded-full bg-destructive/60 hover:bg-destructive transition-colors" />
+              <button onClick={() => setMinimized(!minimized)} className="w-3 h-3 rounded-full bg-warning/60 hover:bg-warning transition-colors" />
+              <div className="w-3 h-3 rounded-full bg-success/30" />
             </div>
             <div className="flex items-center gap-1.5 flex-1 justify-center">
-              <Terminal className="w-3 h-3 text-muted-foreground" />
-              <span className="text-[11px] text-muted-foreground font-mono">codesense — terminal</span>
+              <Terminal className="w-3 h-3 text-muted-foreground/50" />
+              <span className="text-[10px] text-muted-foreground/50 font-mono">codesense — terminal</span>
             </div>
             <button onClick={() => setVisible(false)}>
-              <X className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
+              <X className="w-3 h-3 text-muted-foreground/30 hover:text-foreground transition-colors" />
             </button>
           </div>
 
           {/* Content */}
           <AnimatePresence>
             {!minimized && (
-              <motion.div
-                initial={{ height: 0 }}
-                animate={{ height: "auto" }}
-                exit={{ height: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="p-3 font-mono text-xs space-y-0.5 max-h-48 overflow-y-auto scrollbar-none bg-background/80">
+              <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="overflow-hidden">
+                <div className="p-3 font-mono text-[11px] space-y-0.5 max-h-44 overflow-y-auto scrollbar-none bg-background/50">
                   {lines.map((line, i) => (
                     <motion.div
                       key={i}
@@ -109,20 +98,14 @@ const TerminalBanner = ({ isLoading, repoName, fileCount, isConnected }: Termina
                         line.type === "success" ? "text-success" :
                         line.type === "error" ? "text-destructive" :
                         line.type === "info" ? "text-info" :
-                        "text-muted-foreground"
+                        "text-muted-foreground/70"
                       }
                     >
                       {line.text}
                     </motion.div>
                   ))}
                   {isLoading && (
-                    <motion.div
-                      animate={{ opacity: [1, 0, 1] }}
-                      transition={{ repeat: Infinity, duration: 1 }}
-                      className="text-primary"
-                    >
-                      ▋
-                    </motion.div>
+                    <motion.div animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 1 }} className="text-primary">▋</motion.div>
                   )}
                   <div ref={endRef} />
                 </div>
