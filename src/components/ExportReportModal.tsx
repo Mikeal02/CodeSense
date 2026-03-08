@@ -222,7 +222,7 @@ const ExportReportModal = ({
           {/* Format Selection */}
           <div>
             <label className="text-sm font-medium mb-3 block">Format</label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {[
                 { id: "markdown", label: "Markdown", icon: FileText },
                 { id: "json", label: "JSON", icon: FileJson },
