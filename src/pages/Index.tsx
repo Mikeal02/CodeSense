@@ -87,7 +87,7 @@ const Index = () => {
     updateGithubToken,
   } = useCodebaseAnalysis();
 
-  // Track repos when connected
+  // Track repos and persist sessions when connected
   useEffect(() => {
     if (codebase) {
       addRecentRepo({
@@ -99,12 +99,32 @@ const Index = () => {
       addActivity("repo_connected", `Connected to ${codebase.repoName}`, `${codebase.files.length} files loaded`);
       addNotification("success", "Repository Connected", `${codebase.repoName} loaded with ${codebase.files.length} files`);
       
-      // Fetch GitHub insights for GitHub repos
+      // Save persistent session
+      saveSession({
+        repo_name: codebase.repoName,
+        source: codebase.source,
+        active_mode: activeMode,
+        messages: [],
+        bookmarks: [],
+        settings: null,
+        file_count: codebase.files.length,
+      });
+
       if (codebase.source === "github") {
         repoInsights.fetchInsights(codebase.repoName, githubToken);
       }
     }
   }, [codebase?.repoName]);
+
+  // Persist messages to session when they change
+  useEffect(() => {
+    if (activeSessionId && messages.length > 0) {
+      updateSession(activeSessionId, {
+        messages: messages.map(m => ({ id: m.id, role: m.role, content: m.content })),
+        active_mode: activeMode,
+      });
+    }
+  }, [messages.length, activeMode]);
 
   // Global keyboard shortcuts
   useEffect(() => {
