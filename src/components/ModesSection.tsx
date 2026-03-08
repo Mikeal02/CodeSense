@@ -13,17 +13,17 @@ interface ModesSectionProps {
 }
 
 const modes = [
-  { id: "overview", icon: Eye, title: "Project Overview", description: "Get a bird's-eye view of what the project does, its tech stack, and main responsibilities." },
-  { id: "map", icon: Map, title: "Project Map", description: "Explore folder structure, critical files, and how different parts connect together." },
-  { id: "flow", icon: PlayCircle, title: "Execution Flow", description: "Trace what happens step-by-step when code runs or users interact." },
-  { id: "teach", icon: GraduationCap, title: "Teach-Me Mode", description: "Learn as if you built it yourself, with interview-ready explanations." },
-  { id: "ask", icon: MessageSquare, title: "Ask Anything", description: "Get answers to any question about your codebase, grounded in actual code." },
-  { id: "interview", icon: Briefcase, title: "Interview Prep", description: "Generate project-specific questions and strong sample answers." },
-  { id: "forgot", icon: Brain, title: "Forgot Everything", description: "Quick refresher on purpose, architecture, and key decisions." },
-  { id: "complexity", icon: AlertTriangle, title: "Complexity Detection", description: "Identify risky areas, tight coupling, and files doing too much." },
-  { id: "impact", icon: GitBranch, title: "Change Impact", description: "Predict what breaks when you modify a file and what to test." },
-  { id: "resume", icon: FileText, title: "Resume Summary", description: "Generate resume bullets and tech stack summaries for your portfolio." },
-  { id: "coupling", icon: Link2, title: "Coupling Analysis", description: "Identify tightly and loosely coupled files to understand dependencies." },
+  { id: "overview", icon: Eye, title: "Project Overview", description: "Get a bird's-eye view of what the project does, its tech stack, and main responsibilities.", hotkey: "1" },
+  { id: "map", icon: Map, title: "Project Map", description: "Explore folder structure, critical files, and how different parts connect together.", hotkey: "2" },
+  { id: "flow", icon: PlayCircle, title: "Execution Flow", description: "Trace what happens step-by-step when code runs or users interact.", hotkey: "3" },
+  { id: "teach", icon: GraduationCap, title: "Teach-Me Mode", description: "Learn as if you built it yourself, with interview-ready explanations.", hotkey: "4" },
+  { id: "ask", icon: MessageSquare, title: "Ask Anything", description: "Get answers to any question about your codebase, grounded in actual code.", hotkey: "5" },
+  { id: "interview", icon: Briefcase, title: "Interview Prep", description: "Generate project-specific questions and strong sample answers.", hotkey: "6" },
+  { id: "forgot", icon: Brain, title: "Forgot Everything", description: "Quick refresher on purpose, architecture, and key decisions.", hotkey: "7" },
+  { id: "complexity", icon: AlertTriangle, title: "Complexity Detection", description: "Identify risky areas, tight coupling, and files doing too much.", hotkey: "8" },
+  { id: "impact", icon: GitBranch, title: "Change Impact", description: "Predict what breaks when you modify a file and what to test.", hotkey: "9" },
+  { id: "resume", icon: FileText, title: "Resume Summary", description: "Generate resume bullets and tech stack summaries for your portfolio.", hotkey: "0" },
+  { id: "coupling", icon: Link2, title: "Coupling Analysis", description: "Identify tightly and loosely coupled files to understand dependencies.", hotkey: "" },
 ];
 
 const containerVariants = {
