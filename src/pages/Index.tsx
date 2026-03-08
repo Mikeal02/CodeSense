@@ -20,6 +20,7 @@ import PerformanceMonitor from "@/components/PerformanceMonitor";
 import CodeReviewPanel from "@/components/CodeReviewPanel";
 import DependencyScanner from "@/components/DependencyScanner";
 import StatusBar from "@/components/StatusBar";
+import FloatingDock from "@/components/FloatingDock";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TerminalBanner from "@/components/TerminalBanner";
 import OnboardingOverlay from "@/components/OnboardingOverlay";
