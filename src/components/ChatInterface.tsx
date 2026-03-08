@@ -41,6 +41,44 @@ const suggestedQuestions = [
   { label: "Resume bullets", icon: "📝" },
 ];
 
+// Context-aware follow-up suggestions based on last assistant message
+const getFollowUpSuggestions = (lastMessage: string): { label: string; icon: string }[] => {
+  const lower = lastMessage.toLowerCase();
+  if (lower.includes("overview") || lower.includes("tech stack")) {
+    return [
+      { label: "Explain the architecture in detail", icon: "🏗️" },
+      { label: "What are the main entry points?", icon: "🚪" },
+      { label: "List all third-party dependencies", icon: "📦" },
+    ];
+  }
+  if (lower.includes("interview") || lower.includes("question")) {
+    return [
+      { label: "Give me harder questions", icon: "🔥" },
+      { label: "Explain like I built this myself", icon: "🧠" },
+      { label: "What would a senior engineer ask?", icon: "👨‍💻" },
+    ];
+  }
+  if (lower.includes("complexity") || lower.includes("risk") || lower.includes("coupling")) {
+    return [
+      { label: "How can I refactor the riskiest file?", icon: "🛠️" },
+      { label: "Show me the dependency chain", icon: "🔗" },
+      { label: "What tests should I write first?", icon: "✅" },
+    ];
+  }
+  if (lower.includes("flow") || lower.includes("execution") || lower.includes("step")) {
+    return [
+      { label: "What happens on initial page load?", icon: "⚡" },
+      { label: "Trace the authentication flow", icon: "🔐" },
+      { label: "How does data flow between components?", icon: "🔄" },
+    ];
+  }
+  return [
+    { label: "Tell me more about this", icon: "💬" },
+    { label: "Give me interview questions on this", icon: "💼" },
+    { label: "What are the risks here?", icon: "⚠️" },
+  ];
+};
+
 interface ChatInterfaceProps {
   isActive: boolean;
   messages: Message[];
@@ -361,6 +399,23 @@ const ChatInterface = ({
                       message.content
                     )}
                   </div>
+                  {/* Copy button for assistant messages */}
+                  {message.role === "assistant" && message.content.length > 0 && !isLoading && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                      className="flex items-center gap-1 mt-1.5"
+                    >
+                      <button
+                        onClick={() => handleCopy(message.content, message.id)}
+                        className="flex items-center gap-1 text-[10px] text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                      >
+                        {copiedId === message.id ? <Check className="w-3 h-3 text-success" /> : <Copy className="w-3 h-3" />}
+                        {copiedId === message.id ? "Copied" : "Copy"}
+                      </button>
+                    </motion.div>
+                  )}
                 </div>
               </motion.div>
             ))
@@ -377,8 +432,30 @@ const ChatInterface = ({
           <div ref={messagesEndRef} />
         </div>
         
-        {/* Quick suggestions (shown when messages exist) */}
-        {messages.length > 0 && (
+        {/* Context-aware follow-up suggestions */}
+        {messages.length > 0 && !isLoading && (
+          <div className="px-4 sm:px-5 py-2 border-t border-border/15">
+            <p className="text-[9px] text-muted-foreground/40 mb-1.5 font-medium uppercase tracking-wider">Follow up</p>
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
+              {(() => {
+                const lastAssistant = [...messages].reverse().find(m => m.role === "assistant");
+                const suggestions = lastAssistant ? getFollowUpSuggestions(lastAssistant.content) : suggestedQuestions.slice(0, 3);
+                return suggestions.map((q) => (
+                  <button
+                    key={q.label}
+                    onClick={() => handleSuggestionClick(q.label)}
+                    disabled={isLoading}
+                    className="flex-shrink-0 px-3 py-1.5 rounded-lg text-[10px] bg-primary/[0.05] border border-primary/15 text-muted-foreground hover:text-foreground hover:bg-primary/10 hover:border-primary/30 transition-all disabled:opacity-50"
+                  >
+                    {q.icon} {q.label}
+                  </button>
+                ));
+              })()}
+            </div>
+          </div>
+        )}
+        {/* Static quick suggestions (when loading or first messages) */}
+        {messages.length > 0 && isLoading && (
           <div className="px-4 sm:px-5 py-2 border-t border-border/15 flex gap-1.5 overflow-x-auto scrollbar-none">
             {suggestedQuestions.map((q) => (
               <button
