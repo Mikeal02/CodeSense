@@ -106,15 +106,15 @@ const ChatInterface = ({
     }
   }, [shouldAutoScroll]);
 
-  // Keep scrolled to bottom during streaming
+  // Keep scrolled to bottom during streaming — trigger on content changes
   useEffect(() => {
-    if (isLoading && messages.length > 0) {
+    if (messages.length > 0) {
       const last = messages[messages.length - 1];
-      if (last?.role === "assistant") {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      if (last?.role === "assistant" && isLoading) {
+        messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
       }
     }
-  }, [isLoading, messages]);
+  }, [isLoading, messages, messages.length > 0 ? messages[messages.length - 1]?.content?.length : 0]);
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
