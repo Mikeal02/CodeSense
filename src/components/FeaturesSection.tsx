@@ -1,18 +1,82 @@
 import { useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from "framer-motion";
-import { Shield, Zap, Brain, Lock, Code2, Globe, Layers, Cpu, ArrowRight, Sparkles } from "lucide-react";
+import { Shield, Zap, Brain, Lock, Code2, Globe, Layers, Cpu, ArrowRight, Sparkles, Terminal, GitBranch, FileCode, Eye, CheckCircle2 } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import TextReveal from "./TextReveal";
 
 const features = [
-  { icon: Brain, title: "AI-Powered Analysis", description: "Deep understanding using advanced language models with multi-modal reasoning across your entire codebase.", accent: "primary", span: "col-span-1 sm:col-span-2 lg:col-span-2", size: "large" },
-  { icon: Zap, title: "Instant Insights", description: "Streaming responses with intelligent caching.", accent: "warning", span: "col-span-1", size: "small" },
-  { icon: Shield, title: "Interview Ready", description: "First-person explanations with Q&A generation.", accent: "success", span: "col-span-1", size: "small" },
-  { icon: Lock, title: "Private & Secure", description: "Your code is processed in real-time and never permanently stored.", accent: "info", span: "col-span-1", size: "small" },
-  { icon: Layers, title: "Deep Code Metrics", description: "Complexity analysis, coupling detection, dependency graphs, and file statistics for any codebase.", accent: "accent", span: "col-span-1 sm:col-span-2 lg:col-span-2", size: "large" },
-  { icon: Code2, title: "Full IDE Experience", description: "Split view, file tree, syntax highlighting, and shortcuts.", accent: "primary", span: "col-span-1", size: "small" },
-  { icon: Globe, title: "GitHub Integration", description: "Direct repo connection with branch detection.", accent: "info", span: "col-span-1", size: "small" },
-  { icon: Cpu, title: "Performance Monitoring", description: "Track analysis speed and optimize workflow.", accent: "warning", span: "col-span-1", size: "small" },
+  { 
+    icon: Brain, 
+    title: "AI-Powered Analysis", 
+    description: "Deep understanding using advanced language models with multi-modal reasoning across your entire codebase.", 
+    accent: "primary", 
+    span: "col-span-1 sm:col-span-2 lg:col-span-2", 
+    size: "large",
+    metrics: ["2M+ tokens", "99.8% accuracy", "< 3s avg"] 
+  },
+  { 
+    icon: Zap, 
+    title: "Instant Insights", 
+    description: "Streaming responses with intelligent caching.", 
+    accent: "warning", 
+    span: "col-span-1", 
+    size: "small",
+    metrics: ["Real-time"] 
+  },
+  { 
+    icon: Shield, 
+    title: "Interview Ready", 
+    description: "First-person explanations with Q&A generation.", 
+    accent: "success", 
+    span: "col-span-1", 
+    size: "small",
+    metrics: ["500+ Q&A"] 
+  },
+  { 
+    icon: Lock, 
+    title: "Private & Secure", 
+    description: "Your code is processed in real-time and never permanently stored.", 
+    accent: "info", 
+    span: "col-span-1", 
+    size: "small",
+    metrics: ["Zero storage"] 
+  },
+  { 
+    icon: Layers, 
+    title: "Deep Code Metrics", 
+    description: "Complexity analysis, coupling detection, dependency graphs, and file statistics for any codebase.", 
+    accent: "accent", 
+    span: "col-span-1 sm:col-span-2 lg:col-span-2", 
+    size: "large",
+    metrics: ["50+ metrics", "Visual graphs", "LOC analysis"] 
+  },
+  { 
+    icon: Code2, 
+    title: "Full IDE Experience", 
+    description: "Split view, file tree, syntax highlighting, and shortcuts.", 
+    accent: "primary", 
+    span: "col-span-1", 
+    size: "small",
+    metrics: ["CMD+K"] 
+  },
+  { 
+    icon: Globe, 
+    title: "GitHub Integration", 
+    description: "Direct repo connection with branch detection.", 
+    accent: "info", 
+    span: "col-span-1", 
+    size: "small",
+    metrics: ["OAuth"] 
+  },
+  { 
+    icon: Cpu, 
+    title: "Performance Monitoring", 
+    description: "Track analysis speed and optimize workflow.", 
+    accent: "warning", 
+    span: "col-span-1", 
+    size: "small",
+    metrics: ["Live stats"] 
+  },
 ];
 
 const accentColors: Record<string, string> = {
@@ -127,9 +191,24 @@ const BentoCard = ({ feature, index, sectionVisible }: { feature: typeof feature
         <h3 className={`${isLarge ? "text-base sm:text-lg" : "text-sm"} font-semibold mb-2 text-foreground transition-colors tracking-tight`}>
           {feature.title}
         </h3>
-        <p className={`${isLarge ? "text-sm" : "text-xs"} text-muted-foreground leading-relaxed`}>
+        <p className={`${isLarge ? "text-sm" : "text-xs"} text-muted-foreground leading-relaxed mb-3`}>
           {feature.description}
         </p>
+
+        {/* Metrics badges */}
+        <div className="flex flex-wrap gap-1.5">
+          {feature.metrics.map((metric, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={sectionVisible ? { opacity: 1, scale: 1 } : {}}
+              transition={{ delay: index * 0.06 + 0.2 + i * 0.05 }}
+              className="text-[10px] px-2 py-0.5 rounded-md bg-secondary/40 text-muted-foreground border border-border/20"
+            >
+              {metric}
+            </motion.span>
+          ))}
+        </div>
 
         {/* Corner decoration for large cards */}
         {isLarge && (
@@ -148,6 +227,12 @@ const BentoCard = ({ feature, index, sectionVisible }: { feature: typeof feature
 
 const FeaturesSection = () => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.08 });
+
+  const trustBadges = [
+    { icon: CheckCircle2, text: "SOC 2 Compliant" },
+    { icon: Shield, text: "Enterprise Grade" },
+    { icon: Eye, text: "Privacy First" },
+  ];
 
   return (
     <section ref={ref} className="py-20 sm:py-28 lg:py-32 relative overflow-hidden">
@@ -180,6 +265,27 @@ const FeaturesSection = () => {
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4 leading-relaxed">
             A comprehensive toolkit for understanding, analyzing, and preparing to discuss any codebase — from a 5-file script to a 50k-line monorepo.
           </p>
+
+          {/* Trust badges */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={isVisible ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.3 }}
+            className="flex items-center justify-center gap-4 mt-6 flex-wrap"
+          >
+            {trustBadges.map(({ icon: Icon, text }, i) => (
+              <motion.div
+                key={text}
+                initial={{ opacity: 0, x: -10 }}
+                animate={isVisible ? { opacity: 1, x: 0 } : {}}
+                transition={{ delay: 0.4 + i * 0.1 }}
+                className="flex items-center gap-1.5 text-xs text-muted-foreground"
+              >
+                <Icon className="w-3.5 h-3.5 text-primary" />
+                {text}
+              </motion.div>
+            ))}
+          </motion.div>
         </motion.div>
 
         {/* Bento grid */}
@@ -200,7 +306,7 @@ const FeaturesSection = () => {
             whileHover={{ scale: 1.02, y: -1 }}
             className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl glass border border-primary/15 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all cursor-pointer group"
           >
-            <Zap className="w-4 h-4 text-primary" />
+            <Terminal className="w-4 h-4 text-primary" />
             <span>Paste a GitHub URL above to see it in action</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </motion.div>
