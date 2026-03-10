@@ -68,6 +68,9 @@ const Index = () => {
   const [showCodeReview, setShowCodeReview] = useState(false);
   const [showDepScanner, setShowDepScanner] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(() => {
+    return !localStorage.getItem("codesense_welcome_seen");
+  });
   
   const { isDarkMode, toggleTheme } = useTheme();
   const { recentRepos, addRecentRepo, removeRecentRepo, clearRecentRepos } = useRecentRepos();
