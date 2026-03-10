@@ -503,6 +503,19 @@ const Index = () => {
         isConnected={!!codebase}
       />
 
+      {/* Welcome Modal */}
+      <WelcomeModal
+        isOpen={showWelcome}
+        onClose={() => {
+          setShowWelcome(false);
+          localStorage.setItem("codesense_welcome_seen", "true");
+        }}
+        onConnectRepo={() => {
+          const heroInput = document.querySelector('[data-onboarding="hero-input"] input');
+          if (heroInput) (heroInput as HTMLInputElement).focus();
+        }}
+      />
+
       {/* Onboarding Overlay */}
       <OnboardingOverlay
         isActive={onboarding.isActive}
