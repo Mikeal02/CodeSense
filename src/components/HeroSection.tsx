@@ -360,7 +360,17 @@ const HeroSection = ({
             )}
           </AnimatePresence>
         </div>
-      </motion.div>
+
+          {/* Right side - Visualization (desktop) */}
+          <motion.div
+            className="hidden lg:block flex-1 max-w-md"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <CodebaseVisualization />
+          </motion.div>
+        </div>
     </section>
   );
 };
