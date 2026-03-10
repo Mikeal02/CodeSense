@@ -129,7 +129,9 @@ const HeroSection = ({
         className="container mx-auto px-4 sm:px-6 relative z-10"
         style={{ y: parallaxY2, scale: parallaxScale, opacity: parallaxOpacity }}
       >
-        <div className="max-w-5xl mx-auto text-center relative rounded-[2rem] px-4 sm:px-8 py-8 sm:py-10 glass-ultra card-glow">
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+          {/* Left side - Content */}
+          <div className="flex-1 text-center lg:text-left relative rounded-[2rem] px-4 sm:px-8 py-8 sm:py-10 glass-ultra card-glow">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
