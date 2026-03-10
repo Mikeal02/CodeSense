@@ -338,7 +338,7 @@ const HeroSection = ({
                 </div>
 
                 {/* Stats ticker */}
-                <div className="mt-12 sm:mt-16 relative">
+                <div className="mt-12 sm:mt-16 relative lg:hidden">
                   <div className="flex justify-center flex-wrap gap-6 sm:gap-10 px-4">
                     {stats.map((stat, i) => (
                       <motion.div
