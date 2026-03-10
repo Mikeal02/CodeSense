@@ -9,6 +9,7 @@ import RepoHealthScore from "./RepoHealthScore";
 import RepoInsights from "./RepoInsights";
 import AuroraBackground from "./AuroraBackground";
 import CodeRainCanvas from "./CodeRainCanvas";
+import CodebaseVisualization from "./CodebaseVisualization";
 import { FileContent } from "@/hooks/useCodebaseAnalysis";
 import { RepoInsightsData } from "@/hooks/useRepoInsights";
 
