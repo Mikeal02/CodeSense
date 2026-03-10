@@ -19,6 +19,8 @@ import ScrollProgress from "@/components/ScrollProgress";
 import CustomCursor from "@/components/CustomCursor";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import ConfettiExplosion from "@/components/ConfettiExplosion";
+import EliteStatsBar from "@/components/EliteStatsBar";
+import WelcomeModal from "@/components/WelcomeModal";
 import { useCodebaseAnalysis } from "@/hooks/useCodebaseAnalysis";
 import { useRecentRepos, RecentRepo } from "@/hooks/useRecentRepos";
 import { useTheme } from "@/hooks/useTheme";
@@ -66,6 +68,9 @@ const Index = () => {
   const [showCodeReview, setShowCodeReview] = useState(false);
   const [showDepScanner, setShowDepScanner] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(() => {
+    return !localStorage.getItem("codesense_welcome_seen");
+  });
   
   const { isDarkMode, toggleTheme } = useTheme();
   const { recentRepos, addRecentRepo, removeRecentRepo, clearRecentRepos } = useRecentRepos();
@@ -240,6 +245,26 @@ const Index = () => {
         onOpenDepScanner={() => setShowDepScanner(true)}
         isConnected={!!codebase}
       />
+
+      {/* EliteStatsBar - shown when connected */}
+      <AnimatePresence>
+        {codebase && (
+          <motion.div
+            className="pt-14 sm:pt-16"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <EliteStatsBar
+              fileCount={codebase.files.length}
+              tokenEstimate={Math.round(codebase.files.reduce((acc, f) => acc + f.content.length / 4, 0) / 1000)}
+              activeMode={activeMode}
+              analysisTime={getStats().averageDuration ? getStats().averageDuration / 1000 : undefined}
+              linesOfCode={codebase.files.reduce((acc, f) => acc + f.content.split("\n").length, 0)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Breadcrumbs - shown when connected */}
       <AnimatePresence>
@@ -476,6 +501,19 @@ const Index = () => {
         repoName={codebase?.repoName}
         fileCount={codebase?.files.length}
         isConnected={!!codebase}
+      />
+
+      {/* Welcome Modal */}
+      <WelcomeModal
+        isOpen={showWelcome}
+        onClose={() => {
+          setShowWelcome(false);
+          localStorage.setItem("codesense_welcome_seen", "true");
+        }}
+        onConnectRepo={() => {
+          const heroInput = document.querySelector('[data-onboarding="hero-input"] input');
+          if (heroInput) (heroInput as HTMLInputElement).focus();
+        }}
       />
 
       {/* Onboarding Overlay */}

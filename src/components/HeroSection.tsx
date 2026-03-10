@@ -9,6 +9,7 @@ import RepoHealthScore from "./RepoHealthScore";
 import RepoInsights from "./RepoInsights";
 import AuroraBackground from "./AuroraBackground";
 import CodeRainCanvas from "./CodeRainCanvas";
+import CodebaseVisualization from "./CodebaseVisualization";
 import { FileContent } from "@/hooks/useCodebaseAnalysis";
 import { RepoInsightsData } from "@/hooks/useRepoInsights";
 
@@ -128,7 +129,9 @@ const HeroSection = ({
         className="container mx-auto px-4 sm:px-6 relative z-10"
         style={{ y: parallaxY2, scale: parallaxScale, opacity: parallaxOpacity }}
       >
-        <div className="max-w-5xl mx-auto text-center relative rounded-[2rem] px-4 sm:px-8 py-8 sm:py-10 glass-ultra card-glow">
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+          {/* Left side - Content */}
+          <div className="flex-1 text-center lg:text-left relative rounded-[2rem] px-4 sm:px-8 py-8 sm:py-10 glass-ultra card-glow">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
@@ -335,7 +338,7 @@ const HeroSection = ({
                 </div>
 
                 {/* Stats ticker */}
-                <div className="mt-12 sm:mt-16 relative">
+                <div className="mt-12 sm:mt-16 relative lg:hidden">
                   <div className="flex justify-center flex-wrap gap-6 sm:gap-10 px-4">
                     {stats.map((stat, i) => (
                       <motion.div
@@ -356,6 +359,17 @@ const HeroSection = ({
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
+
+          {/* Right side - Visualization (desktop) */}
+          <motion.div
+            className="hidden lg:block flex-1 max-w-md"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <CodebaseVisualization />
+          </motion.div>
         </div>
       </motion.div>
     </section>
