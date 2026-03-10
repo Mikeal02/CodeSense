@@ -371,6 +371,7 @@ const HeroSection = ({
             <CodebaseVisualization />
           </motion.div>
         </div>
+      </motion.div>
     </section>
   );
 };
