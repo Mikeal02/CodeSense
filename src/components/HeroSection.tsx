@@ -131,7 +131,7 @@ const HeroSection = ({
       >
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           {/* Left side - Content */}
-          <div className="flex-1 text-center lg:text-left relative rounded-[2rem] px-4 sm:px-8 py-8 sm:py-10 glass-ultra card-glow">
+          <div className="flex-1 text-center lg:text-left relative rounded-[2rem] px-4 sm:px-8 py-8 sm:py-12 glass-ultra card-glow">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
