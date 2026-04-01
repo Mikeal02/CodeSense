@@ -64,36 +64,37 @@ const RateLimitStatus = forwardRef<HTMLDivElement, RateLimitStatusProps>(({ gith
       <Tooltip>
         <TooltipTrigger asChild>
           <div ref={ref} className="inline-flex">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={fetchRateLimit}
-            disabled={isLoading}
-            className={cn(
-              "h-7 gap-1.5 text-[10px] rounded-lg",
-              isCritical && "text-destructive",
-              isLow && !isCritical && "text-warning",
-              !isLow && "text-muted-foreground/60",
-              className
-            )}
-          >
-            {isLoading ? (
-              <RefreshCw className="w-3 h-3 animate-spin" />
-            ) : error ? (
-              <AlertTriangle className="w-3 h-3" />
-            ) : isCritical ? (
-              <AlertTriangle className="w-3 h-3" />
-            ) : isLow ? (
-              <Activity className="w-3 h-3" />
-            ) : (
-              <Check className="w-3 h-3" />
-            )}
-            {rateLimit && (
-              <span className="font-mono">
-                {rateLimit.remaining}/{rateLimit.limit}
-              </span>
-            )}
-          </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={fetchRateLimit}
+              disabled={isLoading}
+              className={cn(
+                "h-7 gap-1.5 text-[10px] rounded-lg",
+                isCritical && "text-destructive",
+                isLow && !isCritical && "text-warning",
+                !isLow && "text-muted-foreground/60",
+                className
+              )}
+            >
+              {isLoading ? (
+                <RefreshCw className="w-3 h-3 animate-spin" />
+              ) : error ? (
+                <AlertTriangle className="w-3 h-3" />
+              ) : isCritical ? (
+                <AlertTriangle className="w-3 h-3" />
+              ) : isLow ? (
+                <Activity className="w-3 h-3" />
+              ) : (
+                <Check className="w-3 h-3" />
+              )}
+              {rateLimit && (
+                <span className="font-mono">
+                  {rateLimit.remaining}/{rateLimit.limit}
+                </span>
+              )}
+            </Button>
+          </div>
         </TooltipTrigger>
         <TooltipContent side="bottom" className="max-w-xs">
           <div className="space-y-2">
@@ -128,6 +129,8 @@ const RateLimitStatus = forwardRef<HTMLDivElement, RateLimitStatusProps>(({ gith
       </Tooltip>
     </TooltipProvider>
   );
-};
+});
+
+RateLimitStatus.displayName = "RateLimitStatus";
 
 export default RateLimitStatus;

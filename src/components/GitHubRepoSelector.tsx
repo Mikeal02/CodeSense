@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { Github, Search, Loader2, Lock, Globe, Star, GitFork } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
