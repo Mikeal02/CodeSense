@@ -235,7 +235,7 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <section ref={ref} className="py-20 sm:py-28 lg:py-32 relative overflow-hidden">
+    <section ref={ref} className="py-24 sm:py-32 lg:py-36 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.015] to-transparent pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-32 bg-gradient-to-b from-transparent to-border/30 pointer-events-none" />
