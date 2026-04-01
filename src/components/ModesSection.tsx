@@ -57,7 +57,7 @@ const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionPro
   }, [isConnected]);
 
   return (
-    <section ref={sectionRef} className="py-14 sm:py-20 lg:py-24 relative" data-onboarding="modes-section">
+    <section ref={sectionRef} className="py-16 sm:py-24 lg:py-32 relative" data-onboarding="modes-section">
       {/* Subtle background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/[0.03] to-transparent pointer-events-none" />
       
