@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import { Activity, AlertTriangle, Check, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
@@ -22,7 +22,7 @@ interface RateLimitData {
   used: number;
 }
 
-const RateLimitStatus = ({ githubToken, className }: RateLimitStatusProps) => {
+const RateLimitStatus = forwardRef<HTMLDivElement, RateLimitStatusProps>(({ githubToken, className }, ref) => {
   const [rateLimit, setRateLimit] = useState<RateLimitData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,36 +63,38 @@ const RateLimitStatus = ({ githubToken, className }: RateLimitStatusProps) => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={fetchRateLimit}
-            disabled={isLoading}
-            className={cn(
-              "h-7 gap-1.5 text-[10px] rounded-lg",
-              isCritical && "text-destructive",
-              isLow && !isCritical && "text-warning",
-              !isLow && "text-muted-foreground/60",
-              className
-            )}
-          >
-            {isLoading ? (
-              <RefreshCw className="w-3 h-3 animate-spin" />
-            ) : error ? (
-              <AlertTriangle className="w-3 h-3" />
-            ) : isCritical ? (
-              <AlertTriangle className="w-3 h-3" />
-            ) : isLow ? (
-              <Activity className="w-3 h-3" />
-            ) : (
-              <Check className="w-3 h-3" />
-            )}
-            {rateLimit && (
-              <span className="font-mono">
-                {rateLimit.remaining}/{rateLimit.limit}
-              </span>
-            )}
-          </Button>
+          <div ref={ref} className="inline-flex">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={fetchRateLimit}
+              disabled={isLoading}
+              className={cn(
+                "h-7 gap-1.5 text-[10px] rounded-lg",
+                isCritical && "text-destructive",
+                isLow && !isCritical && "text-warning",
+                !isLow && "text-muted-foreground/60",
+                className
+              )}
+            >
+              {isLoading ? (
+                <RefreshCw className="w-3 h-3 animate-spin" />
+              ) : error ? (
+                <AlertTriangle className="w-3 h-3" />
+              ) : isCritical ? (
+                <AlertTriangle className="w-3 h-3" />
+              ) : isLow ? (
+                <Activity className="w-3 h-3" />
+              ) : (
+                <Check className="w-3 h-3" />
+              )}
+              {rateLimit && (
+                <span className="font-mono">
+                  {rateLimit.remaining}/{rateLimit.limit}
+                </span>
+              )}
+            </Button>
+          </div>
         </TooltipTrigger>
         <TooltipContent side="bottom" className="max-w-xs">
           <div className="space-y-2">
@@ -127,6 +129,8 @@ const RateLimitStatus = ({ githubToken, className }: RateLimitStatusProps) => {
       </Tooltip>
     </TooltipProvider>
   );
-};
+});
+
+RateLimitStatus.displayName = "RateLimitStatus";
 
 export default RateLimitStatus;

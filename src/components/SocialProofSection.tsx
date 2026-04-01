@@ -98,7 +98,7 @@ const SocialProofSection = () => {
   const { ref: testimonialsRef, isVisible: testimonialsVisible } = useScrollReveal({ threshold: 0.15 });
 
   return (
-    <section ref={sectionRef} className="py-20 sm:py-28 relative overflow-hidden">
+    <section ref={sectionRef} className="py-24 sm:py-32 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-secondary/10 to-background pointer-events-none" />
       <div className="absolute inset-0 aurora-gradient opacity-30 pointer-events-none" />

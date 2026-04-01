@@ -80,7 +80,7 @@ const Footer = () => {
                 >
                   <Sparkles className="w-8 h-8 text-primary/60" />
                 </motion.div>
-                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 tracking-tight">
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 tracking-tight text-foreground">
                   Ready to understand your codebase?
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground max-w-lg">

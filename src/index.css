@@ -263,6 +263,7 @@
                 0 0 0 1px hsl(var(--foreground) / 0.03),
                 inset 0 1px 0 hsl(var(--foreground) / 0.08),
                 inset 0 -1px 0 hsl(var(--background) / 0.15),
+                0 0 80px -20px hsl(var(--primary) / 0.1),
                 0 0 48px hsl(var(--primary) / 0.08);
   }
   
@@ -515,15 +516,17 @@
   .bento-card {
     @apply relative overflow-hidden rounded-2xl border border-border/40 bg-card/40 backdrop-blur-sm;
     box-shadow: 0 1px 3px hsl(var(--background) / 0.2),
-                inset 0 1px 0 hsl(var(--foreground) / 0.02);
+                0 0 0 1px hsl(var(--border) / 0.05),
+                inset 0 1px 0 hsl(var(--foreground) / 0.03);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .bento-card:hover {
     @apply border-primary/30 bg-card/60;
-    box-shadow: 0 8px 40px -12px hsl(var(--primary) / 0.2),
-                0 0 0 1px hsl(var(--primary) / 0.1),
-                inset 0 1px 0 hsl(var(--foreground) / 0.04);
-    transform: translateY(-2px);
+    box-shadow: 0 12px 48px -12px hsl(var(--primary) / 0.2),
+                0 0 0 1px hsl(var(--primary) / 0.12),
+                inset 0 1px 0 hsl(var(--foreground) / 0.05),
+                0 0 60px -20px hsl(var(--primary) / 0.1);
+    transform: translateY(-3px);
   }
 
   /* Gradient radial */

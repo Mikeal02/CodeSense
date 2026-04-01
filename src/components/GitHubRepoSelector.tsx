@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { Github, Search, Loader2, Lock, Globe, Star, GitFork } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -25,7 +25,7 @@ interface GitHubRepoSelectorProps {
   githubToken?: string;
 }
 
-const GitHubRepoSelector = ({ onSelectRepo, onClose, isLoading, githubToken }: GitHubRepoSelectorProps) => {
+const GitHubRepoSelector = forwardRef<HTMLDivElement, GitHubRepoSelectorProps>(({ onSelectRepo, onClose, isLoading, githubToken }, ref) => {
   const [username, setUsername] = useState("");
   const [repos, setRepos] = useState<Repository[]>([]);
   const [fetchingRepos, setFetchingRepos] = useState(false);
@@ -69,7 +69,7 @@ const GitHubRepoSelector = ({ onSelectRepo, onClose, isLoading, githubToken }: G
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div ref={ref} className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-background border border-border rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
@@ -209,6 +209,8 @@ const GitHubRepoSelector = ({ onSelectRepo, onClose, isLoading, githubToken }: G
       </div>
     </div>
   );
-};
+});
+
+GitHubRepoSelector.displayName = "GitHubRepoSelector";
 
 export default GitHubRepoSelector;

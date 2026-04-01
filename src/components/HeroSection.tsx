@@ -131,7 +131,7 @@ const HeroSection = ({
       >
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           {/* Left side - Content */}
-          <div className="flex-1 text-center lg:text-left relative rounded-[2rem] px-4 sm:px-8 py-8 sm:py-10 glass-ultra card-glow">
+          <div className="flex-1 text-center lg:text-left relative rounded-[2rem] px-4 sm:px-8 py-8 sm:py-12 glass-ultra card-glow">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
@@ -152,10 +152,10 @@ const HeroSection = ({
             initial={{ opacity: 0, y: 25, filter: "blur(6px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold mb-4 sm:mb-5 leading-[1.05] tracking-tight"
+            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold mb-4 sm:mb-6 leading-[1.08] tracking-tight"
           >
             <span className="block text-foreground">Understand Your Code.</span>
-            <span className="relative inline-block mt-1">
+            <span className="relative inline-block mt-2">
               <span className="text-gradient-hero">Ace Your Interviews.</span>
               <motion.span
                 className="absolute -bottom-2 left-0 right-0 h-[3px] rounded-full bg-gradient-to-r from-primary via-info to-accent"
@@ -172,7 +172,7 @@ const HeroSection = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-10 h-8 flex items-center justify-center"
+            className="text-sm sm:text-lg md:text-xl text-muted-foreground mb-10 sm:mb-12 h-8 flex items-center justify-center lg:justify-start"
           >
             <TypewriterText phrases={heroSubtitles} typingSpeed={50} deletingSpeed={25} pauseTime={2200} />
           </motion.div>
