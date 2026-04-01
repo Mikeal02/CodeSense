@@ -78,8 +78,8 @@ const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionPro
             11 Analysis Modes
             {isConnected && <span className="text-[9px] text-primary/50 font-mono ml-1">Press 1-0</span>}
           </motion.div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4 tracking-tight">Choose Your Mode</h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4 tracking-tight">Choose Your Mode</h2>
+          <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-4 leading-relaxed">
             {isConnected 
               ? "Select a mode to analyze your codebase with AI — or press a number key"
               : "Connect a repository first, then select how you want to explore it"

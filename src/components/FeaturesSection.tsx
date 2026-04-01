@@ -259,7 +259,7 @@ const FeaturesSection = () => {
             </motion.div>
             Capabilities
           </motion.div>
-          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-4 sm:mb-5 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-4 sm:mb-6 tracking-tight">
             <TextReveal>Everything You Need</TextReveal>
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4 leading-relaxed">

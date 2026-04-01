@@ -172,7 +172,7 @@ const HeroSection = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-10 h-8 flex items-center justify-center"
+            className="text-sm sm:text-lg md:text-xl text-muted-foreground mb-10 sm:mb-12 h-8 flex items-center justify-center lg:justify-start"
           >
             <TypewriterText phrases={heroSubtitles} typingSpeed={50} deletingSpeed={25} pauseTime={2200} />
           </motion.div>
