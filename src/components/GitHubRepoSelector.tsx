@@ -25,7 +25,7 @@ interface GitHubRepoSelectorProps {
   githubToken?: string;
 }
 
-const GitHubRepoSelector = ({ onSelectRepo, onClose, isLoading, githubToken }: GitHubRepoSelectorProps) => {
+const GitHubRepoSelector = forwardRef<HTMLDivElement, GitHubRepoSelectorProps>(({ onSelectRepo, onClose, isLoading, githubToken }, ref) => {
   const [username, setUsername] = useState("");
   const [repos, setRepos] = useState<Repository[]>([]);
   const [fetchingRepos, setFetchingRepos] = useState(false);
