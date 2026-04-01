@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import logoImg from "@/assets/codesense-logo.png";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -30,7 +31,7 @@ const Logo = ({ size = "md", showText = true, className = "", animated = true }:
         transition={{ type: "spring", stiffness: 500, damping: 20 }}
       >
         <motion.img 
-          src="/codesense-logo.png" 
+          src={logoImg} 
           alt="CodeSense Logo"
           className={`${sizes.img} drop-shadow-2xl`}
           style={{ filter: "drop-shadow(0 0 20px hsl(172 66% 50% / 0.3))" }}

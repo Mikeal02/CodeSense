@@ -27,31 +27,30 @@ serve(async (req) => {
     // Use user token if provided, otherwise fall back to server token
     const githubToken = userToken || Deno.env.get('GITHUB_TOKEN');
 
-    if (!githubToken) {
-      console.error('No GitHub token available - neither user token nor server token');
-      return new Response(
-        JSON.stringify({ error: 'GitHub token not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Build headers - allow unauthenticated requests with lower rate limits
+    const githubHeaders: HeadersInit = {
+      'Accept': 'application/vnd.github.v3+json',
+      'User-Agent': 'Lovable-CodebaseViewer'
+    };
 
-    // Log which token type is being used (without exposing the actual token)
-    console.log(`Using ${userToken ? 'user-provided' : 'server default'} GitHub token`);
-    console.log(`Proxying request to: ${endpoint}`);
+    if (githubToken) {
+      githubHeaders['Authorization'] = `Bearer ${githubToken}`;
+      console.log(`Using ${userToken ? 'user-provided' : 'server default'} GitHub token`);
+    } else {
+      console.log('No GitHub token available - using unauthenticated requests (lower rate limits)');
+    }
 
     // Build the GitHub API URL
     const githubUrl = endpoint.startsWith('https://') 
       ? endpoint 
       : `https://api.github.com${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`;
 
+    console.log(`Proxying request to: ${githubUrl}`);
+
     // Make the request to GitHub API
     const githubResponse = await fetch(githubUrl, {
       method,
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-        'Authorization': `Bearer ${githubToken}`,
-        'User-Agent': 'Lovable-CodebaseViewer'
-      }
+      headers: githubHeaders
     });
 
     // Get rate limit info for logging

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Code2, Mail, Lock, User, ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -43,20 +43,21 @@ const Auth = () => {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { full_name: fullName },
-        emailRedirectTo: window.location.origin,
       },
     });
     setLoading(false);
     if (error) {
       toast.error(error.message);
+    } else if (data.user && data.user.identities && data.user.identities.length === 0) {
+      toast.error("An account with this email already exists. Please sign in instead.");
     } else {
-      toast.success("Check your email to confirm your account!");
-      setMode("login");
+      toast.success("Account created successfully! You are now signed in.");
+      navigate("/", { replace: true });
     }
   };
 
@@ -92,9 +93,7 @@ const Auth = () => {
       >
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary via-primary to-accent flex items-center justify-center shadow-lg shadow-primary/25">
-            <Code2 className="w-5 h-5 text-primary-foreground" />
-          </div>
+          <img src="/codesense-logo.png" alt="CodeSense" className="w-10 h-10 drop-shadow-2xl" />
           <h1 className="text-2xl font-bold font-display text-foreground">CodeSense</h1>
         </div>
 
