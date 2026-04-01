@@ -152,10 +152,10 @@ const HeroSection = ({
             initial={{ opacity: 0, y: 25, filter: "blur(6px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold mb-4 sm:mb-5 leading-[1.05] tracking-tight"
+            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold mb-4 sm:mb-6 leading-[1.08] tracking-tight"
           >
             <span className="block text-foreground">Understand Your Code.</span>
-            <span className="relative inline-block mt-1">
+            <span className="relative inline-block mt-2">
               <span className="text-gradient-hero">Ace Your Interviews.</span>
               <motion.span
                 className="absolute -bottom-2 left-0 right-0 h-[3px] rounded-full bg-gradient-to-r from-primary via-info to-accent"
