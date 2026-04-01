@@ -45,14 +45,12 @@ serve(async (req) => {
       ? endpoint 
       : `https://api.github.com${endpoint.startsWith('/') ? endpoint : '/' + endpoint}`;
 
+    console.log(`Proxying request to: ${githubUrl}`);
+
     // Make the request to GitHub API
     const githubResponse = await fetch(githubUrl, {
       method,
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-        'Authorization': `Bearer ${githubToken}`,
-        'User-Agent': 'Lovable-CodebaseViewer'
-      }
+      headers: githubHeaders
     });
 
     // Get rate limit info for logging
