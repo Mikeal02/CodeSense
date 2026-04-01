@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import logoImg from "@/assets/codesense-logo.png";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
