@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import { Activity, AlertTriangle, Check, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
@@ -22,7 +22,7 @@ interface RateLimitData {
   used: number;
 }
 
-const RateLimitStatus = ({ githubToken, className }: RateLimitStatusProps) => {
+const RateLimitStatus = forwardRef<HTMLDivElement, RateLimitStatusProps>(({ githubToken, className }, ref) => {
   const [rateLimit, setRateLimit] = useState<RateLimitData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
