@@ -209,6 +209,8 @@ const GitHubRepoSelector = forwardRef<HTMLDivElement, GitHubRepoSelectorProps>((
       </div>
     </div>
   );
-};
+});
+
+GitHubRepoSelector.displayName = "GitHubRepoSelector";
 
 export default GitHubRepoSelector;
