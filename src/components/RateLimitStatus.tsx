@@ -63,6 +63,7 @@ const RateLimitStatus = forwardRef<HTMLDivElement, RateLimitStatusProps>(({ gith
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
+          <div ref={ref} className="inline-flex">
           <Button
             variant="ghost"
             size="sm"
