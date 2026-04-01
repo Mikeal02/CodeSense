@@ -93,9 +93,7 @@ const Auth = () => {
       >
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary via-primary to-accent flex items-center justify-center shadow-lg shadow-primary/25">
-            <Code2 className="w-5 h-5 text-primary-foreground" />
-          </div>
+          <img src="/codesense-logo.png" alt="CodeSense" className="w-10 h-10 drop-shadow-2xl" />
           <h1 className="text-2xl font-bold font-display text-foreground">CodeSense</h1>
         </div>
 
