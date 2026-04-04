@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   Eye, Map, PlayCircle, GraduationCap, MessageSquare, 
-  Briefcase, Brain, AlertTriangle, GitBranch, FileText, Lock, Link2, Sparkles
+  Briefcase, Brain, AlertTriangle, GitBranch, FileText, Lock, Link2
 } from "lucide-react";
 import ModeCard from "./ModeCard";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
@@ -27,23 +27,9 @@ const modes = [
   { id: "coupling", icon: Link2, title: "Coupling Analysis", description: "Identify tightly and loosely coupled files to understand dependencies.", hotkey: "" },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.035, delayChildren: 0.05 } }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.95 },
-  visible: { 
-    opacity: 1, y: 0, scale: 1,
-    transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] as const } 
-  }
-};
-
 const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionProps) => {
   const { ref: sectionRef, isVisible } = useScrollReveal({ threshold: 0.1 });
 
-  // Keyboard shortcuts for modes (1-0 keys)
   const handleKeyDown = (e: KeyboardEvent) => {
     if (!isConnected) return;
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
@@ -57,52 +43,40 @@ const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionPro
   }, [isConnected]);
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-24 lg:py-32 relative" data-onboarding="modes-section">
-      {/* Subtle background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/[0.03] to-transparent pointer-events-none" />
-      
+    <section ref={sectionRef} className="py-16 sm:py-24 relative" data-onboarding="modes-section">
       <div className="container mx-auto px-4 sm:px-6">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-10 sm:mb-14"
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-10 sm:mb-12"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={isVisible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
-            transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/40 bg-secondary/20 backdrop-blur-sm mb-5 text-xs text-muted-foreground"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            11 Analysis Modes
-            {isConnected && <span className="text-[9px] text-primary/50 font-mono ml-1">Press 1-0</span>}
-          </motion.div>
-          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4 tracking-tight">Choose Your Mode</h2>
-          <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-4 leading-relaxed">
-            {isConnected 
+          <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium mb-4">Analysis Modes</p>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 tracking-tight">Choose Your Mode</h2>
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            {isConnected
               ? "Select a mode to analyze your codebase with AI — or press a number key"
               : "Connect a repository first, then select how you want to explore it"
             }
           </p>
         </motion.div>
-        
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate={isVisible ? "visible" : "hidden"}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-3.5"
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isVisible ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3"
         >
           {modes.map((mode) => (
-            <motion.div key={mode.id} variants={itemVariants} className="relative">
+            <div key={mode.id} className="relative">
               {!isConnected && (
                 <div className="absolute top-2 right-2 z-10">
-                  <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-muted-foreground/40" />
+                  <Lock className="w-3 h-3 text-muted-foreground/40" />
                 </div>
               )}
               {isConnected && mode.hotkey && (
                 <div className="absolute top-2 left-2 z-10">
-                  <kbd className="text-[8px] px-1 py-0.5 rounded bg-secondary/60 border border-border/30 font-mono text-muted-foreground/40">
+                  <kbd className="text-[8px] px-1 py-0.5 rounded bg-secondary border border-border font-mono text-muted-foreground/40">
                     {mode.hotkey}
                   </kbd>
                 </div>
@@ -115,7 +89,7 @@ const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionPro
                 onClick={() => onSelectMode(mode.id)}
                 disabled={!isConnected}
               />
-            </motion.div>
+            </div>
           ))}
         </motion.div>
       </div>
