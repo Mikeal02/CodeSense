@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { Shield, Zap, Brain, Lock, Code2, Globe, Layers, Cpu, ArrowRight, Terminal, CheckCircle2, Eye } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Github, Twitter, Heart, Mail, Zap, ArrowUpRight, ArrowRight, Sparkles, Layers, Shield, Code2, BookOpen, FileCode, MessageSquare } from "lucide-react";
+import { Github, Twitter, Heart, Mail, Zap, ArrowRight, Sparkles, Layers, Shield, Code2, BookOpen, FileCode, MessageSquare } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Logo from "./Logo";
 

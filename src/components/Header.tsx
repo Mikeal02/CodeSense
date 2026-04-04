@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+
 import { Github, Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Menu, Shield, FileSearch, LogOut, LogIn, Command, Activity } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";

@@ -278,8 +278,8 @@ const HeroSection = ({
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            <div className="relative rounded-2xl border border-border bg-card/40 p-6 backdrop-blur-sm">
-              <CodebaseVisualization files={files} isConnected={isConnected} />
+            <div className="relative rounded-2xl border border-border bg-card/40 p-6">
+              <CodebaseVisualization />
             </div>
           </motion.div>
         </div>
