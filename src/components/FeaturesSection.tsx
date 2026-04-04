@@ -1,225 +1,64 @@
 import { useRef, useState } from "react";
-import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from "framer-motion";
-import { Shield, Zap, Brain, Lock, Code2, Globe, Layers, Cpu, ArrowRight, Sparkles, Terminal, GitBranch, FileCode, Eye, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Shield, Zap, Brain, Lock, Code2, Globe, Layers, Cpu, ArrowRight, Terminal, CheckCircle2, Eye } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import TextReveal from "./TextReveal";
 
 const features = [
-  { 
-    icon: Brain, 
-    title: "AI-Powered Analysis", 
-    description: "Deep understanding using advanced language models with multi-modal reasoning across your entire codebase.", 
-    accent: "primary", 
-    span: "col-span-1 sm:col-span-2 lg:col-span-2", 
-    size: "large",
-    metrics: ["2M+ tokens", "99.8% accuracy", "< 3s avg"] 
-  },
-  { 
-    icon: Zap, 
-    title: "Instant Insights", 
-    description: "Streaming responses with intelligent caching.", 
-    accent: "warning", 
-    span: "col-span-1", 
-    size: "small",
-    metrics: ["Real-time"] 
-  },
-  { 
-    icon: Shield, 
-    title: "Interview Ready", 
-    description: "First-person explanations with Q&A generation.", 
-    accent: "success", 
-    span: "col-span-1", 
-    size: "small",
-    metrics: ["500+ Q&A"] 
-  },
-  { 
-    icon: Lock, 
-    title: "Private & Secure", 
-    description: "Your code is processed in real-time and never permanently stored.", 
-    accent: "info", 
-    span: "col-span-1", 
-    size: "small",
-    metrics: ["Zero storage"] 
-  },
-  { 
-    icon: Layers, 
-    title: "Deep Code Metrics", 
-    description: "Complexity analysis, coupling detection, dependency graphs, and file statistics for any codebase.", 
-    accent: "accent", 
-    span: "col-span-1 sm:col-span-2 lg:col-span-2", 
-    size: "large",
-    metrics: ["50+ metrics", "Visual graphs", "LOC analysis"] 
-  },
-  { 
-    icon: Code2, 
-    title: "Full IDE Experience", 
-    description: "Split view, file tree, syntax highlighting, and shortcuts.", 
-    accent: "primary", 
-    span: "col-span-1", 
-    size: "small",
-    metrics: ["CMD+K"] 
-  },
-  { 
-    icon: Globe, 
-    title: "GitHub Integration", 
-    description: "Direct repo connection with branch detection.", 
-    accent: "info", 
-    span: "col-span-1", 
-    size: "small",
-    metrics: ["OAuth"] 
-  },
-  { 
-    icon: Cpu, 
-    title: "Performance Monitoring", 
-    description: "Track analysis speed and optimize workflow.", 
-    accent: "warning", 
-    span: "col-span-1", 
-    size: "small",
-    metrics: ["Live stats"] 
-  },
+  { icon: Brain, title: "AI-Powered Analysis", description: "Deep understanding using advanced language models with multi-modal reasoning across your entire codebase.", span: "col-span-1 sm:col-span-2 lg:col-span-2", size: "large", metrics: ["2M+ tokens", "99.8% accuracy", "< 3s avg"] },
+  { icon: Zap, title: "Instant Insights", description: "Streaming responses with intelligent caching.", span: "col-span-1", size: "small", metrics: ["Real-time"] },
+  { icon: Shield, title: "Interview Ready", description: "First-person explanations with Q&A generation.", span: "col-span-1", size: "small", metrics: ["500+ Q&A"] },
+  { icon: Lock, title: "Private & Secure", description: "Your code is processed in real-time and never permanently stored.", span: "col-span-1", size: "small", metrics: ["Zero storage"] },
+  { icon: Layers, title: "Deep Code Metrics", description: "Complexity analysis, coupling detection, dependency graphs, and file statistics for any codebase.", span: "col-span-1 sm:col-span-2 lg:col-span-2", size: "large", metrics: ["50+ metrics", "Visual graphs", "LOC analysis"] },
+  { icon: Code2, title: "Full IDE Experience", description: "Split view, file tree, syntax highlighting, and shortcuts.", span: "col-span-1", size: "small", metrics: ["CMD+K"] },
+  { icon: Globe, title: "GitHub Integration", description: "Direct repo connection with branch detection.", span: "col-span-1", size: "small", metrics: ["OAuth"] },
+  { icon: Cpu, title: "Performance Monitoring", description: "Track analysis speed and optimize workflow.", span: "col-span-1", size: "small", metrics: ["Live stats"] },
 ];
 
-const accentColors: Record<string, string> = {
-  primary: "hsl(var(--primary))",
-  warning: "hsl(var(--warning))",
-  success: "hsl(var(--success))",
-  info: "hsl(var(--info))",
-  accent: "hsl(var(--accent))",
-};
-
 const BentoCard = ({ feature, index, sectionVisible }: { feature: typeof features[0]; index: number; sectionVisible: boolean }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const mouseX = useMotionValue(0.5);
-  const mouseY = useMotionValue(0.5);
-  
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [6, -6]), { stiffness: 350, damping: 25 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-6, 6]), { stiffness: 350, damping: 25 });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const nx = (e.clientX - rect.left) / rect.width;
-    const ny = (e.clientY - rect.top) / rect.height;
-    x.set(nx - 0.5);
-    y.set(ny - 0.5);
-    mouseX.set(nx);
-    mouseY.set(ny);
-  };
-
-  const color = accentColors[feature.accent] || accentColors.primary;
   const isLarge = feature.size === "large";
-
-  const spotlightX = useTransform(mouseX, [0, 1], ["0%", "100%"]);
-  const spotlightY = useTransform(mouseY, [0, 1], ["0%", "100%"]);
 
   return (
     <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 35 }}
-      animate={sectionVisible 
-        ? { opacity: 1, y: 0 } 
-        : { opacity: 0, y: 35 }
-      }
-      transition={{ duration: 0.6, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ y: -5, transition: { duration: 0.25, ease: "easeOut" } }}
-      onMouseMove={handleMouseMove}
+      initial={{ opacity: 0, y: 20 }}
+      animate={sectionVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+      transition={{ duration: 0.5, delay: index * 0.05 }}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => { x.set(0); y.set(0); setHovered(false); }}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 1000 }}
+      onMouseLeave={() => setHovered(false)}
       className={`relative cursor-default ${feature.span}`}
     >
       <div className={`
-        bento-card relative overflow-hidden transition-all duration-500
+        bento-card transition-all duration-300
         ${isLarge ? "p-6 sm:p-8" : "p-5 sm:p-6"}
         ${hovered ? "border-primary/30" : ""}
       `}>
-        {/* Dynamic spotlight following cursor */}
-        <AnimatePresence>
-          {hovered && (
-            <motion.div
-              className="absolute inset-0 pointer-events-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              style={{
-                background: `radial-gradient(400px circle at ${spotlightX.get()} ${spotlightY.get()}, ${color}10 0%, transparent 60%)`,
-              }}
-            />
-          )}
-        </AnimatePresence>
+        {/* Icon */}
+        <div className={`
+          ${isLarge ? "w-12 h-12" : "w-10 h-10"} 
+          rounded-lg flex items-center justify-center mb-4 transition-colors duration-300
+          ${hovered ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"}
+        `}>
+          <feature.icon className={`${isLarge ? "w-6 h-6" : "w-5 h-5"}`} />
+        </div>
 
-        {/* Top accent line with glow */}
-        <motion.div
-          className="absolute top-0 left-0 right-0 h-px"
-          style={{ background: color }}
-          initial={{ scaleX: 0, opacity: 0 }}
-          animate={{ scaleX: hovered ? 1 : 0, opacity: hovered ? 0.6 : 0 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        />
-        {hovered && (
-          <motion.div
-            className="absolute top-0 left-0 right-0 h-2 blur-sm pointer-events-none"
-            style={{ background: color, opacity: 0.15 }}
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: 0.4 }}
-          />
-        )}
-
-        {/* Icon with animated background */}
-        <motion.div
-          animate={{
-            scale: hovered ? 1.08 : 1,
-            backgroundColor: hovered ? `${color}18` : "hsl(var(--secondary) / 0.4)",
-            boxShadow: hovered ? `0 0 28px ${color}20` : "0 0 0 transparent",
-          }}
-          transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-          className={`${isLarge ? "w-14 h-14" : "w-11 h-11"} rounded-xl flex items-center justify-center mb-4 relative`}
-        >
-          <motion.div
-            animate={{ color: hovered ? color : "hsl(var(--muted-foreground))" }}
-            transition={{ duration: 0.25 }}
-          >
-            <feature.icon className={`${isLarge ? "w-7 h-7" : "w-5 h-5"}`} />
-          </motion.div>
-        </motion.div>
-
-        <h3 className={`${isLarge ? "text-base sm:text-lg" : "text-sm"} font-semibold mb-2 text-foreground transition-colors tracking-tight`}>
+        <h3 className={`${isLarge ? "text-base sm:text-lg" : "text-sm"} font-semibold mb-2 text-foreground tracking-tight`}>
           {feature.title}
         </h3>
         <p className={`${isLarge ? "text-sm" : "text-xs"} text-muted-foreground leading-relaxed mb-3`}>
           {feature.description}
         </p>
 
-        {/* Metrics badges */}
+        {/* Metrics */}
         <div className="flex flex-wrap gap-1.5">
           {feature.metrics.map((metric, i) => (
-            <motion.span
+            <span
               key={i}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={sectionVisible ? { opacity: 1, scale: 1 } : {}}
-              transition={{ delay: index * 0.06 + 0.2 + i * 0.05 }}
-              className="text-[10px] px-2 py-0.5 rounded-md bg-secondary/40 text-muted-foreground border border-border/20"
+              className="text-[10px] px-2 py-0.5 rounded-md bg-secondary text-muted-foreground border border-border/30"
             >
               {metric}
-            </motion.span>
+            </span>
           ))}
         </div>
-
-        {/* Corner decoration for large cards */}
-        {isLarge && (
-          <motion.div
-            className="absolute bottom-0 right-0 w-32 h-32 pointer-events-none"
-            animate={{ opacity: hovered ? 0.05 : 0.02 }}
-            transition={{ duration: 0.3 }}
-          >
-            <feature.icon className="w-full h-full" />
-          </motion.div>
-        )}
       </div>
     </motion.div>
   );
@@ -235,81 +74,52 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <section ref={ref} className="py-24 sm:py-32 lg:py-36 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.015] to-transparent pointer-events-none" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-32 bg-gradient-to-b from-transparent to-border/30 pointer-events-none" />
-
-      <div className="container mx-auto px-4 sm:px-6 relative">
+    <section ref={ref} className="py-20 sm:py-28 relative">
+      <div className="container mx-auto px-4 sm:px-6">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-14 sm:mb-18"
+          initial={{ opacity: 0, y: 16 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-12 sm:mb-16"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={isVisible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
-            transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/40 bg-secondary/20 backdrop-blur-sm mb-5 text-xs text-muted-foreground"
-          >
-            <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 3, repeat: Infinity }}>
-              <Sparkles className="w-3.5 h-3.5 text-primary" />
-            </motion.div>
-            Capabilities
-          </motion.div>
-          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold mb-4 sm:mb-6 tracking-tight">
-            <TextReveal>Everything You Need</TextReveal>
+          <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium mb-4">Capabilities</p>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 tracking-tight text-foreground">
+            Everything You Need
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4 leading-relaxed">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             A comprehensive toolkit for understanding, analyzing, and preparing to discuss any codebase — from a 5-file script to a 50k-line monorepo.
           </p>
 
-          {/* Trust badges */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={isVisible ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.3 }}
-            className="flex items-center justify-center gap-4 mt-6 flex-wrap"
-          >
-            {trustBadges.map(({ icon: Icon, text }, i) => (
-              <motion.div
-                key={text}
-                initial={{ opacity: 0, x: -10 }}
-                animate={isVisible ? { opacity: 1, x: 0 } : {}}
-                transition={{ delay: 0.4 + i * 0.1 }}
-                className="flex items-center gap-1.5 text-xs text-muted-foreground"
-              >
-                <Icon className="w-3.5 h-3.5 text-primary" />
+          <div className="flex items-center justify-center gap-5 mt-6">
+            {trustBadges.map(({ icon: Icon, text }) => (
+              <div key={text} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Icon className="w-3.5 h-3.5 text-success" />
                 {text}
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </motion.div>
 
-        {/* Bento grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4">
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {features.map((feature, i) => (
             <BentoCard key={feature.title} feature={feature} index={i} sectionVisible={isVisible} />
           ))}
         </div>
 
-        {/* Bottom CTA strip */}
+        {/* CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-          className="mt-14 sm:mt-18 text-center"
+          initial={{ opacity: 0, y: 12 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+          transition={{ delay: 0.4, duration: 0.4 }}
+          className="mt-12 text-center"
         >
-          <motion.div
-            whileHover={{ scale: 1.02, y: -1 }}
-            className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl glass border border-primary/15 text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all cursor-pointer group"
-          >
+          <div className="inline-flex items-center gap-3 px-5 py-3 rounded-xl border border-border bg-card text-sm text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all cursor-pointer group">
             <Terminal className="w-4 h-4 text-primary" />
             <span>Paste a GitHub URL above to see it in action</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>
