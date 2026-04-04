@@ -221,12 +221,10 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background gradient-mesh noise-overlay pb-7 overflow-x-clip">
-      {/* Elite effects */}
+    <div className="min-h-screen bg-background pb-7 overflow-x-clip">
+      {/* Minimal effects */}
       <CustomCursor />
-      <CursorGlow />
       <ScrollProgress />
-      <ConfettiExplosion active={showConfetti} />
 
       <Header
         onConnectRepo={uploadFolder} 
