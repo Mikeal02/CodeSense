@@ -7,8 +7,8 @@ import TypewriterText from "./TypewriterText";
 import RepoHealthScore from "./RepoHealthScore";
 import RepoInsights from "./RepoInsights";
 import CodebaseVisualization from "./CodebaseVisualization";
-import { FileContent } from "@/hooks/useCodebaseAnalysis";
-import { RepoInsightsData } from "@/hooks/useRepoInsights";
+import type { FileContent } from "@/hooks/useCodebaseAnalysis";
+import type { RepoInsightsData } from "@/hooks/useRepoInsights";
 
 interface HeroSectionProps {
   onSubmitRepo: (url: string) => void;
