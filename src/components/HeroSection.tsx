@@ -1,4 +1,4 @@
-import { ArrowRight, FolderUp, Github, Zap, Loader2, User, Key, Check, Shield, Cpu, Terminal, GitBranch, Star, Sparkles } from "lucide-react";
+import { ArrowRight, FolderUp, Github, Zap, Loader2, User, Key, Check, Shield, Cpu, Terminal, GitBranch, Star, Sparkles, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useState } from "react";
@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import TypewriterText from "./TypewriterText";
 import RepoHealthScore from "./RepoHealthScore";
 import RepoInsights from "./RepoInsights";
-import CodebaseVisualization from "./CodebaseVisualization";
 import type { FileContent } from "@/hooks/useCodebaseAnalysis";
 import type { RepoInsightsData } from "@/hooks/useRepoInsights";
 
@@ -40,6 +39,14 @@ const trustItems = [
   { icon: Terminal, label: "11 Analysis Modes" },
 ];
 
+const terminalLines = [
+  { prefix: "$", text: "codesense analyze github.com/acme/app", color: "text-foreground" },
+  { prefix: "→", text: "Scanning 247 files across 18 directories...", color: "text-muted-foreground" },
+  { prefix: "→", text: "Detected: React + TypeScript + Supabase", color: "text-primary" },
+  { prefix: "→", text: "Architecture: Component-driven SPA", color: "text-primary" },
+  { prefix: "✓", text: "Analysis complete in 2.3s", color: "text-success" },
+];
+
 const HeroSection = ({
   onSubmitRepo, onUploadFolder, onLoadDemo, onOpenGitHubSelector,
   isLoading, isConnected, repoName, githubToken, onUpdateGithubToken,
@@ -61,12 +68,13 @@ const HeroSection = ({
   };
 
   return (
-    <section className="relative min-h-[85vh] flex items-center justify-center pt-20 sm:pt-24 pb-16">
-      {/* Subtle background gradient */}
+    <section className="relative min-h-[88vh] flex items-center justify-center pt-20 sm:pt-24 pb-16 overflow-hidden">
+      {/* Background layers */}
       <div className="absolute inset-0 gradient-mesh pointer-events-none" />
-      
+      <div className="absolute inset-0 grain pointer-events-none opacity-40" />
+
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
           {/* Left - Content */}
           <div className="flex-1 text-center lg:text-left">
             {/* Badge */}
@@ -74,11 +82,11 @@ const HeroSection = ({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-8 border border-border bg-card/60 text-xs text-muted-foreground"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-8 border border-primary/20 bg-primary/[0.06] text-xs text-primary font-medium"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-success" />
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               AI-Powered Codebase Intelligence
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-muted-foreground font-mono">v2.0</span>
+              <ChevronRight className="w-3 h-3 opacity-60" />
             </motion.div>
 
             {/* Heading */}
@@ -86,10 +94,10 @@ const HeroSection = ({
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.5 }}
-              className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-5 leading-[1.1] tracking-tight"
+              className="text-3xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-black mb-5 leading-[1.08] tracking-[-0.03em]"
             >
               <span className="block text-foreground">Understand Your Code.</span>
-              <span className="block mt-1 text-primary">Ace Your Interviews.</span>
+              <span className="block mt-1 text-gradient-hero">Ace Your Interviews.</span>
             </motion.h1>
 
             {/* Typewriter */}
@@ -165,7 +173,7 @@ const HeroSection = ({
                         placeholder="Paste GitHub repo URL..."
                         value={repoUrl}
                         onChange={(e) => setRepoUrl(e.target.value)}
-                        className="pl-11 h-12 sm:h-13 bg-card border-border text-sm focus:border-primary/60 transition-all rounded-xl"
+                        className="pl-11 h-12 sm:h-13 bg-card/80 border-border/60 text-sm focus:border-primary/60 focus:ring-2 focus:ring-primary/10 transition-all rounded-xl"
                         disabled={isLoading}
                       />
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 text-[10px] text-muted-foreground/40">
@@ -175,7 +183,7 @@ const HeroSection = ({
                     <Button
                       type="submit"
                       size="lg"
-                      className="h-12 sm:h-13 px-7 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold"
+                      className="h-12 sm:h-13 px-8 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all"
                       disabled={isLoading || !repoUrl.trim()}
                     >
                       {isLoading ? (
@@ -198,7 +206,7 @@ const HeroSection = ({
                       variant="outline"
                       onClick={onOpenGitHubSelector}
                       disabled={isLoading}
-                      className="gap-2 w-full sm:w-auto rounded-xl"
+                      className="gap-2 w-full sm:w-auto rounded-xl border-border/60 hover:border-primary/30 hover:bg-primary/[0.04]"
                       data-onboarding="github-browse"
                     >
                       <User className="w-4 h-4" />
@@ -261,7 +269,7 @@ const HeroSection = ({
                         transition={{ delay: 0.5 + i * 0.06, duration: 0.4 }}
                         className="flex items-center gap-2 text-muted-foreground text-xs"
                       >
-                        <item.icon className="w-3.5 h-3.5 text-primary/60" />
+                        <item.icon className="w-3.5 h-3.5 text-primary/50" />
                         <span>{item.label}</span>
                       </motion.div>
                     ))}
@@ -271,15 +279,60 @@ const HeroSection = ({
             </AnimatePresence>
           </div>
 
-          {/* Right - Visualization */}
+          {/* Right - Terminal Mockup */}
           <motion.div
-            className="hidden lg:block flex-1 max-w-md"
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
+            className="hidden lg:block flex-1 max-w-md w-full"
+            initial={{ opacity: 0, x: 30, rotateY: -3 }}
+            animate={{ opacity: 1, x: 0, rotateY: 0 }}
+            transition={{ delay: 0.35, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="relative rounded-2xl border border-border bg-card/40 p-6">
-              <CodebaseVisualization />
+            <div className="relative">
+              {/* Glow effect behind terminal */}
+              <div className="absolute -inset-4 bg-primary/[0.04] rounded-3xl blur-2xl" />
+              
+              {/* Terminal window */}
+              <div className="relative rounded-2xl border border-border/60 bg-card/80 backdrop-blur-xl overflow-hidden shadow-2xl shadow-background/60">
+                {/* Title bar */}
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-border/40 bg-card/60">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-destructive/60" />
+                    <div className="w-3 h-3 rounded-full bg-warning/60" />
+                    <div className="w-3 h-3 rounded-full bg-success/60" />
+                  </div>
+                  <div className="flex-1 text-center">
+                    <span className="text-[10px] font-mono text-muted-foreground/50">codesense — terminal</span>
+                  </div>
+                </div>
+                
+                {/* Terminal content */}
+                <div className="p-5 space-y-2.5 font-mono text-[13px] leading-relaxed">
+                  {terminalLines.map((line, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.6 + i * 0.2, duration: 0.4 }}
+                      className="flex items-start gap-2"
+                    >
+                      <span className={`${line.prefix === "✓" ? "text-success" : line.prefix === "$" ? "text-primary" : "text-muted-foreground/50"} select-none font-bold`}>
+                        {line.prefix}
+                      </span>
+                      <span className={line.color}>{line.text}</span>
+                    </motion.div>
+                  ))}
+                  
+                  {/* Blinking cursor */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.8 }}
+                    className="flex items-center gap-2"
+                  >
+                    <span className="text-primary font-bold select-none">$</span>
+                    <span className="w-2 h-4 bg-primary/70 animate-caret-blink" />
+                  </motion.div>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>

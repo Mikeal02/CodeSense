@@ -43,15 +43,15 @@ const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionPro
   }, [isConnected]);
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-24 relative" data-onboarding="modes-section">
+    <section ref={sectionRef} className="py-20 sm:py-28 relative" data-onboarding="modes-section">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-10 sm:mb-12"
+          className="text-center mb-12 sm:mb-14"
         >
-          <p className="text-xs uppercase tracking-[0.2em] text-primary font-medium mb-4">Analysis Modes</p>
+          <p className="text-[11px] uppercase tracking-[0.2em] text-primary font-medium mb-4">Analysis Modes</p>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 tracking-tight">Choose Your Mode</h2>
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             {isConnected
@@ -65,18 +65,24 @@ const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionPro
           initial={{ opacity: 0 }}
           animate={isVisible ? { opacity: 1 } : { opacity: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2.5 sm:gap-3"
         >
-          {modes.map((mode) => (
-            <div key={mode.id} className="relative">
+          {modes.map((mode, i) => (
+            <motion.div
+              key={mode.id}
+              className="relative"
+              initial={{ opacity: 0, y: 16 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+              transition={{ delay: 0.15 + i * 0.03, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            >
               {!isConnected && (
-                <div className="absolute top-2 right-2 z-10">
-                  <Lock className="w-3 h-3 text-muted-foreground/40" />
+                <div className="absolute top-2.5 right-2.5 z-10">
+                  <Lock className="w-3 h-3 text-muted-foreground/30" />
                 </div>
               )}
               {isConnected && mode.hotkey && (
-                <div className="absolute top-2 left-2 z-10">
-                  <kbd className="text-[8px] px-1 py-0.5 rounded bg-secondary border border-border font-mono text-muted-foreground/40">
+                <div className="absolute top-2.5 left-2.5 z-10">
+                  <kbd className="text-[8px] px-1 py-0.5 rounded bg-secondary/80 border border-border/30 font-mono text-muted-foreground/35">
                     {mode.hotkey}
                   </kbd>
                 </div>
@@ -89,7 +95,7 @@ const ModesSection = ({ activeMode, onSelectMode, isConnected }: ModesSectionPro
                 onClick={() => onSelectMode(mode.id)}
                 disabled={!isConnected}
               />
-            </div>
+            </motion.div>
           ))}
         </motion.div>
       </div>
