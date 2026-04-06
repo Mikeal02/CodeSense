@@ -503,11 +503,35 @@
 }
 .shiki-container code {
   font-family: 'JetBrains Mono', monospace;
-  line-height: 1.6;
+  line-height: 1.65;
+  font-variant-ligatures: contextual;
+  font-feature-settings: "calt" 1;
 }
 .shiki-container .line {
-  padding: 0 0.25rem;
+  padding: 0 0.75rem;
   display: block;
+  transition: background-color 75ms ease;
+  border-left: 2px solid transparent;
+}
+.shiki-container .line:hover {
+  background-color: rgba(49, 50, 68, 0.25);
+}
+
+/* Scrollbar styling for code panels */
+.shiki-container::-webkit-scrollbar,
+div[class*="overflow-auto"]::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+div[class*="overflow-auto"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+div[class*="overflow-auto"]::-webkit-scrollbar-thumb {
+  background: rgba(108, 112, 134, 0.2);
+  border-radius: 4px;
+}
+div[class*="overflow-auto"]::-webkit-scrollbar-thumb:hover {
+  background: rgba(108, 112, 134, 0.4);
 }
 
 /* === Caret === */
