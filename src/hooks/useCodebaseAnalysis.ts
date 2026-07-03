@@ -472,6 +472,8 @@ export function useCodebaseAnalysis() {
           codebase: formatCodebaseForAnalysis(codebase),
           mode,
           question,
+          // Send prior turns (excluding the just-added user message) for continuity
+          history: messages.slice(-10).map((m) => ({ role: m.role, content: m.content })),
         }),
       });
 
