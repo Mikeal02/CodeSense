@@ -30,16 +30,16 @@ const Breadcrumbs = ({ repoName, activeMode, isConnected, activePanel, className
       initial={{ opacity: 0, y: -5 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "flex items-center gap-1.5 text-[11px] text-muted-foreground px-4 sm:px-6 py-2 bg-card/20 backdrop-blur-sm border-b border-border/15",
+        "flex items-center gap-1.5 text-[11px] text-muted-foreground px-4 sm:px-6 py-2 bg-card/20 backdrop-blur-sm border-b border-border/15 overflow-x-auto scrollbar-hide whitespace-nowrap",
         className
       )}
     >
       {crumbs.map((crumb, i) => (
-        <span key={i} className="flex items-center gap-1.5">
+        <span key={i} className="flex items-center gap-1.5 flex-shrink-0">
           {i > 0 && <ChevronRight className="w-2.5 h-2.5 text-border/60" />}
           <crumb.icon className="w-3 h-3 text-muted-foreground/50" />
           <span className={cn(
-            "font-mono",
+            "font-mono max-w-[140px] sm:max-w-none truncate",
             i === crumbs.length - 1 ? "text-foreground/80 font-medium" : "text-muted-foreground/50"
           )}>
             {crumb.label}
