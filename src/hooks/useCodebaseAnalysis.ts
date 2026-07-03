@@ -73,13 +73,26 @@ const fetchFilesFromTree = async (
 
   const ignorePaths = ["node_modules", "dist", "build", ".git", "vendor", "__pycache__"];
 
+  // Score files: entry points, config, and shallow paths first — deep test/story files last.
+  const priorityNames = ["package.json", "tsconfig.json", "vite.config", "next.config", "index.ts", "index.tsx", "index.js", "main.ts", "main.tsx", "App.tsx", "App.ts", "main.py", "app.py", "Cargo.toml", "go.mod", "pom.xml", "README.md"];
+  const scoreFile = (path: string): number => {
+    let score = 0;
+    const name = path.split("/").pop() || path;
+    if (priorityNames.some((p) => name === p || name.startsWith(p))) score -= 100;
+    if (path.startsWith("src/")) score -= 20;
+    if (/\.(test|spec|stories)\./.test(path)) score += 50;
+    score += path.split("/").length * 2; // prefer shallow
+    return score;
+  };
+
   const codeFiles = treeData.tree
     .filter((item) => {
       if (item.type !== "blob") return false;
       if (ignorePaths.some((p) => item.path.includes(p))) return false;
       return codeExtensions.some((ext) => item.path.endsWith(ext));
     })
-    .slice(0, 50);
+    .sort((a, b) => scoreFile(a.path) - scoreFile(b.path))
+    .slice(0, 80);
 
   toast.info(`Found ${codeFiles.length} code files. Downloading...`);
 
