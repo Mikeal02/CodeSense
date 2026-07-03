@@ -45,13 +45,13 @@ const StatusBar = memo(({
       initial={{ y: 30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5, duration: 0.3 }}
-      className="fixed bottom-0 left-0 right-0 z-40 h-7 bg-card/80 backdrop-blur-2xl border-t border-border/20 flex items-center justify-between px-3 text-[10px] font-mono select-none"
+      className="fixed bottom-0 left-0 right-0 z-40 h-7 bg-card/80 backdrop-blur-2xl border-t border-border/20 flex items-center justify-between gap-2 px-2 sm:px-3 text-[10px] font-mono select-none overflow-hidden"
       data-onboarding="status-bar"
     >
       {/* Left section */}
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1 overflow-hidden">
         <div className={cn(
-          "flex items-center gap-1.5 px-2 py-0.5 rounded-sm",
+          "flex items-center gap-1.5 px-1.5 sm:px-2 py-0.5 rounded-sm flex-shrink-0",
           isConnected ? "text-success" : "text-muted-foreground/50"
         )}>
           {isConnected ? (
@@ -68,44 +68,44 @@ const StatusBar = memo(({
         </div>
 
         {repoName && (
-          <div className="flex items-center gap-1.5 text-foreground/50">
+          <div className="flex items-center gap-1.5 text-foreground/50 min-w-0 flex-shrink">
             <GitBranch className="w-3 h-3" />
-            <span className="max-w-[140px] truncate">{repoName}</span>
+            <span className="max-w-[80px] sm:max-w-[140px] truncate">{repoName}</span>
           </div>
         )}
 
         {fileCount > 0 && (
-          <div className="flex items-center gap-1.5 text-foreground/50">
+          <div className="hidden sm:flex items-center gap-1.5 text-foreground/50 flex-shrink-0">
             <FileCode className="w-3 h-3" />
             <span>{fileCount} files</span>
           </div>
         )}
 
         {activeMode && (
-          <div className="flex items-center gap-1.5 text-primary/70">
+          <div className="flex items-center gap-1.5 text-primary/70 flex-shrink-0">
             <Zap className="w-3 h-3" />
             <span>{activeMode}</span>
           </div>
         )}
 
         {isLoading && (
-          <div className="flex items-center gap-1.5 text-warning/70">
+          <div className="flex items-center gap-1.5 text-warning/70 flex-shrink-0">
             <Loader2 className="w-3 h-3 animate-spin" />
-            <span>Analyzing...</span>
+            <span className="hidden xs:inline">Analyzing...</span>
           </div>
         )}
       </div>
 
       {/* Right section */}
-      <div className="flex items-center gap-2.5">
-        <div className="flex items-center gap-1.5 text-foreground/30">
+      <div className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+        <div className="hidden sm:flex items-center gap-1.5 text-foreground/30">
           <Terminal className="w-3 h-3" />
           <span>{messageCount} msgs</span>
         </div>
 
         {performanceScore !== undefined && (
           <div className={cn(
-            "flex items-center gap-1.5",
+            "hidden md:flex items-center gap-1.5",
             performanceScore > 80 ? "text-success/60" : performanceScore > 50 ? "text-warning/60" : "text-destructive/60"
           )}>
             <Cpu className="w-3 h-3" />
@@ -118,13 +118,13 @@ const StatusBar = memo(({
           <span>{formatUptime(uptime)}</span>
         </div>
 
-        <div className="flex items-center gap-1.5 text-foreground/30">
+        <div className="hidden sm:flex items-center gap-1.5 text-foreground/30">
           <Eye className="w-3 h-3" />
           <span>{isDarkMode ? "Dark" : "Light"}</span>
         </div>
 
         <div className={cn(
-          "w-1.5 h-1.5 rounded-full",
+          "w-1.5 h-1.5 rounded-full flex-shrink-0",
           isLoading ? "bg-warning animate-pulse" : isConnected ? "bg-success shadow-sm shadow-success/50" : "bg-muted-foreground/30"
         )} />
       </div>

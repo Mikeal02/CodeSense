@@ -43,7 +43,7 @@ const StatItem = ({ icon: Icon, label, children, color, delay }: {
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/30 border border-border/20"
+    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary/30 border border-border/20 flex-shrink-0"
   >
     <Icon className={`w-3.5 h-3.5 ${color}`} />
     <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</span>
@@ -89,11 +89,11 @@ const EliteStatsBar = ({ fileCount, tokenEstimate, activeMode, analysisTime, lin
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className="border-b border-border/20 bg-card/40 backdrop-blur-xl"
     >
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="flex items-center gap-3 py-2 overflow-x-auto scrollbar-hide">
+      <div className="w-full max-w-full px-3 sm:px-6">
+        <div className="flex items-center gap-2 sm:gap-3 py-2 overflow-x-auto scrollbar-hide">
           {/* Live indicator */}
           <motion.div
-            className="flex items-center gap-1.5 pr-3 border-r border-border/20"
+            className="flex items-center gap-1.5 pr-2 sm:pr-3 border-r border-border/20 flex-shrink-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -134,7 +134,7 @@ const EliteStatsBar = ({ fileCount, tokenEstimate, activeMode, analysisTime, lin
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.35 }}
-            className="flex items-center gap-2 px-3 py-1.5 ml-auto"
+            className="flex items-center gap-2 px-3 py-1.5 ml-auto flex-shrink-0"
           >
             <Activity className="w-3.5 h-3.5 text-muted-foreground" />
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Load</span>
