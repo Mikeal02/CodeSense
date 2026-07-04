@@ -420,7 +420,8 @@ export function analyzeCodebase(rawFiles: RawFile[]): CodeIntelligence {
   files.forEach((f) => {
     const re = /import\s+(?:{([^}]+)}|(\*\s+as\s+\w+)|([A-Za-z_$][\w$]*))/g;
     let m: RegExpExecArray | null;
-    while ((m = re.exec(f.content))) {
+    const src = rawFiles.find((r) => r.path === f.path)?.content || "";
+    while ((m = re.exec(src))) {
       if (m[1]) m[1].split(",").forEach((n) => importedNames.add(n.trim().split(/\s+as\s+/i)[0].trim()));
       if (m[3]) importedNames.add(m[3].trim());
     }
