@@ -42,7 +42,7 @@ const SettingsPanel = lazy(() => import("@/components/SettingsPanel"));
 const NotificationCenter = lazy(() => import("@/components/NotificationCenter"));
 const ActivityTimeline = lazy(() => import("@/components/ActivityTimeline"));
 const ConversationManager = lazy(() => import("@/components/ConversationManager"));
-const AnalyticsDashboard = lazy(() => import("@/components/AnalyticsDashboard"));
+const CodeIntelligenceDashboard = lazy(() => import("@/components/CodeIntelligenceDashboard"));
 const FileDiffView = lazy(() => import("@/components/FileDiffView"));
 const PerformanceMonitor = lazy(() => import("@/components/PerformanceMonitor"));
 const CodeReviewPanel = lazy(() => import("@/components/CodeReviewPanel"));
@@ -452,10 +452,11 @@ const Index = () => {
           }}
         />
 
-        <AnalyticsDashboard
+        <CodeIntelligenceDashboard
           isOpen={showAnalytics}
           onClose={() => setShowAnalytics(false)}
           files={codebase?.files || []}
+          repoName={codebase?.repoName}
         />
 
         <FileDiffView
