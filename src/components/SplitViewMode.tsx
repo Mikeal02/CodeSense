@@ -2,12 +2,13 @@ import { useState, useCallback, useEffect } from "react";
 import { 
   PanelLeftClose, PanelLeftOpen, X, Columns2, 
   Keyboard, ChevronLeft, ChevronRight, FileCode, Terminal, 
-  Sparkles, Send, Loader2, Code, Copy, Check, Search
+  Sparkles, Send, Loader2, Code, Copy, Check, Search, GitBranch
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import FileTreeView from "./FileTreeView";
 import FileContentPreview from "./FileContentPreview";
+import FileDrilldownPanel from "./FileDrilldownPanel";
 import { Message } from "./ChatInterface";
 import ReactMarkdown from "react-markdown";
 import { Input } from "./ui/input";
@@ -40,6 +41,7 @@ const SplitViewMode = ({
   const [activeFileIndex, setActiveFileIndex] = useState(0);
   const [showFileTree, setShowFileTree] = useState(true);
   const [showChat, setShowChat] = useState(true);
+  const [showDrilldown, setShowDrilldown] = useState(true);
   const [input, setInput] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -51,6 +53,7 @@ const SplitViewMode = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); setShowFileTree(p => !p); }
       if ((e.ctrlKey || e.metaKey) && e.key === 'j') { e.preventDefault(); setShowChat(p => !p); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); setShowDrilldown(p => !p); }
       if ((e.ctrlKey || e.metaKey) && e.key === 'w') { e.preventDefault(); if (selectedFiles.length > 0) closeTab(activeFileIndex); }
       if ((e.ctrlKey || e.metaKey) && e.key === 'Tab') { e.preventDefault(); if (selectedFiles.length > 1) setActiveFileIndex(p => (p + 1) % selectedFiles.length); }
       if (e.key === 'Escape') onClose();
@@ -125,6 +128,14 @@ const SplitViewMode = ({
           </Button>
           <Button
             variant="ghost" size="icon"
+            onClick={() => setShowDrilldown(!showDrilldown)}
+            className={cn("h-8 w-8 text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313244]", showDrilldown && "text-[#cdd6f4] bg-[#313244]/50")}
+            title="Toggle Drilldown (⌘I)"
+          >
+            <GitBranch className="w-3.5 h-3.5" />
+          </Button>
+          <Button
+            variant="ghost" size="icon"
             onClick={() => setShowChat(!showChat)}
             className={cn("h-8 w-8 text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313244]", showChat && "text-[#cdd6f4] bg-[#313244]/50")}
             title="Toggle Chat (⌘J)"
@@ -153,7 +164,7 @@ const SplitViewMode = ({
             </h3>
             <div className="space-y-2">
               {[
-                ["⌘B", "Explorer"], ["⌘J", "Chat"], ["⌘W", "Close tab"],
+              ["⌘B", "Explorer"], ["⌘I", "Drilldown"], ["⌘J", "Chat"], ["⌘W", "Close tab"],
                 ["⌘Tab", "Next tab"], ["⌘/", "Shortcuts"], ["Esc", "Exit"],
               ].map(([key, desc]) => (
                 <div key={key} className="flex justify-between text-[12px]">
@@ -270,6 +281,22 @@ const SplitViewMode = ({
 
         {/* ── Chat Panel ── */}
         <AnimatePresence>
+          {showDrilldown && (
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 320, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="border-l border-[#313244]/40 bg-[#181825] flex-shrink-0 overflow-hidden"
+            >
+              <FileDrilldownPanel
+                files={files}
+                activePath={activeFile}
+                onFileSelect={handleFileSelect}
+                onClose={() => setShowDrilldown(false)}
+              />
+            </motion.div>
+          )}
           {showChat && (
             <motion.div
               initial={{ width: 0, opacity: 0 }}

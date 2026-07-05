@@ -174,7 +174,7 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
       >
         {/* Active line gutter indicator */}
         {isActive && (
-          <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-primary" />
+          <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
         )}
         {/* Search match gutter dot */}
         {isSearchHit && !isActive && (
@@ -210,14 +210,14 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#1e1e2e]">
+    <div className="flex flex-col h-full bg-gradient-to-b from-[#1e1e2e] via-[#1e1e2e] to-[#181825]">
       {/* ── Header Tab Bar ── */}
       {!hideHeader && (
-        <div className="flex items-center justify-between px-1 h-9 border-b border-[#313244]/60 bg-[#181825]">
+        <div className="flex items-center justify-between px-1 h-9 border-b border-[#313244]/60 bg-gradient-to-b from-[#1a1a28] to-[#181825] shadow-[0_1px_0_0_rgba(0,0,0,0.4)]">
           <div className="flex items-center gap-0 min-w-0">
             {/* Active tab */}
             <div className="flex items-center gap-2 px-3 h-9 bg-[#1e1e2e] border-r border-[#313244]/40 relative">
-              <div className="absolute top-0 left-0 right-0 h-[2px] rounded-b" style={{ backgroundColor: langColor }} />
+              <div className="absolute top-0 left-0 right-0 h-[2px] rounded-b shadow-[0_0_8px_currentColor]" style={{ backgroundColor: langColor, color: langColor }} />
               <FileCode className="w-3.5 h-3.5 flex-shrink-0" style={{ color: langColor }} />
               <span className="text-[12px] font-medium text-[#cdd6f4] truncate max-w-48">{fileName}</span>
               <Button variant="ghost" size="icon" onClick={onClose} className="h-5 w-5 opacity-50 hover:opacity-100 text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313244]">
@@ -308,7 +308,7 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
           {shikiReady ? (
             <div className="flex font-mono" style={{ fontSize }}>
               {/* Gutter */}
-              <div className="flex-shrink-0 text-right pr-2 pl-4 py-3 select-none border-r border-[#313244]/30 bg-[#181825]/60 sticky left-0 z-10 min-w-[3.5rem]">
+              <div className="flex-shrink-0 text-right pr-2 pl-4 py-3 select-none border-r border-[#313244]/40 bg-gradient-to-r from-[#181825] to-[#181825]/70 sticky left-0 z-10 min-w-[3.5rem] backdrop-blur-sm">
                 {lines.map((_, i) => renderLineNumber(i))}
               </div>
               {/* Code */}
@@ -390,7 +390,7 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
       </div>
 
       {/* ── Status Bar ── */}
-      <div className="h-[22px] border-t border-[#313244]/40 bg-[#181825] flex items-center justify-between px-3 text-[11px] select-none">
+      <div className="h-[22px] border-t border-[#313244]/40 bg-gradient-to-b from-[#181825] to-[#11111b] flex items-center justify-between px-3 text-[11px] select-none">
         <div className="flex items-center gap-3 text-[#6c7086]">
           {highlightedLine !== null && (
             <span className="text-[#cdd6f4]">
@@ -399,6 +399,7 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
           )}
           <span>{lines.length} lines</span>
           <span>{formatSize(stats.sizeKB)}</span>
+          <span className="hidden sm:inline">{stats.words.toLocaleString()} words</span>
         </div>
         <div className="flex items-center gap-3 text-[#6c7086]">
           <button onClick={() => setWordWrap(!wordWrap)} className={cn("hover:text-[#cdd6f4] transition-colors", wordWrap && "text-[#cdd6f4]")}>
@@ -409,7 +410,7 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
           </button>
           <span>UTF-8</span>
           <span className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: langColor }} />
+            <div className="w-2 h-2 rounded-full shadow-[0_0_6px_currentColor]" style={{ backgroundColor: langColor, color: langColor }} />
             <span className="text-[#cdd6f4]">{language}</span>
           </span>
         </div>
