@@ -174,7 +174,7 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
       >
         {/* Active line gutter indicator */}
         {isActive && (
-          <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-primary" />
+          <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
         )}
         {/* Search match gutter dot */}
         {isSearchHit && !isActive && (
