@@ -2,12 +2,13 @@ import { useState, useCallback, useEffect } from "react";
 import { 
   PanelLeftClose, PanelLeftOpen, X, Columns2, 
   Keyboard, ChevronLeft, ChevronRight, FileCode, Terminal, 
-  Sparkles, Send, Loader2, Code, Copy, Check, Search
+  Sparkles, Send, Loader2, Code, Copy, Check, Search, GitBranch
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import FileTreeView from "./FileTreeView";
 import FileContentPreview from "./FileContentPreview";
+import FileDrilldownPanel from "./FileDrilldownPanel";
 import { Message } from "./ChatInterface";
 import ReactMarkdown from "react-markdown";
 import { Input } from "./ui/input";
@@ -40,6 +41,7 @@ const SplitViewMode = ({
   const [activeFileIndex, setActiveFileIndex] = useState(0);
   const [showFileTree, setShowFileTree] = useState(true);
   const [showChat, setShowChat] = useState(true);
+  const [showDrilldown, setShowDrilldown] = useState(true);
   const [input, setInput] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -51,6 +53,7 @@ const SplitViewMode = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); setShowFileTree(p => !p); }
       if ((e.ctrlKey || e.metaKey) && e.key === 'j') { e.preventDefault(); setShowChat(p => !p); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); setShowDrilldown(p => !p); }
       if ((e.ctrlKey || e.metaKey) && e.key === 'w') { e.preventDefault(); if (selectedFiles.length > 0) closeTab(activeFileIndex); }
       if ((e.ctrlKey || e.metaKey) && e.key === 'Tab') { e.preventDefault(); if (selectedFiles.length > 1) setActiveFileIndex(p => (p + 1) % selectedFiles.length); }
       if (e.key === 'Escape') onClose();
