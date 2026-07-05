@@ -281,6 +281,22 @@ const SplitViewMode = ({
 
         {/* ── Chat Panel ── */}
         <AnimatePresence>
+          {showDrilldown && (
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 320, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="border-l border-[#313244]/40 bg-[#181825] flex-shrink-0 overflow-hidden"
+            >
+              <FileDrilldownPanel
+                files={files}
+                activePath={activeFile}
+                onFileSelect={handleFileSelect}
+                onClose={() => setShowDrilldown(false)}
+              />
+            </motion.div>
+          )}
           {showChat && (
             <motion.div
               initial={{ width: 0, opacity: 0 }}
