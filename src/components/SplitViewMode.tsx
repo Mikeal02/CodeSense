@@ -128,6 +128,14 @@ const SplitViewMode = ({
           </Button>
           <Button
             variant="ghost" size="icon"
+            onClick={() => setShowDrilldown(!showDrilldown)}
+            className={cn("h-8 w-8 text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313244]", showDrilldown && "text-[#cdd6f4] bg-[#313244]/50")}
+            title="Toggle Drilldown (⌘I)"
+          >
+            <GitBranch className="w-3.5 h-3.5" />
+          </Button>
+          <Button
+            variant="ghost" size="icon"
             onClick={() => setShowChat(!showChat)}
             className={cn("h-8 w-8 text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313244]", showChat && "text-[#cdd6f4] bg-[#313244]/50")}
             title="Toggle Chat (⌘J)"
@@ -156,7 +164,7 @@ const SplitViewMode = ({
             </h3>
             <div className="space-y-2">
               {[
-                ["⌘B", "Explorer"], ["⌘J", "Chat"], ["⌘W", "Close tab"],
+              ["⌘B", "Explorer"], ["⌘I", "Drilldown"], ["⌘J", "Chat"], ["⌘W", "Close tab"],
                 ["⌘Tab", "Next tab"], ["⌘/", "Shortcuts"], ["Esc", "Exit"],
               ].map(([key, desc]) => (
                 <div key={key} className="flex justify-between text-[12px]">
