@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { 
   Send, Sparkles, Code, FileCode, Copy, Check, Loader2, 
   Maximize2, Minimize2, X, FolderTree, Columns2, BarChart3,
-  Search, Bookmark, Download, Keyboard, Share2, ArrowDown, Bot, User
+  Search, Bookmark, Download, Keyboard, Share2, ArrowDown, Bot, User,
+  Zap, Command
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,7 @@ import EmptyState from "./EmptyState";
 import TypingWave from "./TypingWave";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { motion, AnimatePresence } from "framer-motion";
+import { parseRef, resolveRefPath } from "@/lib/fileReferences";
 
 export interface Message {
   id: string;
@@ -31,6 +33,19 @@ export interface Message {
     filename?: string;
   };
 }
+
+// Slash command catalog — turns the composer into a command palette.
+const SLASH_COMMANDS: { cmd: string; label: string; hint: string }[] = [
+  { cmd: "/overview", label: "Project overview", hint: "Architecture, stack, entry points" },
+  { cmd: "/map", label: "Project map", hint: "Directory tree, critical files, patterns" },
+  { cmd: "/flow", label: "Execution flow", hint: "Cold start, key interactions, effects" },
+  { cmd: "/teach", label: "Teach me this codebase", hint: "As if I built it — interview mode" },
+  { cmd: "/interview", label: "Interview questions", hint: "5-7 leveled questions with answers" },
+  { cmd: "/complexity", label: "Complexity & risk", hint: "Hotspots, fragility, tech debt" },
+  { cmd: "/coupling", label: "Coupling analysis", hint: "Tightly/loosely coupled clusters" },
+  { cmd: "/impact", label: "Change impact", hint: "Blast radius + verification plan" },
+  { cmd: "/resume", label: "Resume bullets", hint: "Portfolio-ready summary" },
+];
 
 const suggestedQuestions = [
   { label: "Project overview", icon: "🔍" },
@@ -110,11 +125,50 @@ const ChatInterface = ({
   const [showExport, setShowExport] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [feedback, setFeedback] = useState<Record<string, "up" | "down">>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  // Track when each assistant message started + finished so we can show elapsed time.
+  const timings = useRef<Map<string, { start: number; end?: number }>>(new Map());
+  const [, forceTimingsRender] = useState(0);
   
   const { bookmarks, addBookmark, removeBookmark, updateBookmark, clearAllBookmarks } = useBookmarks();
+
+  // Slash command filter based on current input
+  const slashMatches = input.startsWith("/")
+    ? SLASH_COMMANDS.filter(c => c.cmd.startsWith(input.split(/\s/)[0].toLowerCase()))
+    : [];
+
+  // Handle a resolved file reference click from inside markdown.
+  const openFileRef = (path: string) => {
+    const resolved = resolveRefPath(path, files) ?? path;
+    if (files.some(f => f.path === resolved)) {
+      setSelectedFile(resolved);
+      setShowFileTree(true);
+    }
+  };
+
+  // Register timing for the currently streaming assistant message.
+  useEffect(() => {
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== "assistant") return;
+    const entry = timings.current.get(last.id);
+    if (!entry) {
+      timings.current.set(last.id, { start: Date.now() });
+    } else if (!isLoading && !entry.end) {
+      entry.end = Date.now();
+      forceTimingsRender(x => x + 1);
+    }
+  }, [messages, isLoading]);
+
+  const formatElapsed = (id: string) => {
+    const t = timings.current.get(id);
+    if (!t || !t.end) return null;
+    const ms = t.end - t.start;
+    if (ms < 1000) return `${ms} ms`;
+    return `${(ms / 1000).toFixed(1)}s`;
+  };
 
   useEffect(() => {
     if (selectedFileFromPalette) {
@@ -164,7 +218,15 @@ const ChatInterface = ({
     e.preventDefault();
     if (input.trim() && !isLoading) {
       setShouldAutoScroll(true);
-      onSendMessage(input.trim());
+      // Expand slash commands to their prompt equivalents.
+      const trimmed = input.trim();
+      const first = trimmed.split(/\s+/)[0].toLowerCase();
+      const match = SLASH_COMMANDS.find(c => c.cmd === first);
+      const rest = trimmed.slice(first.length).trim();
+      const finalMessage = match
+        ? (rest ? `${match.label}: ${rest}` : match.label)
+        : trimmed;
+      onSendMessage(finalMessage);
       setInput("");
     }
   };
@@ -360,6 +422,22 @@ const ChatInterface = ({
                               const match = /language-(\w+)/.exec(className || '');
                               const isInline = !match;
                               if (isInline) {
+                                const raw = String(children);
+                                const ref = parseRef(raw);
+                                const resolved = ref ? resolveRefPath(ref.path, files) : null;
+                                if (ref && resolved) {
+                                  return (
+                                    <button
+                                      type="button"
+                                      onClick={() => openFileRef(resolved)}
+                                      className="inline-flex items-center gap-1 bg-primary/[0.08] hover:bg-primary/15 border border-primary/20 hover:border-primary/40 px-1.5 py-0.5 rounded-md text-primary font-mono text-xs transition-colors"
+                                      title={`Open ${resolved}${ref.line ? ` at line ${ref.line}` : ''}`}
+                                    >
+                                      <FileCode className="w-3 h-3 opacity-70" />
+                                      {raw}
+                                    </button>
+                                  );
+                                }
                                 return <code className="bg-secondary/60 px-1.5 py-0.5 rounded-md text-primary font-mono text-xs" {...props}>{children}</code>;
                               }
                               return (
@@ -405,7 +483,7 @@ const ChatInterface = ({
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.3 }}
-                      className="flex items-center gap-1 mt-1.5"
+                      className="flex items-center gap-2 mt-1.5"
                     >
                       <button
                         onClick={() => handleCopy(message.content, message.id)}
@@ -414,6 +492,22 @@ const ChatInterface = ({
                         {copiedId === message.id ? <Check className="w-3 h-3 text-success" /> : <Copy className="w-3 h-3" />}
                         {copiedId === message.id ? "Copied" : "Copy"}
                       </button>
+                      <button
+                        onClick={() => setFeedback(f => ({ ...f, [message.id]: f[message.id] === "up" ? undefined as any : "up" }))}
+                        className={cn("text-[10px] transition-colors", feedback[message.id] === "up" ? "text-success" : "text-muted-foreground/40 hover:text-muted-foreground")}
+                        title="Helpful"
+                      >👍</button>
+                      <button
+                        onClick={() => setFeedback(f => ({ ...f, [message.id]: f[message.id] === "down" ? undefined as any : "down" }))}
+                        className={cn("text-[10px] transition-colors", feedback[message.id] === "down" ? "text-destructive" : "text-muted-foreground/40 hover:text-muted-foreground")}
+                        title="Not helpful"
+                      >👎</button>
+                      {formatElapsed(message.id) && (
+                        <span className="flex items-center gap-1 text-[10px] text-muted-foreground/40 ml-auto tabular-nums">
+                          <Zap className="w-2.5 h-2.5" />
+                          {formatElapsed(message.id)}
+                        </span>
+                      )}
                     </motion.div>
                   )}
                 </div>
@@ -472,6 +566,37 @@ const ChatInterface = ({
         
         {/* Input */}
         <form onSubmit={handleSubmit} className="p-3 sm:p-4 border-t border-border/15">
+          {/* Slash command popover */}
+          <AnimatePresence>
+            {slashMatches.length > 0 && isFocused && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.12 }}
+                className="mb-2 rounded-xl border border-border/30 bg-card/95 backdrop-blur-xl overflow-hidden shadow-2xl shadow-black/40"
+              >
+                <div className="px-3 py-1.5 border-b border-border/20 flex items-center gap-1.5">
+                  <Command className="w-3 h-3 text-primary" />
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Commands</span>
+                </div>
+                <div className="max-h-56 overflow-y-auto">
+                  {slashMatches.map(c => (
+                    <button
+                      key={c.cmd}
+                      type="button"
+                      onMouseDown={(e) => { e.preventDefault(); setInput(c.cmd + " "); inputRef.current?.focus(); }}
+                      className="w-full flex items-center gap-3 px-3 py-2 hover:bg-primary/10 transition-colors text-left"
+                    >
+                      <span className="font-mono text-xs text-primary min-w-[80px]">{c.cmd}</span>
+                      <span className="text-xs text-foreground/90">{c.label}</span>
+                      <span className="text-[10px] text-muted-foreground/60 ml-auto truncate">{c.hint}</span>
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div className={cn(
             "flex gap-2 items-end p-1.5 rounded-xl border transition-all duration-200",
             isFocused ? "border-primary/30 bg-card/60 shadow-lg shadow-primary/5" : "border-border/20 bg-secondary/20"
@@ -482,8 +607,8 @@ const ChatInterface = ({
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              placeholder="Ask anything about your codebase..."
+              onBlur={() => setTimeout(() => setIsFocused(false), 100)}
+              placeholder="Ask anything, or type / for commands…"
               className="flex-1 bg-transparent border-none outline-none resize-none text-sm text-foreground placeholder:text-muted-foreground/40 px-2 py-1.5 min-h-[36px] max-h-[120px]"
               disabled={isLoading}
               rows={1}
@@ -502,7 +627,7 @@ const ChatInterface = ({
               {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </Button>
           </div>
-          <p className="text-[10px] text-muted-foreground/30 mt-1.5 text-center">Press Enter to send · Shift+Enter for new line</p>
+          <p className="text-[10px] text-muted-foreground/30 mt-1.5 text-center">Enter to send · Shift+Enter newline · / for commands</p>
         </form>
       </div>
       )}
