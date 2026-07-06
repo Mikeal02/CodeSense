@@ -1,10 +1,11 @@
-import { X, Copy, Check, FileCode, Hash, WrapText, ZoomIn, ZoomOut, Download, Search, ArrowUp, ArrowDown, Columns2, Terminal, Braces, GitBranch } from "lucide-react";
+import { X, Copy, Check, FileCode, Hash, Download, Search, ArrowUp, ArrowDown, Braces, ListTree, CornerDownRight, Component as ComponentIcon, Box, Zap, Type as TypeIcon } from "lucide-react";
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useShikiHighlighter } from "@/hooks/useShikiHighlighter";
+import { extractSymbols, type OutlineSymbol, type SymbolKind } from "@/lib/symbolOutline";
 
 interface FileContentPreviewProps {
   filePath: string;
@@ -42,6 +43,10 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
   const [fontSize, setFontSize] = useState(13);
   const [wordWrap, setWordWrap] = useState(false);
   const [showMinimap, setShowMinimap] = useState(true);
+  const [showOutline, setShowOutline] = useState(false);
+  const [showGoto, setShowGoto] = useState(false);
+  const [gotoValue, setGotoValue] = useState("");
+  const [selectionStats, setSelectionStats] = useState<{ chars: number; lines: number } | null>(null);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchIndex, setSearchIndex] = useState(0);
@@ -49,6 +54,7 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
   const [hoveredLine, setHoveredLine] = useState<number | null>(null);
   const codeRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const gotoInputRef = useRef<HTMLInputElement>(null);
   const minimapRef = useRef<HTMLDivElement>(null);
   const [scrollPercent, setScrollPercent] = useState(0);
 
@@ -95,14 +101,69 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
         setShowSearch(true);
         setTimeout(() => searchInputRef.current?.focus(), 50);
       }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'g') {
+        e.preventDefault();
+        setShowGoto(true);
+        setTimeout(() => gotoInputRef.current?.focus(), 50);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'o') {
+        e.preventDefault();
+        setShowOutline(v => !v);
+      }
       if (e.key === 'Escape' && showSearch) {
         setShowSearch(false);
         setSearchQuery("");
       }
+      if (e.key === 'Escape' && showGoto) {
+        setShowGoto(false);
+        setGotoValue("");
+      }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [showSearch]);
+  }, [showSearch, showGoto]);
+
+  // Track selection char count inside the code region.
+  useEffect(() => {
+    const el = codeRef.current;
+    if (!el) return;
+    const handler = () => {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0 || sel.isCollapsed) {
+        setSelectionStats(null);
+        return;
+      }
+      const range = sel.getRangeAt(0);
+      if (!el.contains(range.commonAncestorContainer)) {
+        setSelectionStats(null);
+        return;
+      }
+      const text = sel.toString();
+      if (!text) { setSelectionStats(null); return; }
+      setSelectionStats({ chars: text.length, lines: text.split('\n').length });
+    };
+    document.addEventListener('selectionchange', handler);
+    return () => document.removeEventListener('selectionchange', handler);
+  }, []);
+
+  // Symbol outline (recomputed on file change)
+  const symbols = useMemo<OutlineSymbol[]>(() => extractSymbols(content, filePath), [content, filePath]);
+
+  const jumpToLine = useCallback((lineNumber: number) => {
+    const clamped = Math.max(1, Math.min(lines.length, lineNumber));
+    const el = codeRef.current?.querySelector(`[data-line="${clamped - 1}"]`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setHighlightedLine(clamped - 1);
+    }
+  }, [lines.length]);
+
+  const handleGotoSubmit = () => {
+    const n = parseInt(gotoValue.replace(/[^0-9]/g, ''), 10);
+    if (!Number.isNaN(n)) jumpToLine(n);
+    setShowGoto(false);
+    setGotoValue("");
+  };
 
   // Scroll to search result
   useEffect(() => {
@@ -229,6 +290,12 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
             <Button variant="ghost" size="icon" onClick={() => setShowSearch(!showSearch)} className="h-7 w-7 text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313244]" title="Find (Ctrl+F)">
               <Search className="w-3.5 h-3.5" />
             </Button>
+            <Button variant="ghost" size="icon" onClick={() => { setShowGoto(true); setTimeout(() => gotoInputRef.current?.focus(), 50); }} className="h-7 w-7 text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313244]" title="Go to line (Ctrl+G)">
+              <CornerDownRight className="w-3.5 h-3.5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => setShowOutline(v => !v)} className={cn("h-7 w-7 hover:bg-[#313244]", showOutline ? "text-primary" : "text-[#6c7086] hover:text-[#cdd6f4]")} title="Outline (⌘⇧O)">
+              <ListTree className="w-3.5 h-3.5" />
+            </Button>
             <Button variant="ghost" size="icon" onClick={handleCopy} className="h-7 w-7 text-[#6c7086] hover:text-[#cdd6f4] hover:bg-[#313244]" title="Copy all">
               {copied ? <Check className="w-3.5 h-3.5 text-[#a6e3a1]" /> : <Copy className="w-3.5 h-3.5" />}
             </Button>
@@ -302,8 +369,70 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
         )}
       </AnimatePresence>
 
+      {/* ── Go To Line Overlay ── */}
+      <AnimatePresence>
+        {showGoto && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.12 }}
+            className="absolute top-11 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-2 rounded-lg bg-[#181825] border border-[#313244] shadow-2xl shadow-black/60"
+          >
+            <CornerDownRight className="w-3.5 h-3.5 text-primary" />
+            <Input
+              ref={gotoInputRef}
+              value={gotoValue}
+              onChange={e => setGotoValue(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') handleGotoSubmit(); }}
+              placeholder={`Line 1-${lines.length}`}
+              className="h-6 w-32 text-xs bg-[#313244]/60 border-[#45475a]/50 text-[#cdd6f4] placeholder:text-[#6c7086] rounded-md"
+            />
+            <span className="text-[10px] text-[#6c7086]">Enter</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Code Content ── */}
       <div className="flex-1 overflow-hidden flex relative">
+        {/* Symbol Outline */}
+        <AnimatePresence>
+          {showOutline && symbols.length > 0 && (
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 200, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="flex-shrink-0 border-r border-[#313244]/40 bg-[#181825]/70 overflow-hidden"
+            >
+              <div className="w-[200px] h-full flex flex-col">
+                <div className="px-3 py-2 border-b border-[#313244]/40 flex items-center justify-between">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-[#a6adc8]">Outline</span>
+                  <span className="text-[10px] font-mono text-[#45475a]">{symbols.length}</span>
+                </div>
+                <div className="flex-1 overflow-y-auto py-1">
+                  {symbols.map((s, idx) => (
+                    <button
+                      key={`${s.name}-${s.line}-${idx}`}
+                      onClick={() => jumpToLine(s.line)}
+                      className={cn(
+                        "w-full flex items-center gap-2 px-3 py-1 text-[11.5px] text-left transition-colors",
+                        highlightedLine === s.line - 1
+                          ? "bg-primary/15 text-[#cdd6f4]"
+                          : "text-[#a6adc8] hover:text-[#cdd6f4] hover:bg-[#313244]/40"
+                      )}
+                    >
+                      <SymbolIcon kind={s.kind} />
+                      <span className="truncate font-mono">{s.name}</span>
+                      <span className="ml-auto text-[9px] text-[#45475a] tabular-nums flex-shrink-0">{s.line}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div ref={codeRef} className="flex-1 overflow-auto" onScroll={handleScroll}>
           {shikiReady ? (
             <div className="flex font-mono" style={{ fontSize }}>
@@ -397,11 +526,21 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
               Ln {highlightedLine + 1}, Col 1
             </span>
           )}
+          {selectionStats && (
+            <span className="text-primary/90">
+              Sel {selectionStats.chars} ch · {selectionStats.lines} ln
+            </span>
+          )}
           <span>{lines.length} lines</span>
           <span>{formatSize(stats.sizeKB)}</span>
           <span className="hidden sm:inline">{stats.words.toLocaleString()} words</span>
         </div>
         <div className="flex items-center gap-3 text-[#6c7086]">
+          {symbols.length > 0 && (
+            <button onClick={() => setShowOutline(!showOutline)} className={cn("hover:text-[#cdd6f4] transition-colors flex items-center gap-1", showOutline && "text-[#cdd6f4]")}>
+              <ListTree className="w-3 h-3" /> {symbols.length}
+            </button>
+          )}
           <button onClick={() => setWordWrap(!wordWrap)} className={cn("hover:text-[#cdd6f4] transition-colors", wordWrap && "text-[#cdd6f4]")}>
             {wordWrap ? "Word Wrap: On" : "Word Wrap: Off"}
           </button>
@@ -420,3 +559,28 @@ const FileContentPreview = ({ filePath, content, onClose, hideHeader = false }: 
 };
 
 export default FileContentPreview;
+
+const SYMBOL_META: Record<SymbolKind, { color: string; label: string }> = {
+  component: { color: "#89b4fa", label: "C" },
+  hook: { color: "#f5c2e7", label: "H" },
+  function: { color: "#a6e3a1", label: "ƒ" },
+  method: { color: "#a6e3a1", label: "m" },
+  class: { color: "#fab387", label: "◆" },
+  interface: { color: "#94e2d5", label: "I" },
+  type: { color: "#94e2d5", label: "T" },
+  const: { color: "#f9e2af", label: "▪" },
+  export: { color: "#cba6f7", label: "→" },
+};
+
+function SymbolIcon({ kind }: { kind: SymbolKind }) {
+  const meta = SYMBOL_META[kind];
+  return (
+    <span
+      className="w-4 h-4 rounded-[3px] flex items-center justify-center text-[9px] font-bold flex-shrink-0 font-mono"
+      style={{ backgroundColor: `${meta.color}22`, color: meta.color, border: `1px solid ${meta.color}33` }}
+      title={kind}
+    >
+      {meta.label}
+    </span>
+  );
+}
