@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, GitCompare, ArrowLeftRight, FileCode, Search, RotateCcw, Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { X, GitCompare, ArrowLeftRight, FileCode, Search, RotateCcw, Copy, Check, ChevronDown, ChevronUp, Columns2, AlignJustify } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,7 @@ const FileDiffView = ({ isOpen, onClose, files }: FileDiffViewProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showUnchanged, setShowUnchanged] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [viewMode, setViewMode] = useState<"split" | "inline">("split");
 
   const leftContent = useMemo(() => files.find(f => f.path === leftFile)?.content || "", [files, leftFile]);
   const rightContent = useMemo(() => files.find(f => f.path === rightFile)?.content || "", [files, rightFile]);
@@ -100,6 +101,28 @@ const FileDiffView = ({ isOpen, onClose, files }: FileDiffViewProps) => {
         <div className="flex items-center gap-1">
           {leftFile && rightFile && (
             <>
+              <div className="flex items-center bg-secondary/40 rounded-md p-0.5 mr-1 ring-1 ring-border/30">
+                <button
+                  onClick={() => setViewMode("split")}
+                  className={cn(
+                    "h-6 px-2 rounded-[5px] text-[10px] flex items-center gap-1 transition-all",
+                    viewMode === "split" ? "bg-primary/20 text-primary" : "text-muted-foreground/60 hover:text-foreground"
+                  )}
+                  title="Side-by-side diff"
+                >
+                  <Columns2 className="w-3 h-3" /> Split
+                </button>
+                <button
+                  onClick={() => setViewMode("inline")}
+                  className={cn(
+                    "h-6 px-2 rounded-[5px] text-[10px] flex items-center gap-1 transition-all",
+                    viewMode === "inline" ? "bg-primary/20 text-primary" : "text-muted-foreground/60 hover:text-foreground"
+                  )}
+                  title="Unified inline diff"
+                >
+                  <AlignJustify className="w-3 h-3" /> Inline
+                </button>
+              </div>
               <Button variant="ghost" size="sm" onClick={() => setShowUnchanged(!showUnchanged)} className="h-7 text-[10px] gap-1">
                 {showUnchanged ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                 {showUnchanged ? "Hide" : "Show"} unchanged
@@ -192,7 +215,7 @@ const FileDiffView = ({ isOpen, onClose, files }: FileDiffViewProps) => {
 
               <ScrollArea className="flex-1">
                 <div className="font-mono text-[11px]">
-                  {displayLines.map((line, i) => (
+                  {viewMode === "split" && displayLines.map((line, i) => (
                     <div
                       key={i}
                       className={cn(
@@ -226,6 +249,38 @@ const FileDiffView = ({ isOpen, onClose, files }: FileDiffViewProps) => {
                       </div>
                     </div>
                   ))}
+                  {viewMode === "inline" && displayLines.flatMap((line, i) => {
+                    const rows: JSX.Element[] = [];
+                    if (line.status === 'same') {
+                      rows.push(
+                        <div key={`s-${i}`} className="flex text-[#cdd6f4]/60">
+                          <div className="w-10 text-right pr-1.5 py-px text-[#6c7086]/50 select-none border-r border-[#313244]/30 bg-[#181825]/50 text-[10px]">{line.lineNum}</div>
+                          <div className="w-4 text-center text-[#6c7086]/40 select-none"> </div>
+                          <div className="flex-1 px-2 py-px whitespace-pre overflow-hidden">{line.left}</div>
+                        </div>
+                      );
+                    } else {
+                      if (line.left) {
+                        rows.push(
+                          <div key={`r-${i}`} className="flex bg-destructive/8 text-destructive/80">
+                            <div className="w-10 text-right pr-1.5 py-px text-destructive/40 select-none border-r border-[#313244]/30 bg-[#181825]/50 text-[10px]">{line.lineNum}</div>
+                            <div className="w-4 text-center text-destructive/60 select-none">-</div>
+                            <div className="flex-1 px-2 py-px whitespace-pre overflow-hidden">{line.left}</div>
+                          </div>
+                        );
+                      }
+                      if (line.right) {
+                        rows.push(
+                          <div key={`a-${i}`} className="flex bg-success/8 text-success/80">
+                            <div className="w-10 text-right pr-1.5 py-px text-success/40 select-none border-r border-[#313244]/30 bg-[#181825]/50 text-[10px]">{line.lineNum}</div>
+                            <div className="w-4 text-center text-success/60 select-none">+</div>
+                            <div className="flex-1 px-2 py-px whitespace-pre overflow-hidden">{line.right}</div>
+                          </div>
+                        );
+                      }
+                    }
+                    return rows;
+                  })}
                 </div>
               </ScrollArea>
             </>
