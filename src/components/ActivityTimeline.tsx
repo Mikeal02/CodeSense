@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import {
-  Clock, Github, Brain, MessageSquare, FileCode, Bookmark,
+  Clock,  Brain, MessageSquare, FileCode, Bookmark,
   Download, Search, Palette, Save, AlertTriangle, X
 } from "lucide-react";
+import { FaGithub } from "react-icons/fa6";
 import { cn } from "@/lib/utils";
 import { ActivityEntry, ActivityType } from "@/hooks/useActivityLog";
 import { formatDistanceToNow } from "date-fns";
@@ -16,8 +17,8 @@ interface ActivityTimelineProps {
   onClear: () => void;
 }
 
-const typeConfig: Record<ActivityType, { icon: typeof Github; color: string }> = {
-  repo_connected: { icon: Github, color: "text-success" },
+const typeConfig: Record<ActivityType, { icon: typeof FaGithub; color: string }> = {
+  repo_connected: { icon: FaGithub, color: "text-success" },
   mode_selected: { icon: Brain, color: "text-primary" },
   question_asked: { icon: MessageSquare, color: "text-info" },
   file_viewed: { icon: FileCode, color: "text-accent" },

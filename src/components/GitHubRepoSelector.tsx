@@ -1,5 +1,6 @@
 import { useState, forwardRef } from "react";
-import { Github, Search, Loader2, Lock, Globe, Star, GitFork } from "lucide-react";
+import {  Search, Loader2, Lock, Globe, Star, GitFork } from "lucide-react";
+import { FaGithub } from "react-icons/fa6";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
@@ -75,7 +76,7 @@ const GitHubRepoSelector = forwardRef<HTMLDivElement, GitHubRepoSelectorProps>((
         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Github className="w-5 h-5 text-primary-foreground" />
+              <FaGithub className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
               <h3 className="font-semibold text-foreground">Connect GitHub Account</h3>
@@ -192,7 +193,7 @@ const GitHubRepoSelector = forwardRef<HTMLDivElement, GitHubRepoSelectorProps>((
         {repos.length === 0 && !fetchingRepos && !error && (
           <div className="flex-1 flex items-center justify-center p-8">
             <div className="text-center text-muted-foreground">
-              <Github className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <FaGithub className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>Enter a GitHub username to browse their public repositories</p>
             </div>
           </div>

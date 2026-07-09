@@ -1,5 +1,6 @@
-import { ArrowRight, FolderUp, Github, Zap, Loader2, User, Key, Check, Shield, Cpu, Terminal, GitBranch, Star, Sparkles, ChevronRight } from "lucide-react";
+import { ArrowRight, FolderUp, Zap, Loader2, User, Key, Check, Shield, Cpu, Terminal, GitBranch, Star, Sparkles, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
+import { FaGithub } from "react-icons/fa6";
 import { Input } from "./ui/input";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -167,7 +168,7 @@ const HeroSection = ({
                   {/* Form */}
                   <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto lg:mx-0 mb-5" data-onboarding="hero-input">
                     <div className="flex-1 relative group/input">
-                      <Github className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground transition-colors group-focus-within/input:text-primary" />
+                      <FaGithub className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground transition-colors group-focus-within/input:text-primary" />
                       <Input
                         type="url"
                         placeholder="Paste GitHub repo URL..."

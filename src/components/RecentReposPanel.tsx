@@ -1,4 +1,5 @@
-import { Clock, Github, FolderUp, Zap, X, Trash2 } from "lucide-react";
+import { Clock, FolderUp, Zap, X, Trash2 } from "lucide-react";
+import { FaGithub } from "react-icons/fa6";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { RecentRepo } from "@/hooks/useRecentRepos";
@@ -26,7 +27,7 @@ const RecentReposPanel = ({
   const getIcon = (source: RecentRepo["source"]) => {
     switch (source) {
       case "github":
-        return <Github className="w-4 h-4" />;
+        return <FaGithub className="w-4 h-4" />;
       case "local":
         return <FolderUp className="w-4 h-4" />;
       case "demo":

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Brain, GitBranch, MessageSquare, Sparkles, X } from "lucide-react";
 import { Button } from "./ui/button";
-import Logo from "./Logo";
+
 
 interface WelcomeModalProps {
   isOpen: boolean;

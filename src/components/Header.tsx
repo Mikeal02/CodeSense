@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import {motion} from "framer-motion";
-import { Github, Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Menu, Shield, FileSearch, LogOut, LogIn, Command, Activity } from "lucide-react";
+import { Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Menu, Shield, FileSearch, LogOut, LogIn, Command, Activity } from "lucide-react";
 import { Button } from "./ui/button";
+import { FaGithub } from "react-icons/fa6";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
 import RateLimitStatus from "./RateLimitStatus";
 import ThemeToggle from "./ThemeToggle";
@@ -177,7 +178,7 @@ const Header = ({
                 onClick={onConnectRepo}
                 className="gap-2 h-8 text-xs rounded-lg"
               >
-                <Github className="w-3.5 h-3.5" />
+                <FaGithub className="w-3.5 h-3.5" />
                 Connect
                 <kbd className="hidden xl:inline text-[9px] px-1 py-0.5 rounded bg-primary-foreground/15 font-mono">⌘K</kbd>
               </Button>
@@ -280,7 +281,7 @@ const Header = ({
                 </Button>
               )}
               <Button variant="default" size="sm" onClick={() => { onConnectRepo(); setMobileMenuOpen(false); }} className="w-full gap-2 rounded-xl justify-start">
-                <Github className="w-4 h-4" />
+                <FaGithub className="w-4 h-4" />
                 Connect Repository
               </Button>
             </div>

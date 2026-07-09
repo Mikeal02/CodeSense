@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Github, Twitter, Heart, Mail, Zap, ArrowRight, Sparkles, Layers, Shield, Code2, BookOpen, FileCode, MessageSquare } from "lucide-react";
+import { Heart, Mail, Zap, ArrowRight, Sparkles, Layers, Shield, Code2, BookOpen, FileCode, MessageSquare } from "lucide-react";
+import { FaGithub, FaXTwitter } from "react-icons/fa6";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 
@@ -21,8 +22,8 @@ const Footer = () => {
       { label: "Privacy Policy", icon: Shield },
     ],
     Connect: [
-      { label: "GitHub", icon: Github },
-      { label: "Twitter / X", icon: Twitter },
+      { label: "Github", icon: FaGithub },
+      { label: "X", icon: FaXTwitter },
       { label: "Contact", icon: Mail },
     ],
   };
@@ -58,8 +59,8 @@ const Footer = () => {
                   <ArrowRight className="w-4 h-4" />
                 </button>
                 <button className="px-7 py-3.5 rounded-xl bg-secondary/60 text-foreground font-semibold text-sm border border-border/40 inline-flex items-center gap-2 hover:bg-secondary/80 hover:border-border/60 transition-all">
-                  <Github className="w-4 h-4" />
-                  View on GitHub
+                  <FaGithub className="w-4 h-4" />
+                  View on Github
                 </button>
               </div>
             </div>
