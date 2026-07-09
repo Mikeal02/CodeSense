@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-
+import {motion} from "framer-motion";
 import { Github, Bell, Settings, Clock, MessageSquare, BarChart3, GitCompare, Menu, Shield, FileSearch, LogOut, LogIn, Command, Activity } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
 import RateLimitStatus from "./RateLimitStatus";
 import ThemeToggle from "./ThemeToggle";
-import Logo from "./Logo";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -100,7 +99,15 @@ const Header = ({
       >
         <div className="container mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
           {/* Logo */}
-          <Logo size="md" data-onboarding="logo" />
+          <motion.img
+  src="/favicon.png"
+  alt="CodeSense Logo"
+  data-onboarding="logo"
+  className="w-10 h-10 object-contain cursor-pointer"
+  initial={{ opacity: 0, scale: 0.9 }}
+  animate={{ opacity: 1, scale: 1 }}
+  transition={{ duration: 0.4 }}
+/>
 
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-1.5" data-onboarding="header-tools">
@@ -201,7 +208,19 @@ const Header = ({
         <SheetContent side="right" className="w-[300px] sm:w-[340px] bg-background/95 backdrop-blur-2xl p-0 border-l border-border">
           <SheetHeader className="p-5 pb-3 border-b border-border/30">
             <SheetTitle className="flex items-center gap-3">
-              <Logo size="sm" showText={true} animated={false} />
+            <div className="flex items-center gap-3">
+  <motion.img
+    src="/favicon.png"
+    alt="CodeSense Logo"
+    className="w-9 h-9 object-contain"
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.4 }}
+  />
+  <span className="text-lg font-bold tracking-tight">
+    CodeSense
+  </span>
+</div>
             </SheetTitle>
           </SheetHeader>
 

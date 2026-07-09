@@ -93,7 +93,7 @@ const Auth = () => {
       >
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-8">
-          <img src="/codesense-logo.png" alt="CodeSense" className="w-10 h-10 drop-shadow-2xl" />
+          <img src="/favicon.png" alt="CodeSense" className="w-10 h-10 drop-shadow-2xl" />
           <h1 className="text-2xl font-bold font-display text-foreground">CodeSense</h1>
         </div>
 

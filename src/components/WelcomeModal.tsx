@@ -48,7 +48,18 @@ const StepVisual = ({ visual, step }: { visual: string; step: number }) => {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
       >
-        <Logo size="xl" animated />
+        <motion.img
+  src="/favicon.png"
+  alt="CodeSense Logo"
+  className="w-24 h-24 object-contain"
+  initial={{ scale: 0.8, opacity: 0, rotate: -10 }}
+  animate={{ scale: 1, opacity: 1, rotate: 0 }}
+  transition={{
+    delay: 0.2,
+    type: "spring",
+    stiffness: 200,
+  }}
+/>
         <motion.div
           className="flex gap-1"
           initial={{ opacity: 0 }}

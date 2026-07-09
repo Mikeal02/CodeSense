@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Github, Twitter, Heart, Mail, Zap, ArrowRight, Sparkles, Layers, Shield, Code2, BookOpen, FileCode, MessageSquare } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import Logo from "./Logo";
+
 
 const Footer = () => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.1 });
@@ -71,7 +71,14 @@ const Footer = () => {
           {/* Brand */}
           <div className="sm:col-span-2">
             <div className="mb-5">
-              <Logo size="lg" animated={false} />
+            <motion.img
+  src="/favicon.png"
+  alt="CodeSense Logo"
+  className="w-16 h-16 object-contain"
+  initial={{ opacity: 0, scale: 0.9 }}
+  animate={{ opacity: 1, scale: 1 }}
+  transition={{ duration: 0.5 }}
+/>
             </div>
             <p className="text-sm text-muted-foreground/70 leading-relaxed max-w-xs mb-6">
               Turn confusion into confidence. Understand your code, ace your interviews, and ship with clarity.
